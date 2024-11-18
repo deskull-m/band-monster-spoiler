@@ -9,6 +9,8 @@ class Creature {
         // 各行を分割
         const lines = text.split('\n');
 
+        this.textDetails = text;
+
         lines.forEach(line => {
             const key = line.charAt(0); // 行の最初の文字で判断
             const values = line.substring(2).split(':'); // データを抽出
