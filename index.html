@@ -53,7 +53,9 @@
                     <input type="file" accept=".txt" onChange={handleFileChange} />  { }
                     <div>
                         {infoList.map((creature, index) => (
-                            <div id={index}><span class="num">{creature.serialNumber}</span>{creature.name}</div>
+                            <div id={index}><div><span class="num">{creature.serialNumber}</span>{creature.name}</div>
+                                <pre span="textdetails">{creature.textDetails}</pre>
+                            </div>
                         ))}
                     </div>
                 </div>
