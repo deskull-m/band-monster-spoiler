@@ -7,18 +7,21 @@ class Creature {
     constructor(text) {
 
         // 各行を分割
-        const lines = text.split('\n');
+        const lines = text.split("\r\n");
+        console.log(lines);
 
         this.textDetails = text;
 
         lines.forEach(line => {
+            //console.log(line);
             const key = line.charAt(0); // 行の最初の文字で判断
             const values = line.substring(2).split(':'); // データを抽出
 
             switch (key) {
                 case 'N':
                     const [serialNumber, name] = values;
-                    console.log(serialNumber, name);
+                    //console.log("////////////////////////////");
+                    //console.log(serialNumber, name);
                     this.serialNumber = serialNumber;
                     this.name = name;
                     break;

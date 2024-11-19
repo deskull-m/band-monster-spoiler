@@ -34,7 +34,8 @@
                     const reader = new FileReader();
                     reader.onload = (e) => {
                         const text = e.target.result;
-                        const datas = text.split('N:');
+                        const datas = text.split(/\r\nN\:/);
+                        console.log(text);
                         let list = [];
                         for(let i = 1; i < datas.length; i++) {
                             let data = "N:" + datas[i];
