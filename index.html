@@ -56,6 +56,7 @@
                         {infoList.map((creature, index) => (
                             <div id={index}><div><span class="num">{creature.serialNumber}</span>{creature.name}</div>
                                 <pre span="textdetails">{creature.textDetails}</pre>
+                                <pre span="jsondetails">{creature.putJson()}</pre>
                             </div>
                         ))}
                     </div>

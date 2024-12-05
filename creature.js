@@ -4,6 +4,25 @@ class Creature {
         return `${this.serialNumber} ${this.name} (${this.symbol})`;
     }
 
+    putJson() {
+        let j = {
+            id: this.serialNumber,
+            name: {
+                ja: this.name,
+                en: this.ename,
+            },
+            symbol: {
+                character: this.symbol,
+                color: this.color,
+            },
+            speed: this.speed,
+            hit_points: this.hitPoints,
+            vision: this.vision,
+            armor_class: this.armor
+        };
+        return JSON.stringify(j, null, 4);
+    }
+
     constructor(text) {
 
         // 各行を分割
@@ -25,6 +44,9 @@ class Creature {
                     this.serialNumber = serialNumber;
                     this.name = name;
                     break;
+                case 'E':
+                    const [ename] = values;
+                    this.ename = ename;
                 case 'G':
                     const [symbol, color] = values;
                     this.symbol = symbol;
