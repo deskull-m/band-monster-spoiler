@@ -1,0 +1,18 @@
+.num {
+    display: inline-block;
+    width: 2rem;
+    text-align: right;
+    margin-right: 1rem;
+}
+
+pre.textdetails {
+    margin: 1rem;
+    padding: 0.5rem;
+    border: 1px solid #000;
+}
+
+pre.jsondetails {
+    margin: 1rem;
+    padding: 0.5rem;
+    border: 1px solid #000;
+}
