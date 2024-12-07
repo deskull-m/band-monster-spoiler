@@ -72,12 +72,12 @@ class Creature {
                     this.color = color;
                     break;
                 case 'I':
-                    const [speed, hitPoints, vision, armorClass, alertness] = values.map(Number);
-                    this.speed = speed;
+                    const [speed, hitPoints, vision, armorClass, alertness] = values;
+                    this.speed = Number(speed);
                     this.hitPoints = hitPoints;
-                    this.vision = vision;
-                    this.armorClass = armorClass;
-                    this.alertness = alertness;
+                    this.vision = Number(vision);
+                    this.armorClass = Number(armorClass);
+                    this.alertness = Number(alertness);
                     break;
                 case 'W':
                     const [depth, rarity, exp, nextExp, nextMon] = values.map(Number);
