@@ -1,5 +1,24 @@
 class Creature {
 
+    static colorSymbol = {
+        'D': 'Black',
+        'w': 'White',
+        's': 'Gray',
+        'o': 'Orange',
+        'r': 'Red',
+        'g': 'Green',
+        'b': 'Blue',
+        'u': 'Brown',
+        'd': 'Dark Gray',
+        'W': 'Light Gray',
+        'v': 'Violet',
+        'y': 'Yellow',
+        'R': 'Light Red',
+        'G': 'Light Green',
+        'B': 'Light Blue',
+        'U': 'Light Brown'
+    };
+
     displayInfo() {
         return `${this.serialNumber} ${this.name} (${this.symbol})`;
     }
@@ -13,13 +32,21 @@ class Creature {
             },
             symbol: {
                 character: this.symbol,
-                color: this.color,
+                color: Creature.colorSymbol[this.color],
             },
             speed: this.speed,
             hit_points: this.hitPoints,
             vision: this.vision,
-            armor_class: this.armor
+            armor_class: this.armor,
+            level: this.depth,
+            rarity: this.rarity,
+            exp: this.exp,
+            next_exp: this.nextExp,
+            next_mon: this.nextMon,
         };
+
+        j["flags"] = this.flags;
+
         return JSON.stringify(j, null, 4);
     }
 
@@ -30,6 +57,7 @@ class Creature {
         console.log(lines);
 
         this.textDetails = text;
+        this.flags = [];
 
         lines.forEach(line => {
             //console.log(line);
@@ -53,12 +81,12 @@ class Creature {
                     this.color = color;
                     break;
                 case 'I':
-                    const [speed, hitPoints, vision, armorClass, alertness] = values.map(Number);
-                    this.speed = speed;
+                    const [speed, hitPoints, vision, armorClass, alertness] = values;
+                    this.speed = Number(speed);
                     this.hitPoints = hitPoints;
-                    this.vision = vision;
-                    this.armorClass = armorClass;
-                    this.alertness = alertness;
+                    this.vision = Number(vision);
+                    this.armorClass = Number(armorClass);
+                    this.alertness = Number(alertness);
                     break;
                 case 'W':
                     const [depth, rarity, exp, nextExp, nextMon] = values.map(Number);
@@ -79,7 +107,7 @@ class Creature {
                     else this.spells = values;
                     break;
                 case 'F':
-                    this.flags = values;
+                    this.flags.push(...values[0].split(/\s*\|\s*/));
                     break;
                 case 'D':
                     this.description = values.join(' ');
