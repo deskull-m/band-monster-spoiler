@@ -1,5 +1,24 @@
 class Creature {
 
+    static colorSymbol = {
+        'D': 'Black',
+        'w': 'White',
+        's': 'Gray',
+        'o': 'Orange',
+        'r': 'Red',
+        'g': 'Green',
+        'b': 'Blue',
+        'u': 'Brown',
+        'd': 'Dark Gray',
+        'W': 'Light Gray',
+        'v': 'Violet',
+        'y': 'Yellow',
+        'R': 'Light Red',
+        'G': 'Light Green',
+        'B': 'Light Blue',
+        'U': 'Light Brown'
+    };
+
     displayInfo() {
         return `${this.serialNumber} ${this.name} (${this.symbol})`;
     }
@@ -13,7 +32,7 @@ class Creature {
             },
             symbol: {
                 character: this.symbol,
-                color: this.color,
+                color: Creature.colorSymbol[this.color],
             },
             speed: this.speed,
             hit_points: this.hitPoints,
