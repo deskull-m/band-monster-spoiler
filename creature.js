@@ -37,8 +37,16 @@ class Creature {
             speed: this.speed,
             hit_points: this.hitPoints,
             vision: this.vision,
-            armor_class: this.armor
+            armor_class: this.armor,
+            level: this.depth,
+            rarity: this.rarity,
+            exp: this.exp,
+            next_exp: this.nextExp,
+            next_mon: this.nextMon,
         };
+
+        j["flags"] = this.flags;
+
         return JSON.stringify(j, null, 4);
     }
 
@@ -49,6 +57,7 @@ class Creature {
         console.log(lines);
 
         this.textDetails = text;
+        this.flags = [];
 
         lines.forEach(line => {
             //console.log(line);
@@ -98,7 +107,7 @@ class Creature {
                     else this.spells = values;
                     break;
                 case 'F':
-                    this.flags = values;
+                    this.flags.push(...values[0].split(/\s*\|\s*/));
                     break;
                 case 'D':
                     this.description = values.join(' ');
