@@ -158,17 +158,17 @@ class Creature {
         const dropKindFlags = this.flags.filter(f => f.startsWith("DROP_KIND_"));
         if (dropKindFlags.length > 0) {
             j.drop_kind = dropKindFlags.map(flag => {
-                // 例: DROP_KIND_1_IN_5_102_0_1d1
+                // 例: DROP_KIND_1_IN_2_803_0_3d4
                 const dropParts = flag.replace("DROP_KIND_", "").split("_");
-                // 1_IN_5_102_0_1d1 → ["1", "IN", "5", "102", "0", "1d1"]
+                // 1_IN_2_803_0_3d4 → ["1", "IN", "2", "803", "0", "3d4"]
                 if (dropParts.length >= 5) {
                     const probability = dropParts.slice(0, 3).join("_");
-                    const item_id = dropParts[3];
-                    const grade = dropParts[4];
+                    const id = parseInt(dropParts[3], 10);
+                    const grade = parseInt(dropParts[4], 10);
                     const dice = dropParts[5] || "";
                     return {
+                        id,
                         probability,
-                        item_id,
                         grade,
                         dice
                     };
