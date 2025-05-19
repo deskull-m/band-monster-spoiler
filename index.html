@@ -15,6 +15,7 @@
 <body>
     <div id="root"></div>
 
+    <div></div>
     <script type="text/babel">
 
         function FileReaderComponent() {
@@ -29,7 +30,7 @@
                         const datas = text.split(/\r\nN\:/);
                         console.log(text);
                         let list = [];
-                        for(let i = 1; i < datas.length; i++) {
+                        for (let i = 1; i < datas.length; i++) {
                             let data = "N:" + datas[i];
                             let creature = new Creature(data);
                             list.push(creature);
@@ -41,16 +42,33 @@
             };
 
             return (
-                <div>
-                    <h2>モンスター定義ファイルを読み込み</h2>
+                <div id="container">
+                    <h1>*bandモンスターエディタ</h1>
+                    <p>モンスター定義ファイルを読み込んで下さい</p>
                     <input type="file" accept=".txt" onChange={handleFileChange} />  { }
-                    <div>
-                        {infoList.map((creature, index) => (
-                            <div id={index}><div><span class="num">{creature.serialNumber}</span>{creature.name}</div>
-                                <pre class="textdetails">{creature.textDetails}</pre>
-                                <pre class="jsondetails">{creature.putJson()}</pre>
+                    <div id="editor">
+                        <div id="pagenation">
+                            <div id="title">モンスター一覧</div>
+                            <div id="search">
+                                <input type="text" id="searchText" placeholder="検索" />
+                                <button id="searchButton">検索</button>
                             </div>
-                        ))}
+                            <div id="sort">
+                                <select id="sortSelect">
+                                    <option value="serialNumber">No</option>
+                                    <option value="name">名前</option>
+                                </select>
+                                <button id="sortButton">ソート</button>
+                            </div>
+                        </div>
+                        <div id="detail-lists">
+                            {infoList.map((creature, index) => (
+                                <div id={index}><div><span class="num">{creature.serialNumber}</span>{creature.name}</div>
+                                    <pre class="textdetails">{creature.textDetails}</pre>
+                                    <pre class="jsondetails">{creature.putJson()}</pre>
+                                </div>
+                            ))}
+                        </div>
                     </div>
                 </div>
             );
