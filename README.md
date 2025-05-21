@@ -1,2 +1,2 @@
 # band-monster-spoiler
-馬鹿馬鹿のモンスターデータ変換用StreamLit
+*band系モンスターデータの旧テキスト/json互換成立用モンスターエディタ。まだ作りかけです。
