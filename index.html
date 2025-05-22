@@ -64,8 +64,18 @@
                         <div id="detail-lists">
                             {infoList.map((creature, index) => (
                                 <div id={index}><div><span class="num">{creature.serialNumber}</span>{creature.name}</div>
-                                    <pre class="textdetails">{creature.textDetails}</pre>
-                                    <pre class="jsondetails">{creature.putJson()}</pre>
+                                    <textarea
+                                        className="textdetails"
+                                        value={creature.textDetails}
+                                        rows={Math.max(3, creature.textDetails.split('\n').length)}
+                                        style={{ width: "100%", resize: "vertical" }}
+                                    />
+                                    <textarea
+                                        className="jsondetails"
+                                        value={creature.putJson()}
+                                        rows={Math.max(3, creature.textDetails.split('\n').length)}
+                                        style={{ width: "100%", resize: "vertical" }}
+                                    />
                                 </div>
                             ))}
                         </div>
