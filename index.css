@@ -3,6 +3,27 @@ body {
     color: #e0e0e0;
 }
 
+h3 {
+    font-size: 1.2rem;
+    margin-block-start: 0.3rem;
+    margin-block-end: 0.3rem;
+    margin-inline-start: 0px;
+    margin-inline-end: 0px;
+    font-weight: bold;
+    unicode-bidi: isolate;
+    border-bottom: solid #505050 0.2rem;
+}
+
+h4 {
+    font-size: 0.8rem;
+    margin-block-start: 1.0rem;
+    margin-block-end: 0.3rem;
+    margin-inline-start: 0px;
+    margin-inline-end: 0px;
+    font-weight: bold;
+    unicode-bidi: isolate;
+}
+
 #container {
     background: #23272b;
     max-width: 900px;
