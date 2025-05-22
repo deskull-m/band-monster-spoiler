@@ -19,28 +19,87 @@ pre.jsondetails {
     width: 40rem;
 }
 
+/* ...existing code... */
+
 #container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 1rem;
+    box-sizing: border-box;
+    width: 100%;
     display: flex;
     flex-direction: column;
-    align-items: center;
-}
-
-#container > div {
-    margin: 0.5rem;
-}
-
-#container > div > pre {
-    margin: 0.5rem;
-    padding: 0.5rem;
-    border: 1px solid #000;
+    align-items: stretch;
 }
 
 #editor {
     display: flex;
-    flex-direction: row;
-    width: 80vw;
+    flex-direction: column;
+    gap: 1rem;
+    width: 100%;
+}
+
+#pagenation {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: center;
+    justify-content: space-between;
+}
+
+#search, #sort {
+    display: flex;
+    gap: 0.5rem;
+    min-width: 160px;
+    flex: 1 1 180px;
 }
 
 #detail-lists {
-    flex: 1 0 auto
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    gap: 1rem;
+    width: 100%;
+}
+
+#detail-lists > div {
+    min-width: 320px;
+    max-width: 100%;
+    flex: 0 0 auto;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 0.5rem;
+    background: #fafafa;
+    box-sizing: border-box;
+}
+
+@media (max-width: 600px) {
+    #detail-lists > div {
+        min-width: 260px;
+        max-width: 90vw;
+    }
+}
+.textdetails,
+.jsondetails {
+    width: 100%;
+    resize: vertical;
+    margin-top: 0.5em;
+    box-sizing: border-box;
+}
+
+@media (max-width: 600px) {
+    #container {
+        padding: 0.5rem;
+    }
+    #editor {
+        width: 100%;
+    }
+    #detail-lists {
+        grid-template-columns: 1fr;
+    }
+    .textdetails,
+    .jsondetails {
+        font-size: 0.95em;
+    }
 }

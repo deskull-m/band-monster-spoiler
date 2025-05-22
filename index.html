@@ -59,13 +59,54 @@
                                     <option value="name">名前</option>
                                 </select>
                                 <button id="sortButton">ソート</button>
+
+                                <div id="jump">
+                                    <select
+                                        id="jumpSelect"
+                                        onChange={e => {
+                                            const anchorId = e.target.value;
+                                            if (anchorId) {
+                                                const anchor = document.getElementById(anchorId);
+                                                if (anchor) {
+                                                    anchor.scrollIntoView({ behavior: "smooth", block: "start" });
+                                                }
+                                            }
+                                        }}
+                                        defaultValue=""
+                                    >
+                                        <option value="" disabled>モンスターへジャンプ</option>
+                                        {infoList.map((creature) => (
+                                            <option
+                                                key={creature.serialNumber}
+                                                value={`creature-${creature.serialNumber}`}
+                                            >
+                                                {creature.serialNumber} : {creature.name}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
                             </div>
                         </div>
                         <div id="detail-lists">
                             {infoList.map((creature, index) => (
-                                <div id={index}><div><span class="num">{creature.serialNumber}</span>{creature.name}</div>
-                                    <pre class="textdetails">{creature.textDetails}</pre>
-                                    <pre class="jsondetails">{creature.putJson()}</pre>
+                                <div id={index}>
+                                    <div>
+                                        <a id={`creature-${creature.serialNumber}`}></a>
+                                        <h3 className="num">{creature.serialNumber}</h3>
+                                        {creature.name}
+                                    </div>
+                                    <textarea
+                                        className="textdetails"
+                                        value={creature.textDetails}
+                                        rows={Math.max(3, creature.textDetails.split('\n').length)}
+                                        style={{ width: "100%", resize: "vertical" }}
+                                    />
+                                    <textarea
+                                        className="jsondetails"
+                                        value={creature.putJson()}
+                                        rows={Math.max(3, creature.textDetails.split('\n').length)}
+                                        style={{ width: "100%", resize: "vertical" }}
+                                    />
                                 </div>
                             ))}
                         </div>
