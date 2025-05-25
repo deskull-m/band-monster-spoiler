@@ -35,9 +35,10 @@ class Creature {
                 color: Creature.colorSymbol[this.color],
             },
             speed: this.speed,
-            hit_points: this.hitPoints,
+            hit_point: this.hitPoints,
             vision: this.vision,
-            armor_class: this.armor,
+            armor_class: this.armor_class,
+            alertness: this.alertness,
             level: this.depth,
             rarity: this.rarity,
             exp: this.exp,
@@ -59,6 +60,12 @@ class Creature {
         this.textDetails = text;
         this.flags = [];
 
+        this.depth = 0;
+        this.rarity = 1;
+        this.exp = 0;
+        this.nextExp = 0;
+        this.nextMon = 0;
+
         lines.forEach(line => {
             //console.log(line);
             const key = line.charAt(0); // 行の最初の文字で判断
@@ -69,7 +76,7 @@ class Creature {
                     const [serialNumber, name] = values;
                     //console.log("////////////////////////////");
                     //console.log(serialNumber, name);
-                    this.serialNumber = serialNumber;
+                    this.serialNumber = parseInt(serialNumber);
                     this.name = name;
                     break;
                 case 'E':
@@ -85,7 +92,7 @@ class Creature {
                     this.speed = Number(speed);
                     this.hitPoints = hitPoints;
                     this.vision = Number(vision);
-                    this.armorClass = Number(armorClass);
+                    this.armor_class = Number(armorClass);
                     this.alertness = Number(alertness);
                     break;
                 case 'W':
