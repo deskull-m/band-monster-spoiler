@@ -83,6 +83,33 @@
                             <div style={{ textAlign: "right", fontSize: "0.9em" }}>{progress}%</div>
                         </div>
                     )}
+                    <div style={{ textAlign: "right", margin: "1em 0" }}>
+                        <button
+                            style={{
+                                background: "#333c44",
+                                color: "#e0e0e0",
+                                border: "1px solid #555",
+                                borderRadius: "4px",
+                                padding: "0.5em 1em",
+                                cursor: "pointer"
+                            }}
+                            onClick={() => {
+                                const monstetBlock = `[${infoList.map(c => c.putJson()).join(",\n")}]`;
+                                const allJson = `{\n"versions": 1.0,\n"monsters": ${monstetBlock}\n}`;
+                                const blob = new Blob([allJson], { type: "application/json" });
+                                const url = URL.createObjectURL(blob);
+                                const a = document.createElement("a");
+                                a.href = url;
+                                a.download = "all_monsters.json";
+                                document.body.appendChild(a);
+                                a.click();
+                                document.body.removeChild(a);
+                                URL.revokeObjectURL(url);
+                            }}
+                        >
+                            JSONエクスポート
+                        </button>
+                    </div>
                     <div id="editor">
                         <div id="pagenation">
                             <div id="search">
