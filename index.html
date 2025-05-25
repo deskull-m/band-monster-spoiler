@@ -130,9 +130,27 @@
                         <div id="detail-lists">
                             {infoList.map((creature, index) => (
                                 <div id={index}>
-                                    <div>
-                                        <a id={`creature-${creature.serialNumber}`}></a>
-                                        <h3><span className="num">{creature.serialNumber}</span>{creature.name}</h3>
+                                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                                        <div>
+                                            <a id={`creature-${creature.serialNumber}`}></a>
+                                            <h3 style={{ display: "inline-block", margin: 0 }}>
+                                                <span className="num">{creature.serialNumber}</span>{creature.name}
+                                            </h3>
+                                        </div>
+                                        <button
+                                            style={{
+                                                marginLeft: "1em",
+                                                background: "none",
+                                                border: "none",
+                                                color: "#90caf9",
+                                                cursor: "pointer",
+                                                fontSize: "1.2em"
+                                            }}
+                                            title="ページトップに戻る"
+                                            onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+                                        >
+                                            ↑
+                                        </button>
                                     </div>
                                     <h4>*_info</h4>
                                     <div style={{ position: "relative", marginBottom: "0.5em" }}>
