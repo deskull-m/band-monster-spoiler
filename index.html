@@ -111,14 +111,18 @@
                                         defaultValue=""
                                     >
                                         <option value="" disabled>モンスターへジャンプ</option>
-                                        {infoList.map((creature) => (
-                                            <option
-                                                key={creature.serialNumber}
-                                                value={`creature-${creature.serialNumber}`}
-                                            >
-                                                {creature.serialNumber} : {creature.name}
-                                            </option>
-                                        ))}
+                                        {infoList.map((creature) => {
+                                            const label = `${creature.serialNumber} : ${creature.name}`;
+                                            const truncated = label.length > 50 ? label.slice(0, 47) + "..." : label;
+                                            return (
+                                                <option
+                                                    key={creature.serialNumber}
+                                                    value={`creature-${creature.serialNumber}`}
+                                                >
+                                                    {truncated}
+                                                </option>
+                                            );
+                                        })}
                                     </select>
                                 </div>
                             </div>
