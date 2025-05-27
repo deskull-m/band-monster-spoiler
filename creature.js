@@ -65,6 +65,7 @@ class Creature {
         this.exp = 0;
         this.nextExp = 0;
         this.nextMon = 0;
+        this.speed = 0;
 
         lines.forEach(line => {
             //console.log(line);
@@ -89,7 +90,13 @@ class Creature {
                     break;
                 case 'I':
                     const [speed, hitPoints, vision, armorClass, alertness] = values;
-                    this.speed = Number(speed);
+                    this.speed = Number(speed) - 110; // jsonでは基準が0になったので110を引く
+                    if (this.speed < -50) {
+                        this.speed = -50;
+                    }
+                    if (this.speed >= 100) {
+                        this.speed = 99;
+                    }
                     this.hitPoints = hitPoints;
                     this.vision = Number(vision);
                     this.armor_class = Number(armorClass);
