@@ -46,7 +46,18 @@ class Creature {
             next_mon: this.nextMon,
         };
 
-        j["flags"] = this.flags;
+        let sexes = "";
+        if (this.flags.includes("MALE")) {
+            sexes = "MALE";
+        } else if (this.flags.includes("FEMALE")) {
+            sexes = "FEMALE";
+        } else {
+            j["flags"] = this.flags;
+        }
+
+        if (sexes.length > 0) {
+            j["sex"] = sexes;
+        }
 
         return JSON.stringify(j, null, 4);
     }
