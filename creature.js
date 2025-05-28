@@ -46,17 +46,32 @@ class Creature {
             next_mon: this.nextMon,
         };
 
+        // sex
         let sexes = "";
         if (this.flags.includes("MALE")) {
             sexes = "MALE";
         } else if (this.flags.includes("FEMALE")) {
             sexes = "FEMALE";
-        } else {
-            j["flags"] = this.flags;
+        }
+        if (sexes.length > 0) {
+            j.sex = sexes;
         }
 
-        if (sexes.length > 0) {
-            j["sex"] = sexes;
+        // alliance
+        const allianceFlags = this.flags.filter(f => f.startsWith("ALLIANCE_"));
+        if (allianceFlags.length > 0) {
+            j.alliance = allianceFlags[0].split("_")[1];
+        }
+
+        // flags (PREVENT_SUDDEN_MAGIC除外, ALLIANCE_*除外)
+        const filteredFlags = this.flags.filter(
+            f => f !== "PREVENT_SUDDEN_MAGIC" &&
+                f !== "MALE" &&
+                f !== "FEMALE" &&
+                !f.startsWith("ALLIANCE_")
+        );
+        if (!/^\s*$/.test(filteredFlags.join(''))) {
+            j.flags = filteredFlags;
         }
 
         return JSON.stringify(j, null, 4);
