@@ -52,7 +52,11 @@ class Creature {
         } else if (this.flags.includes("FEMALE")) {
             sexes = "FEMALE";
         } else {
-            j["flags"] = this.flags;
+            // PREVENT_SUDDEN_MAGICを除外してflagsに追加
+            const filteredFlags = this.flags.filter(f => f !== "PREVENT_SUDDEN_MAGIC");
+            if (!/^\s*$/.test(filteredFlags.join(''))) {
+                j.flags = filteredFlags;
+            }
         }
 
         if (sexes.length > 0) {
