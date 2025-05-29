@@ -63,6 +63,11 @@ class Creature {
             j.alliance = allianceFlags[0].split("_")[1];
         }
 
+        const collapseFlags = this.flags.filter(f => f.startsWith("COLLAPSE_"));
+        if (collapseFlags.length > 0) {
+            j.collapse = collapseFlags[0].split("_")[1];
+        }
+
         const perhpFlags = this.flags.filter(f => f.startsWith("PERHP_"));
         if (perhpFlags.length > 0) {
             j.perhp = perhpFlags[0].split("_")[1];
@@ -89,11 +94,13 @@ class Creature {
                 f !== "MALE" &&
                 f !== "FEMALE" &&
                 !f.startsWith("ALLIANCE_") &&
+                !f.startsWith("COLLAPSE_") &&
                 !f.startsWith("PERHP_") &&
                 !f.startsWith("MOB_") &&
                 !f.startsWith("MOTHER_") &&
                 !f.startsWith("FATHER_") &&
                 !f.startsWith("SPAWN_CREATURE_") &&
+                !f.startsWith("SPAWN_FEATURE_") &&
                 !f.startsWith("DROP_KIND_")
         );
         if (!/^\s*$/.test(filteredFlags.join(''))) {
@@ -136,13 +143,28 @@ class Creature {
             }).filter(x => x !== null);
         }
 
-        // SPAWN_CREATURE-*-A_IN_B の処理（複数対応）
         const spawnCreatureFlags = this.flags.filter(f => /^SPAWN_CREATURE_\d+_IN_\d+_\d+$/.test(f));
         if (spawnCreatureFlags.length > 0) {
             j.spawn_creature = spawnCreatureFlags.map(flag => {
-                // 例: SPAWN_CREATURE-123-1_IN_5
+                // 例: SPAWN_CREATURE_123_1_IN_5
                 // id: 123, probability: 1_IN_5
                 const match = flag.match(/^SPAWN_CREATURE_(\d+_IN_\d+)_(\d+)$/);
+                if (match) {
+                    return {
+                        id: parseInt(match[2], 10),
+                        probability: match[1]
+                    };
+                }
+                return null;
+            }).filter(x => x !== null);
+        }
+
+        const spawnFeatureFlags = this.flags.filter(f => /^SPAWN_FEATURE_\d+_IN_\d+_\d+$/.test(f));
+        if (spawnFeatureFlags.length > 0) {
+            j.terrain_feature = spawnFeatureFlags.map(flag => {
+                // 例: SPAWN_FEATURE_123_1_IN_5
+                // id: 123, probability: 1_IN_5
+                const match = flag.match(/^SPAWN_FEATURE_(\d+_IN_\d+)_(\d+)$/);
                 if (match) {
                     return {
                         id: parseInt(match[2], 10),
