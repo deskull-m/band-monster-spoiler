@@ -74,6 +74,19 @@ class Creature {
             j.flags = filteredFlags;
         }
 
+        // spellsをskill項目に変換
+        const probabilityList = this.skills
+            .filter(f => /_IN_/.test(f))
+            .flatMap(f => f.split('|').map(x => x.trim()).filter(x => x.length > 0));
+        const skillList = this.skills
+            .filter(f => !/_IN_/.test(f))
+            .flatMap(f => f.split('|').map(x => x.trim()).filter(x => x.length > 0));
+        if (skillList.length > 0 || probabilityList.length > 0) {
+            if (!j.skill) j.skill = {};
+            if (skillList.length > 0) j.skill.list = skillList;
+            if (probabilityList.length > 0) j.skill.probability = probabilityList[0];
+        }
+
         return JSON.stringify(j, null, 4);
     }
 
@@ -85,6 +98,7 @@ class Creature {
 
         this.textDetails = text;
         this.flags = [];
+        this.skills = [];
 
         this.depth = 0;
         this.rarity = 1;
@@ -142,9 +156,12 @@ class Creature {
                     this.attacks.push({ method, effect, damage });
                     break;
                 case 'S':
-                    if (!this.spells) this.spells = [];
-                    if (!this.spellFrequency) this.spellFrequency = values[0];
-                    else this.spells = values;
+                    this.skills.push(
+                        ...values[0]
+                            .split(/\s*\|\s*/)
+                            .map(f => f.trim())
+                            .filter(f => f.length > 0)
+                    );
                     break;
                 case 'F':
                     this.flags.push(
