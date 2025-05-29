@@ -63,12 +63,38 @@ class Creature {
             j.alliance = allianceFlags[0].split("_")[1];
         }
 
+        const perhpFlags = this.flags.filter(f => f.startsWith("PERHP_"));
+        if (perhpFlags.length > 0) {
+            j.perhp = perhpFlags[0].split("_")[1];
+        }
+
+        const mobFlags = this.flags.filter(f => f.startsWith("MOB_"));
+        if (mobFlags.length > 0) {
+            j.mob = mobFlags[0].split("_")[1];
+        }
+
+        const motherFlags = this.flags.filter(f => f.startsWith("MOTHER_"));
+        if (motherFlags.length > 0) {
+            j.mother = motherFlags[0].split("_")[1];
+        }
+
+        const fatherFlags = this.flags.filter(f => f.startsWith("FATHER_"));
+        if (fatherFlags.length > 0) {
+            j.father = fatherFlags[0].split("_")[1];
+        }
+
         // flags (PREVENT_SUDDEN_MAGIC除外, ALLIANCE_*除外)
         const filteredFlags = this.flags.filter(
             f => f !== "PREVENT_SUDDEN_MAGIC" &&
                 f !== "MALE" &&
                 f !== "FEMALE" &&
-                !f.startsWith("ALLIANCE_")
+                !f.startsWith("ALLIANCE_") &&
+                !f.startsWith("PERHP_") &&
+                !f.startsWith("MOB_") &&
+                !f.startsWith("MOTHER_") &&
+                !f.startsWith("FATHER_") &&
+                !f.startsWith("SPAWN_CREATURE_") &&
+                !f.startsWith("DROP_KIND_")
         );
         if (!/^\s*$/.test(filteredFlags.join(''))) {
             j.flags = filteredFlags;
@@ -85,6 +111,46 @@ class Creature {
             if (!j.skill) j.skill = {};
             if (skillList.length > 0) j.skill.list = skillList;
             if (probabilityList.length > 0) j.skill.probability = probabilityList[0];
+        }
+
+        // DROP_KIND_* の処理（複数対応）
+        const dropKindFlags = this.flags.filter(f => f.startsWith("DROP_KIND_"));
+        if (dropKindFlags.length > 0) {
+            j.drop_kind = dropKindFlags.map(flag => {
+                // 例: DROP_KIND_1_IN_5_102_0_1d1
+                const dropParts = flag.replace("DROP_KIND_", "").split("_");
+                // 1_IN_5_102_0_1d1 → ["1", "IN", "5", "102", "0", "1d1"]
+                if (dropParts.length >= 5) {
+                    const probability = dropParts.slice(0, 3).join("_");
+                    const item_id = dropParts[3];
+                    const grade = dropParts[4];
+                    const dice = dropParts[5] || "";
+                    return {
+                        probability,
+                        item_id,
+                        grade,
+                        dice
+                    };
+                }
+                return null;
+            }).filter(x => x !== null);
+        }
+
+        // SPAWN_CREATURE-*-A_IN_B の処理（複数対応）
+        const spawnCreatureFlags = this.flags.filter(f => /^SPAWN_CREATURE_\d+_IN_\d+_\d+$/.test(f));
+        if (spawnCreatureFlags.length > 0) {
+            j.spawn_creature = spawnCreatureFlags.map(flag => {
+                // 例: SPAWN_CREATURE-123-1_IN_5
+                // id: 123, probability: 1_IN_5
+                const match = flag.match(/^SPAWN_CREATURE_(\d+_IN_\d+)_(\d+)$/);
+                if (match) {
+                    return {
+                        id: parseInt(match[2], 10),
+                        probability: match[1]
+                    };
+                }
+                return null;
+            }).filter(x => x !== null);
         }
 
         return JSON.stringify(j, null, 4);
