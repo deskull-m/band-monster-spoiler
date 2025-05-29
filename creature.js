@@ -73,6 +73,16 @@ class Creature {
             j.mob = mobFlags[0].split("_")[1];
         }
 
+        const motherFlags = this.flags.filter(f => f.startsWith("MOTHER_"));
+        if (motherFlags.length > 0) {
+            j.mother = motherFlags[0].split("_")[1];
+        }
+
+        const fatherFlags = this.flags.filter(f => f.startsWith("FATHER_"));
+        if (fatherFlags.length > 0) {
+            j.father = fatherFlags[0].split("_")[1];
+        }
+
         // flags (PREVENT_SUDDEN_MAGIC除外, ALLIANCE_*除外)
         const filteredFlags = this.flags.filter(
             f => f !== "PREVENT_SUDDEN_MAGIC" &&
@@ -81,6 +91,8 @@ class Creature {
                 !f.startsWith("ALLIANCE_") &&
                 !f.startsWith("PERHP_") &&
                 !f.startsWith("MOB_") &&
+                !f.startsWith("MOTHER_") &&
+                !f.startsWith("FATHER_") &&
                 !f.startsWith("DROP_KIND_")
         );
         if (!/^\s*$/.test(filteredFlags.join(''))) {
