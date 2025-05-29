@@ -63,6 +63,11 @@ class Creature {
             j.alliance = allianceFlags[0].split("_")[1];
         }
 
+        const collapseFlags = this.flags.filter(f => f.startsWith("COLLAPSE_"));
+        if (collapseFlags.length > 0) {
+            j.collapse = collapseFlags[0].split("_")[1];
+        }
+
         const perhpFlags = this.flags.filter(f => f.startsWith("PERHP_"));
         if (perhpFlags.length > 0) {
             j.perhp = perhpFlags[0].split("_")[1];
@@ -89,6 +94,7 @@ class Creature {
                 f !== "MALE" &&
                 f !== "FEMALE" &&
                 !f.startsWith("ALLIANCE_") &&
+                !f.startsWith("COLLAPSE_") &&
                 !f.startsWith("PERHP_") &&
                 !f.startsWith("MOB_") &&
                 !f.startsWith("MOTHER_") &&
