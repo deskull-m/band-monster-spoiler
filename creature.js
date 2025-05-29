@@ -68,7 +68,8 @@ class Creature {
             f => f !== "PREVENT_SUDDEN_MAGIC" &&
                 f !== "MALE" &&
                 f !== "FEMALE" &&
-                !f.startsWith("ALLIANCE_")
+                !f.startsWith("ALLIANCE_") &&
+                !f.startsWith("DROP_KIND_")
         );
         if (!/^\s*$/.test(filteredFlags.join(''))) {
             j.flags = filteredFlags;
@@ -85,6 +86,29 @@ class Creature {
             if (!j.skill) j.skill = {};
             if (skillList.length > 0) j.skill.list = skillList;
             if (probabilityList.length > 0) j.skill.probability = probabilityList[0];
+        }
+
+        // DROP_KIND_* の処理（複数対応）
+        const dropKindFlags = this.flags.filter(f => f.startsWith("DROP_KIND_"));
+        if (dropKindFlags.length > 0) {
+            j.drop_kind = dropKindFlags.map(flag => {
+                // 例: DROP_KIND_1_IN_5_102_0_1d1
+                const dropParts = flag.replace("DROP_KIND_", "").split("_");
+                // 1_IN_5_102_0_1d1 → ["1", "IN", "5", "102", "0", "1d1"]
+                if (dropParts.length >= 5) {
+                    const probability = dropParts.slice(0, 3).join("_");
+                    const item_id = dropParts[3];
+                    const grade = dropParts[4];
+                    const dice = dropParts[5] || "";
+                    return {
+                        probability,
+                        item_id,
+                        grade,
+                        dice
+                    };
+                }
+                return null;
+            }).filter(x => x !== null);
         }
 
         return JSON.stringify(j, null, 4);
