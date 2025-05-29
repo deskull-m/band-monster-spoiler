@@ -63,12 +63,18 @@ class Creature {
             j.alliance = allianceFlags[0].split("_")[1];
         }
 
+        const perhpFlags = this.flags.filter(f => f.startsWith("PERHP_"));
+        if (perhpFlags.length > 0) {
+            j.perhp = perhpFlags[0].split("_")[1];
+        }
+
         // flags (PREVENT_SUDDEN_MAGIC除外, ALLIANCE_*除外)
         const filteredFlags = this.flags.filter(
             f => f !== "PREVENT_SUDDEN_MAGIC" &&
                 f !== "MALE" &&
                 f !== "FEMALE" &&
                 !f.startsWith("ALLIANCE_") &&
+                !f.startsWith("PERHP_") &&
                 !f.startsWith("DROP_KIND_")
         );
         if (!/^\s*$/.test(filteredFlags.join(''))) {
