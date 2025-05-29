@@ -93,6 +93,7 @@ class Creature {
                 !f.startsWith("MOB_") &&
                 !f.startsWith("MOTHER_") &&
                 !f.startsWith("FATHER_") &&
+                !f.startsWith("SPAWN_CREATURE_") &&
                 !f.startsWith("DROP_KIND_")
         );
         if (!/^\s*$/.test(filteredFlags.join(''))) {
@@ -129,6 +130,23 @@ class Creature {
                         item_id,
                         grade,
                         dice
+                    };
+                }
+                return null;
+            }).filter(x => x !== null);
+        }
+
+        // SPAWN_CREATURE-*-A_IN_B の処理（複数対応）
+        const spawnCreatureFlags = this.flags.filter(f => /^SPAWN_CREATURE_\d+_IN_\d+_\d+$/.test(f));
+        if (spawnCreatureFlags.length > 0) {
+            j.spawn_creature = spawnCreatureFlags.map(flag => {
+                // 例: SPAWN_CREATURE-123-1_IN_5
+                // id: 123, probability: 1_IN_5
+                const match = flag.match(/^SPAWN_CREATURE_(\d+_IN_\d+)_(\d+)$/);
+                if (match) {
+                    return {
+                        id: parseInt(match[2], 10),
+                        probability: match[1]
                     };
                 }
                 return null;
