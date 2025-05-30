@@ -115,7 +115,8 @@ class Creature {
                 !f.startsWith("FATHER_") &&
                 !f.startsWith("SPAWN_CREATURE_") &&
                 !f.startsWith("SPAWN_FEATURE_") &&
-                !f.startsWith("DROP_KIND_")
+                !f.startsWith("DROP_KIND_") &&
+                !f.startsWith("DEAD_SPAWN_")
         );
         if (!/^\s*$/.test(filteredFlags.join(''))) {
             j.flags = filteredFlags;
@@ -167,6 +168,20 @@ class Creature {
                     return {
                         id: parseInt(match[2], 10),
                         probability: match[1]
+                    };
+                }
+                return null;
+            }).filter(x => x !== null);
+        }
+        const deadSpawnCreatureFlags = this.flags.filter(f => /^DEAD_SPAWN_\d+_IN_\d+_\d+_\d+d\d+$/.test(f));
+        if (deadSpawnCreatureFlags.length > 0) {
+            j.dead_spawn = deadSpawnCreatureFlags.map(flag => {
+                const match = flag.match(/^DEAD_SPAWN_(\d+_IN_\d+)_(\d+)_(\d+d\d+)$/);
+                if (match) {
+                    return {
+                        id: parseInt(match[2], 10),
+                        probability: match[1],
+                        dice: match[3]
                     };
                 }
                 return null;
