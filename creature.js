@@ -45,7 +45,7 @@ class Creature {
             speed: this.speed,
             hit_point: this.hitPoints,
             vision: this.inRange(this.vision, 0, 999),
-            armor_class: this.armor_class,
+            armor_class: this.inRange(this.armor_class, 0, 10000),
             alertness: this.alertness,
             level: this.depth,
             rarity: this.rarity,
