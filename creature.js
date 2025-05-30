@@ -1,5 +1,13 @@
 class Creature {
 
+    inRange(v, min, max) {
+        if(v < min)
+            return min;
+        if(v > max)
+            return max;
+        return v;
+    }
+
     static colorSymbol = {
         'D': 'Black',
         'w': 'White',
@@ -36,8 +44,8 @@ class Creature {
             },
             speed: this.speed,
             hit_point: this.hitPoints,
-            vision: this.vision,
-            armor_class: this.armor_class,
+            vision: this.inRange(this.vision, 0, 999),
+            armor_class: this.inRange(this.armor_class, 0, 10000),
             alertness: this.alertness,
             level: this.depth,
             rarity: this.rarity,
@@ -78,6 +86,11 @@ class Creature {
             j.mob = mobFlags[0].split("_")[1];
         }
 
+        const suicideFlags = this.flags.filter(f => f.startsWith("SUICIDE_"));
+        if (suicideFlags.length > 0) {
+            j.suicide = suicideFlags[0].split("_")[1];
+        }
+
         const motherFlags = this.flags.filter(f => f.startsWith("MOTHER_"));
         if (motherFlags.length > 0) {
             j.mother = motherFlags[0].split("_")[1];
@@ -97,11 +110,13 @@ class Creature {
                 !f.startsWith("COLLAPSE_") &&
                 !f.startsWith("PERHP_") &&
                 !f.startsWith("MOB_") &&
+                !f.startsWith("SUICIDE_") &&
                 !f.startsWith("MOTHER_") &&
                 !f.startsWith("FATHER_") &&
                 !f.startsWith("SPAWN_CREATURE_") &&
                 !f.startsWith("SPAWN_FEATURE_") &&
-                !f.startsWith("DROP_KIND_")
+                !f.startsWith("DROP_KIND_") &&
+                !f.startsWith("DEAD_SPAWN_")
         );
         if (!/^\s*$/.test(filteredFlags.join(''))) {
             j.flags = filteredFlags;
@@ -153,6 +168,20 @@ class Creature {
                     return {
                         id: parseInt(match[2], 10),
                         probability: match[1]
+                    };
+                }
+                return null;
+            }).filter(x => x !== null);
+        }
+        const deadSpawnCreatureFlags = this.flags.filter(f => /^DEAD_SPAWN_\d+_IN_\d+_\d+_\d+d\d+$/.test(f));
+        if (deadSpawnCreatureFlags.length > 0) {
+            j.dead_spawn = deadSpawnCreatureFlags.map(flag => {
+                const match = flag.match(/^DEAD_SPAWN_(\d+_IN_\d+)_(\d+)_(\d+d\d+)$/);
+                if (match) {
+                    return {
+                        id: parseInt(match[2], 10),
+                        probability: match[1],
+                        dice: match[3]
                     };
                 }
                 return null;
@@ -211,6 +240,7 @@ class Creature {
                 case 'E':
                     const [ename] = values;
                     this.ename = ename;
+                    break;
                 case 'G':
                     const [symbol, color] = values;
                     this.symbol = symbol;
