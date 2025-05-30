@@ -217,6 +217,7 @@ class Creature {
                 case 'E':
                     const [ename] = values;
                     this.ename = ename;
+                    break;
                 case 'G':
                     const [symbol, color] = values;
                     this.symbol = symbol;
