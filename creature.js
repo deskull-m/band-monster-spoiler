@@ -78,6 +78,11 @@ class Creature {
             j.mob = mobFlags[0].split("_")[1];
         }
 
+        const suicideFlags = this.flags.filter(f => f.startsWith("SUICIDE_"));
+        if (suicideFlags.length > 0) {
+            j.suicide = suicideFlags[0].split("_")[1];
+        }
+
         const motherFlags = this.flags.filter(f => f.startsWith("MOTHER_"));
         if (motherFlags.length > 0) {
             j.mother = motherFlags[0].split("_")[1];
@@ -97,6 +102,7 @@ class Creature {
                 !f.startsWith("COLLAPSE_") &&
                 !f.startsWith("PERHP_") &&
                 !f.startsWith("MOB_") &&
+                !f.startsWith("SUICIDE_") &&
                 !f.startsWith("MOTHER_") &&
                 !f.startsWith("FATHER_") &&
                 !f.startsWith("SPAWN_CREATURE_") &&
