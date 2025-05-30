@@ -1,5 +1,13 @@
 class Creature {
 
+    inRange(v, min, max) {
+        if(v < min)
+            return min;
+        if(v > max)
+            return max;
+        return v;
+    }
+
     static colorSymbol = {
         'D': 'Black',
         'w': 'White',
@@ -36,7 +44,7 @@ class Creature {
             },
             speed: this.speed,
             hit_point: this.hitPoints,
-            vision: this.vision,
+            vision: this.inRange(this.vision, 0, 999),
             armor_class: this.armor_class,
             alertness: this.alertness,
             level: this.depth,
