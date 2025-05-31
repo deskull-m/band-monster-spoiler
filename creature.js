@@ -86,6 +86,11 @@ class Creature {
             j.mob = mobFlags[0].split("_")[1];
         }
 
+        const collapseOverFlags = this.flags.filter(f => f.startsWith("COLLAPSE-OVER_"));
+        if (collapseOverFlags.length > 0) {
+            j.collapse_over = collapseOverFlags[0].split("_")[1];
+        }
+
         const suicideFlags = this.flags.filter(f => f.startsWith("SUICIDE_"));
         if (suicideFlags.length > 0) {
             j.suicide = suicideFlags[0].split("_")[1];
@@ -108,12 +113,14 @@ class Creature {
                 f !== "FEMALE" &&
                 !f.startsWith("ALLIANCE_") &&
                 !f.startsWith("COLLAPSE_") &&
+                !f.startsWith("COLLAPSE-OVER_") &&
                 !f.startsWith("PERHP_") &&
                 !f.startsWith("MOB_") &&
                 !f.startsWith("SUICIDE_") &&
                 !f.startsWith("MOTHER_") &&
                 !f.startsWith("FATHER_") &&
                 !f.startsWith("SPAWN_CREATURE_") &&
+                !f.startsWith("SPAWN_ITEM_") &&
                 !f.startsWith("SPAWN_FEATURE_") &&
                 !f.startsWith("DROP_KIND_") &&
                 !f.startsWith("DEAD_SPAWN_")
@@ -173,6 +180,21 @@ class Creature {
                 return null;
             }).filter(x => x !== null);
         }
+
+        const spawnItemFlags = this.flags.filter(f => /^SPAWN_ITEM_\d+_IN_\d+_\d+$/.test(f));
+        if (spawnItemFlags.length > 0) {
+            j.spawn_item = spawnItemFlags.map(flag => {
+                const match = flag.match(/^SPAWN_ITEM_(\d+_IN_\d+)_(\d+)$/);
+                if (match) {
+                    return {
+                        id: parseInt(match[2], 10),
+                        probability: match[1]
+                    };
+                }
+                return null;
+            }).filter(x => x !== null);
+        }
+
         const deadSpawnCreatureFlags = this.flags.filter(f => /^DEAD_SPAWN_\d+_IN_\d+_\d+_\d+d\d+$/.test(f));
         if (deadSpawnCreatureFlags.length > 0) {
             j.dead_spawn = deadSpawnCreatureFlags.map(flag => {
