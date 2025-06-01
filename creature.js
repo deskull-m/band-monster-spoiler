@@ -54,6 +54,15 @@ class Creature {
             next_mon: this.nextMon,
         };
 
+        // blows
+        if (this.attacks && this.attacks.length > 0) {
+            j.blows = this.attacks.map(atk => ({
+                method: atk.method,
+                effect: atk.effect,
+                damage_dice: atk.damage
+            }));
+        }
+
         // flavor
         if (this.description_ja || this.description_en) {
             j.flavor = {};
