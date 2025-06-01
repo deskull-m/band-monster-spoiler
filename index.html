@@ -121,7 +121,24 @@
                                     <option value="serialNumber">No</option>
                                     <option value="name">名前</option>
                                 </select>
-                                <button id="sortButton">ソート</button>
+                                <button
+                                    id="levelSortButton"
+                                    onClick={() => {
+                                        // infoListをlevel昇順にソートして再描画
+                                        setInfoList([...infoList].sort((a, b) => a.depth - b.depth));
+                                    }}
+                                >
+                                    レベル順ソート（昇順）
+                                </button>
+                                <button
+                                    id="levelSortDescButton"
+                                    onClick={() => {
+                                        // infoListをlevel降順にソートして再描画
+                                        setInfoList([...infoList].sort((a, b) => b.depth - a.depth));
+                                    }}
+                                >
+                                    レベル順ソート（降順）
+                                </button>
 
                                 <div id="jump">
                                     <select
