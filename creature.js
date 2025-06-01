@@ -54,6 +54,13 @@ class Creature {
             next_mon: this.nextMon,
         };
 
+        // flavor
+        if (this.description_ja || this.description_en) {
+            j.flavor = {};
+            if (this.description_ja) j.flavor.ja = this.description_ja;
+            if (this.description_en) j.flavor.en = this.description_en;
+        }
+
         // sex
         let sexes = "";
         if (this.flags.includes("MALE")) {
@@ -238,6 +245,8 @@ class Creature {
         this.textDetails = text;
         this.flags = [];
         this.skills = [];
+        this.description_ja = "";
+        this.description_en = "";
 
         this.depth = 0;
         this.rarity = 1;
@@ -312,10 +321,13 @@ class Creature {
                     );
                     break;
                 case 'D':
-                    this.description = values.join(' ');
-                    break;
-                case '#':
-                    this.comment = values.join(' ');
+                    if (values[0][0] === '$') {
+                        this.description_en += values.join(' ').substring(1);
+                        console.log(this.description_en);
+                    }
+                    else {
+                        this.description_ja += values.join(' ');
+                    }
                     break;
             }
         });
