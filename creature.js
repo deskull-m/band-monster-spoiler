@@ -332,6 +332,21 @@ class Creature {
             }
         });
 
+        // HP期待値計算
+        this.hp_expected = null;
+        const m = this.hitPoints.match(/^(\d+)d(\d+)$/);
+        if (m) {
+            const x = parseInt(m[1], 10);
+            const y = parseInt(m[2], 10);
+            if (this.flags && this.flags.includes("FORCE_MAXHP")) {
+                this.hp_expected = x * y;
+            } else {
+                this.hp_expected = ((y + 1) / 2) * x;
+            }
+        } else if (!isNaN(Number(hitPoints))) {
+            this.hp_expected = Number(hitPoints);
+        }
+
     };
 
 }

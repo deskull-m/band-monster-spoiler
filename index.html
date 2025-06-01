@@ -196,6 +196,35 @@
                                             ↑
                                         </button>
                                     </div>
+                                    <h4>ステータス</h4>
+                                    <table className="status-table">
+                                        <tbody>
+                                            <tr>
+                                                <th>レベル</th>
+                                                <td>{creature.depth}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>HP期待値</th>
+                                                <td>{creature.hp_expected}({creature.hitPoints})</td>
+                                            </tr>
+                                            <tr>
+                                                <th>加速</th>
+                                                <td>{creature.speed}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>視界</th>
+                                                <td>{creature.vision}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>警戒度</th>
+                                                <td>{creature.alertness}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>AC</th>
+                                                <td>{creature.armor_class}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
                                     <h4>*_info</h4>
                                     <div style={{ position: "relative", marginBottom: "0.5em" }}>
                                         <button
