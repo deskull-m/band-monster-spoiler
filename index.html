@@ -157,6 +157,24 @@
                                 >
                                     加速順ソート（降順）
                                 </button>
+                                <button
+                                    id="hpSortButton"
+                                    onClick={() => {
+                                        // infoListをhp昇順にソートして再描画
+                                        setInfoList([...infoList].sort((a, b) => a.hp_expected - b.hp_expected));
+                                    }}
+                                >
+                                    HP順ソート（昇順）
+                                </button>
+                                <button
+                                    id="hpSortDescButton"
+                                    onClick={() => {
+                                        // infoListをhp降順にソートして再描画
+                                        setInfoList([...infoList].sort((a, b) => b.hp_expected - a.hp_expected));
+                                    }}
+                                >
+                                    HP順ソート（降順）
+                                </button>
 
                                 <div id="jump">
                                     <select
