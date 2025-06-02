@@ -56,11 +56,21 @@ class Creature {
 
         // blows
         if (this.attacks && this.attacks.length > 0) {
-            j.blows = this.attacks.map(atk => ({
-                method: atk.method,
-                effect: atk.effect,
-                damage_dice: atk.damage
-            }));
+            j.blows = [];
+            this.attacks.forEach(atk => {
+                if (atk.method === "SHOOT") {
+                    if (!j.skill) j.skill = {};
+                    j.skill.shoot = atk.damage;
+                } else {
+                    j.blows.push({
+                        method: atk.method,
+                        effect: atk.effect,
+                        damage_dice: atk.damage
+                    });
+                }
+            });
+            // 空配列ならblowsを削除
+            if (j.blows.length === 0) delete j.blows;
         }
 
         // flavor
