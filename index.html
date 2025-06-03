@@ -22,6 +22,7 @@
             const [infoList, setInfoList] = React.useState([]);
             const [progress, setProgress] = React.useState(0);
             const [loading, setLoading] = React.useState(false);
+            const [showUniqueOnly, setShowUniqueOnly] = React.useState(false);
 
             const handleFileChange = (event) => {
                 const file = event.target.files[0];
@@ -58,6 +59,11 @@
                     reader.readAsText(file);
                 }
             };
+
+            // フィルタリング
+            const filteredList = showUniqueOnly
+                ? infoList.filter(c => c.flags && c.flags.includes("UNIQUE"))
+                : infoList;
 
             return (
                 <div id="container">
@@ -124,98 +130,108 @@
                                 <button
                                     id="levelSortButton"
                                     onClick={() => {
-                                        // infoListをlevel昇順にソートして再描画
                                         setInfoList([...infoList].sort((a, b) => a.depth - b.depth));
-                                    }}
-                                >
-                                    レベル順ソート（昇順）
-                                </button>
-                                <button
-                                    id="levelSortDescButton"
-                                    onClick={() => {
-                                        // infoListをlevel降順にソートして再描画
-                                        setInfoList([...infoList].sort((a, b) => b.depth - a.depth));
-                                    }}
-                                >
-                                    レベル順ソート（降順）
-                                </button>
-                                <button
-                                    id="speedSortButton"
-                                    onClick={() => {
-                                        // infoListをspeed昇順にソートして再描画
-                                        setInfoList([...infoList].sort((a, b) => a.speed - b.speed));
-                                    }}
-                                >
-                                    加速順ソート（昇順）
-                                </button>
-                                <button
-                                    id="speedSortDescButton"
-                                    onClick={() => {
-                                        // infoListをspeed降順にソートして再描画
-                                        setInfoList([...infoList].sort((a, b) => b.speed - a.speed));
-                                    }}
-                                >
-                                    加速順ソート（降順）
-                                </button>
-                                <button
-                                    id="hpSortButton"
-                                    onClick={() => {
-                                        // infoListをhp昇順にソートして再描画
-                                        setInfoList([...infoList].sort((a, b) => a.hp_expected - b.hp_expected));
-                                    }}
-                                >
-                                    HP順ソート（昇順）
-                                </button>
-                                <button
-                                    id="hpSortDescButton"
-                                    onClick={() => {
-                                        // infoListをhp降順にソートして再描画
-                                        setInfoList([...infoList].sort((a, b) => b.hp_expected - a.hp_expected));
-                                    }}
-                                >
-                                    HP順ソート（降順）
-                                </button>
-
-                                <div id="jump">
-                                    <select
-                                        id="jumpSelect"
-                                        onChange={e => {
-                                            const anchorId = e.target.value;
-                                            if (anchorId) {
-                                                const anchor = document.getElementById(anchorId);
-                                                if (anchor) {
-                                                    anchor.scrollIntoView({ behavior: "smooth", block: "start" });
-                                                }
-                                            }
-                                        }}
-                                        defaultValue=""
-                                    >
-                                        <option value="" disabled>モンスターへジャンプ</option>
-                                        {infoList.map((creature) => {
-                                            const label = `${creature.serialNumber} : ${creature.name}`;
-                                            const truncated = label.length > 50 ? label.slice(0, 47) + "..." : label;
-                                            return (
-                                                <option
-                                                    key={creature.serialNumber}
-                                                    value={`creature-${creature.serialNumber}`}
-                                                >
-                                                    {truncated}
-                                                </option>
-                                            );
-                                        })}
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                        <div id="detail-lists">
-                            {infoList.map((creature, index) => (
-                                <MonsterDetail key={index} creature={creature} index={index} />
-                            ))}
+                            }}
+                        >
+                            レベル順ソート（昇順）
+                        </button>
+                        <button
+                            id="levelSortDescButton"
+                            onClick={() => {
+                                setInfoList([...infoList].sort((a, b) => b.depth - a.depth));
+                            }}
+                        >
+                            レベル順ソート（降順）
+                        </button>
+                        <button
+                            id="speedSortButton"
+                            onClick={() => {
+                                setInfoList([...infoList].sort((a, b) => a.speed - b.speed));
+                            }}
+                        >
+                            加速順ソート（昇順）
+                        </button>
+                        <button
+                            id="speedSortDescButton"
+                            onClick={() => {
+                                setInfoList([...infoList].sort((a, b) => b.speed - a.speed));
+                            }}
+                        >
+                            加速順ソート（降順）
+                        </button>
+                        <button
+                            id="hpSortButton"
+                            onClick={() => {
+                                setInfoList([...infoList].sort((a, b) => a.hp_expected - b.hp_expected));
+                            }}
+                        >
+                            HP順ソート（昇順）
+                        </button>
+                        <button
+                            id="hpSortDescButton"
+                            onClick={() => {
+                                setInfoList([...infoList].sort((a, b) => b.hp_expected - a.hp_expected));
+                            }}
+                        >
+                            HP順ソート（降順）
+                        </button>
+                        {/* UNIQUEフィルタボタン追加 */}
+                        <button
+                            id="uniqueFilterButton"
+                            style={{
+                                marginLeft: "1em",
+                                background: showUniqueOnly ? "#ffd700" : "#f5f5f5",
+                                color: "#333",
+                                border: "1px solid #888",
+                                borderRadius: "4px",
+                                padding: "0.3em 1em",
+                                cursor: "pointer"
+                            }}
+                            onClick={() => setShowUniqueOnly(v => !v)}
+                        >
+                            {showUniqueOnly ? "UNIQUEのみ表示中（解除）" : "UNIQUEのみ表示"}
+                        </button>
+                        {/* ...ジャンプセレクトなど... */}
+                        <div id="jump">
+                            <select
+                                id="jumpSelect"
+                                onChange={e => {
+                                    const anchorId = e.target.value;
+                                    if (anchorId) {
+                                        const anchor = document.getElementById(anchorId);
+                                        if (anchor) {
+                                            anchor.scrollIntoView({ behavior: "smooth", block: "start" });
+                                        }
+                                    }
+                                }}
+                                defaultValue=""
+                            >
+                                <option value="" disabled>モンスターへジャンプ</option>
+                                {filteredList.map((creature) => {
+                                    const label = `${creature.serialNumber} : ${creature.name}`;
+                                    const truncated = label.length > 50 ? label.slice(0, 47) + "..." : label;
+                                    return (
+                                        <option
+                                            key={creature.serialNumber}
+                                            value={`creature-${creature.serialNumber}`}
+                                        >
+                                            {truncated}
+                                        </option>
+                                    );
+                                })}
+                            </select>
                         </div>
                     </div>
                 </div>
-            );
-        }
+                <div id="detail-lists">
+                    {filteredList.map((creature, index) => (
+                        <MonsterDetail key={index} creature={creature} index={index} />
+                    ))}
+                </div>
+            </div>
+        </div>
+    );
+}
 
         function MonsterDetail({ creature, index }) {
     // デフォルトで開いている状態にする
