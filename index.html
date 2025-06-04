@@ -175,6 +175,22 @@
                         >
                             HP順ソート（降順）
                         </button>
+                        <button
+                            id="acSortButton"
+                            onClick={() => {
+                                setInfoList([...infoList].sort((a, b) => a.armor_class - b.armor_class));
+                            }}
+                        >
+                            AC順ソート（昇順）
+                        </button>
+                        <button
+                            id="acSortDescButton"
+                            onClick={() => {
+                                setInfoList([...infoList].sort((a, b) => b.armor_class - a.armor_class));
+                            }}
+                        >
+                            AC順ソート（降順）
+                        </button>
                         {/* UNIQUEフィルタボタン追加 */}
                         <button
                             id="uniqueFilterButton"
