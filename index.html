@@ -374,34 +374,41 @@
                         </button>
                     </div>
                     <h4>ステータス</h4>
-                    <table className="status-table">
-                        <tbody>
-                            <tr>
-                                <th>レベル</th>
-                                <td>{creature.depth}</td>
-                            </tr>
-                            <tr>
-                                <th>HP期待値</th>
-                                <td>{creature.hp_expected}({creature.hitPoints})</td>
-                            </tr>
-                            <tr>
-                                <th>加速</th>
-                                <td>{creature.speed}</td>
-                            </tr>
-                            <tr>
-                                <th>視界</th>
-                                <td>{creature.vision}</td>
-                            </tr>
-                            <tr>
-                                <th>警戒度</th>
-                                <td>{creature.alertness}</td>
-                            </tr>
-                            <tr>
-                                <th>AC</th>
-                                <td>{creature.armor_class}</td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    <div
+    className="status-flex"
+    style={{
+        display: "flex",
+        flexWrap: "wrap",
+        gap: "1.5em",
+        marginBottom: "1em",
+        alignItems: "center"
+    }}
+>
+    <div>
+        <strong>レベル</strong><br />
+        {creature.depth}
+    </div>
+    <div>
+        <strong>HP期待値</strong><br />
+        {creature.hp_expected}({creature.hitPoints})
+    </div>
+    <div>
+        <strong>加速</strong><br />
+        {creature.speed}
+    </div>
+    <div>
+        <strong>視界</strong><br />
+        {creature.vision}
+    </div>
+    <div>
+        <strong>警戒度</strong><br />
+        {creature.alertness}
+    </div>
+    <div>
+        <strong>AC</strong><br />
+        {creature.armor_class}
+    </div>
+</div>
                     <h4 style={{ display: "flex", alignItems: "center" }}>
                         *_info
                         <button
