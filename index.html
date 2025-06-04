@@ -128,6 +128,22 @@
                                     <option value="name">名前</option>
                                 </select>
                                 <button
+                                    id="idSortButton"
+                                    onClick={() => {
+                                        setInfoList([...infoList].sort((a, b) => a.serialNumber - b.serialNumber));
+                                    }}
+                                >
+                                    ID順ソート（昇順）
+                                </button>
+                                <button
+                                    id="idSortDescButton"
+                                    onClick={() => {
+                                        setInfoList([...infoList].sort((a, b) => b.serialNumber - a.serialNumber));
+                                    }}
+                                >
+                                    ID順ソート（降順）
+                                </button>
+                                <button
                                     id="levelSortButton"
                                     onClick={() => {
                                         setInfoList([...infoList].sort((a, b) => a.depth - b.depth));
