@@ -191,6 +191,22 @@
                         >
                             AC順ソート（降順）
                         </button>
+                        <button
+                            id="visionSortButton"
+                            onClick={() => {
+                                setInfoList([...infoList].sort((a, b) => a.vision - b.vision));
+                            }}
+                        >
+                            視界順ソート（昇順）
+                        </button>
+                        <button
+                            id="visionSortDescButton"
+                            onClick={() => {
+                                setInfoList([...infoList].sort((a, b) => b.vision - a.vision));
+                            }}
+                        >
+                            視界順ソート（降順）
+                        </button>
                         {/* UNIQUEフィルタボタン追加 */}
                         <button
                             id="uniqueFilterButton"
