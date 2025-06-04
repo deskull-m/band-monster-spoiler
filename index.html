@@ -131,269 +131,269 @@
                                     id="levelSortButton"
                                     onClick={() => {
                                         setInfoList([...infoList].sort((a, b) => a.depth - b.depth));
-                            }}
-                        >
-                            レベル順ソート（昇順）
-                        </button>
-                        <button
-                            id="levelSortDescButton"
-                            onClick={() => {
-                                setInfoList([...infoList].sort((a, b) => b.depth - a.depth));
-                            }}
-                        >
-                            レベル順ソート（降順）
-                        </button>
-                        <button
-                            id="speedSortButton"
-                            onClick={() => {
-                                setInfoList([...infoList].sort((a, b) => a.speed - b.speed));
-                            }}
-                        >
-                            加速順ソート（昇順）
-                        </button>
-                        <button
-                            id="speedSortDescButton"
-                            onClick={() => {
-                                setInfoList([...infoList].sort((a, b) => b.speed - a.speed));
-                            }}
-                        >
-                            加速順ソート（降順）
-                        </button>
-                        <button
-                            id="hpSortButton"
-                            onClick={() => {
-                                setInfoList([...infoList].sort((a, b) => a.hp_expected - b.hp_expected));
-                            }}
-                        >
-                            HP順ソート（昇順）
-                        </button>
-                        <button
-                            id="hpSortDescButton"
-                            onClick={() => {
-                                setInfoList([...infoList].sort((a, b) => b.hp_expected - a.hp_expected));
-                            }}
-                        >
-                            HP順ソート（降順）
-                        </button>
-                        <button
-                            id="acSortButton"
-                            onClick={() => {
-                                setInfoList([...infoList].sort((a, b) => a.armor_class - b.armor_class));
-                            }}
-                        >
-                            AC順ソート（昇順）
-                        </button>
-                        <button
-                            id="acSortDescButton"
-                            onClick={() => {
-                                setInfoList([...infoList].sort((a, b) => b.armor_class - a.armor_class));
-                            }}
-                        >
-                            AC順ソート（降順）
-                        </button>
-                        <button
-                            id="visionSortButton"
-                            onClick={() => {
-                                setInfoList([...infoList].sort((a, b) => a.vision - b.vision));
-                            }}
-                        >
-                            視界順ソート（昇順）
-                        </button>
-                        <button
-                            id="visionSortDescButton"
-                            onClick={() => {
-                                setInfoList([...infoList].sort((a, b) => b.vision - a.vision));
-                            }}
-                        >
-                            視界順ソート（降順）
-                        </button>
-                        <button
-                            id="alertSortButton"
-                            onClick={() => {
-                                setInfoList([...infoList].sort((a, b) => a.alertness - b.alertness));
-                            }}
-                        >
-                            警戒度順ソート（昇順）
-                        </button>
-                        <button
-                            id="alertSortDescButton"
-                            onClick={() => {
-                                setInfoList([...infoList].sort((a, b) => b.alertness - a.alertness));
-                            }}
-                        >
-                            警戒度順ソート（降順）
-                        </button>
-                        {/* UNIQUEフィルタボタン追加 */}
-                        <button
-                            id="uniqueFilterButton"
-                            style={{
-                                marginLeft: "1em",
-                                background: showUniqueOnly ? "#ffd700" : "#f5f5f5",
-                                color: "#333",
-                                border: "1px solid #888",
-                                borderRadius: "4px",
-                                padding: "0.3em 1em",
-                                cursor: "pointer"
-                            }}
-                            onClick={() => setShowUniqueOnly(v => !v)}
-                        >
-                            {showUniqueOnly ? "UNIQUEのみ表示中（解除）" : "UNIQUEのみ表示"}
-                        </button>
-                        {/* ...ジャンプセレクトなど... */}
-                        <div id="jump">
-                            <select
-                                id="jumpSelect"
-                                onChange={e => {
-                                    const anchorId = e.target.value;
-                                    if (anchorId) {
-                                        const anchor = document.getElementById(anchorId);
-                                        if (anchor) {
-                                            anchor.scrollIntoView({ behavior: "smooth", block: "start" });
-                                        }
-                                    }
-                                }}
-                                defaultValue=""
-                            >
-                                <option value="" disabled>モンスターへジャンプ</option>
-                                {filteredList.map((creature) => {
-                                    const label = `${creature.serialNumber} : ${creature.name}`;
-                                    const truncated = label.length > 50 ? label.slice(0, 47) + "..." : label;
-                                    return (
-                                        <option
-                                            key={creature.serialNumber}
-                                            value={`creature-${creature.serialNumber}`}
-                                        >
-                                            {truncated}
-                                        </option>
-                                    );
-                                })}
-                            </select>
+                                    }}
+                                >
+                                    レベル順ソート（昇順）
+                                </button>
+                                <button
+                                    id="levelSortDescButton"
+                                    onClick={() => {
+                                        setInfoList([...infoList].sort((a, b) => b.depth - a.depth));
+                                    }}
+                                >
+                                    レベル順ソート（降順）
+                                </button>
+                                <button
+                                    id="speedSortButton"
+                                    onClick={() => {
+                                        setInfoList([...infoList].sort((a, b) => a.speed - b.speed));
+                                    }}
+                                >
+                                    加速順ソート（昇順）
+                                </button>
+                                <button
+                                    id="speedSortDescButton"
+                                    onClick={() => {
+                                        setInfoList([...infoList].sort((a, b) => b.speed - a.speed));
+                                    }}
+                                >
+                                    加速順ソート（降順）
+                                </button>
+                                <button
+                                    id="hpSortButton"
+                                    onClick={() => {
+                                        setInfoList([...infoList].sort((a, b) => a.hp_expected - b.hp_expected));
+                                    }}
+                                >
+                                    HP順ソート（昇順）
+                                </button>
+                                <button
+                                    id="hpSortDescButton"
+                                    onClick={() => {
+                                        setInfoList([...infoList].sort((a, b) => b.hp_expected - a.hp_expected));
+                                    }}
+                                >
+                                    HP順ソート（降順）
+                                </button>
+                                <button
+                                    id="acSortButton"
+                                    onClick={() => {
+                                        setInfoList([...infoList].sort((a, b) => a.armor_class - b.armor_class));
+                                    }}
+                                >
+                                    AC順ソート（昇順）
+                                </button>
+                                <button
+                                    id="acSortDescButton"
+                                    onClick={() => {
+                                        setInfoList([...infoList].sort((a, b) => b.armor_class - a.armor_class));
+                                    }}
+                                >
+                                    AC順ソート（降順）
+                                </button>
+                                <button
+                                    id="visionSortButton"
+                                    onClick={() => {
+                                        setInfoList([...infoList].sort((a, b) => a.vision - b.vision));
+                                    }}
+                                >
+                                    視界順ソート（昇順）
+                                </button>
+                                <button
+                                    id="visionSortDescButton"
+                                    onClick={() => {
+                                        setInfoList([...infoList].sort((a, b) => b.vision - a.vision));
+                                    }}
+                                >
+                                    視界順ソート（降順）
+                                </button>
+                                <button
+                                    id="alertSortButton"
+                                    onClick={() => {
+                                        setInfoList([...infoList].sort((a, b) => a.alertness - b.alertness));
+                                    }}
+                                >
+                                    警戒度順ソート（昇順）
+                                </button>
+                                <button
+                                    id="alertSortDescButton"
+                                    onClick={() => {
+                                        setInfoList([...infoList].sort((a, b) => b.alertness - a.alertness));
+                                    }}
+                                >
+                                    警戒度順ソート（降順）
+                                </button>
+                                {/* UNIQUEフィルタボタン追加 */}
+                                <button
+                                    id="uniqueFilterButton"
+                                    style={{
+                                        marginLeft: "1em",
+                                        background: showUniqueOnly ? "#ffd700" : "#f5f5f5",
+                                        color: "#333",
+                                        border: "1px solid #888",
+                                        borderRadius: "4px",
+                                        padding: "0.3em 1em",
+                                        cursor: "pointer"
+                                    }}
+                                    onClick={() => setShowUniqueOnly(v => !v)}
+                                >
+                                    {showUniqueOnly ? "UNIQUEのみ表示中（解除）" : "UNIQUEのみ表示"}
+                                </button>
+                                {/* ...ジャンプセレクトなど... */}
+                                <div id="jump">
+                                    <select
+                                        id="jumpSelect"
+                                        onChange={e => {
+                                            const anchorId = e.target.value;
+                                            if (anchorId) {
+                                                const anchor = document.getElementById(anchorId);
+                                                if (anchor) {
+                                                    anchor.scrollIntoView({ behavior: "smooth", block: "start" });
+                                                }
+                                            }
+                                        }}
+                                        defaultValue=""
+                                    >
+                                        <option value="" disabled>モンスターへジャンプ</option>
+                                        {filteredList.map((creature) => {
+                                            const label = `${creature.serialNumber} : ${creature.name}`;
+                                            const truncated = label.length > 50 ? label.slice(0, 47) + "..." : label;
+                                            return (
+                                                <option
+                                                    key={creature.serialNumber}
+                                                    value={`creature-${creature.serialNumber}`}
+                                                >
+                                                    {truncated}
+                                                </option>
+                                            );
+                                        })}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="detail-lists">
+                            {filteredList.map((creature, index) => (
+                                <MonsterDetail key={index} creature={creature} index={index} />
+                            ))}
                         </div>
                     </div>
                 </div>
-                <div id="detail-lists">
-                    {filteredList.map((creature, index) => (
-                        <MonsterDetail key={index} creature={creature} index={index} />
-                    ))}
-                </div>
-            </div>
-        </div>
-    );
-}
+            );
+        }
 
         function MonsterDetail({ creature, index }) {
-    // デフォルトで開いている状態にする
-    const [showInfo, setShowInfo] = React.useState(true);
-    const [showJson, setShowJson] = React.useState(true);
+            // デフォルトで開いている状態にする
+            const [showInfo, setShowInfo] = React.useState(true);
+            const [showJson, setShowJson] = React.useState(true);
 
-    return (
-        <div id={index} key={index}>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                <div>
-                    <a id={`creature-${creature.serialNumber}`}></a>
-                    <h3 style={{ display: "inline-block", margin: 0 }}>
-                        <span className="num">{creature.serialNumber}</span>{creature.name}
-                    </h3>
+            return (
+                <div id={index} key={index}>
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                        <div>
+                            <a id={`creature-${creature.serialNumber}`}></a>
+                            <h3 style={{ display: "inline-block", margin: 0 }}>
+                                <span className="num">{creature.serialNumber}</span>{creature.name}
+                            </h3>
+                        </div>
+                        <button
+                            style={{
+                                marginLeft: "1em",
+                                background: "none",
+                                border: "none",
+                                color: "#90caf9",
+                                cursor: "pointer",
+                                fontSize: "1.2em"
+                            }}
+                            title="ページトップに戻る"
+                            onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+                        >
+                            ↑
+                        </button>
+                    </div>
+                    <h4>ステータス</h4>
+                    <table className="status-table">
+                        <tbody>
+                            <tr>
+                                <th>レベル</th>
+                                <td>{creature.depth}</td>
+                            </tr>
+                            <tr>
+                                <th>HP期待値</th>
+                                <td>{creature.hp_expected}({creature.hitPoints})</td>
+                            </tr>
+                            <tr>
+                                <th>加速</th>
+                                <td>{creature.speed}</td>
+                            </tr>
+                            <tr>
+                                <th>視界</th>
+                                <td>{creature.vision}</td>
+                            </tr>
+                            <tr>
+                                <th>警戒度</th>
+                                <td>{creature.alertness}</td>
+                            </tr>
+                            <tr>
+                                <th>AC</th>
+                                <td>{creature.armor_class}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <h4 style={{ display: "flex", alignItems: "center" }}>
+                        *_info
+                        <button
+                            onClick={() => setShowInfo(v => !v)}
+                        >
+                            {showInfo ? "閉じる" : "開く"}
+                        </button>
+                    </h4>
+                    {showInfo && (
+                        <div style={{ position: "relative", marginBottom: "0.5em" }}>
+                            <button
+                                className="to-clipboard"
+                                onClick={() => navigator.clipboard.writeText(creature.textDetails)}
+                                title="*_infoをコピー"
+                            >
+                                コピー
+                            </button>
+                            <textarea
+                                className="textdetails"
+                                value={creature.textDetails}
+                                rows={Math.max(3, creature.textDetails.split('\n').length)}
+                                style={{ width: "100%", resize: "vertical", paddingRight: "4em" }}
+                                readOnly
+                            />
+                        </div>
+                    )}
+                    <h4 style={{ display: "flex", alignItems: "center" }}>
+                        .json
+                        <button
+                            onClick={() => setShowJson(v => !v)}
+                        >
+                            {showJson ? "閉じる" : "開く"}
+                        </button>
+                    </h4>
+                    {showJson && (
+                        <div style={{ position: "relative", marginBottom: "0.5em" }}>
+                            <button
+                                className="to-clipboard"
+                                onClick={() => navigator.clipboard.writeText(creature.putJson())}
+                                title="JSONをコピー"
+                            >
+                                コピー
+                            </button>
+                            <textarea
+                                className="jsondetails"
+                                value={creature.putJson()}
+                                rows={Math.max(3, creature.textDetails.split('\n').length)}
+                                style={{ width: "100%", resize: "vertical", paddingRight: "4em" }}
+                                readOnly
+                            />
+                        </div>
+                    )}
                 </div>
-                <button
-                    style={{
-                        marginLeft: "1em",
-                        background: "none",
-                        border: "none",
-                        color: "#90caf9",
-                        cursor: "pointer",
-                        fontSize: "1.2em"
-                    }}
-                    title="ページトップに戻る"
-                    onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-                >
-                    ↑
-                </button>
-            </div>
-            <h4>ステータス</h4>
-            <table className="status-table">
-                <tbody>
-                    <tr>
-                        <th>レベル</th>
-                        <td>{creature.depth}</td>
-                    </tr>
-                    <tr>
-                        <th>HP期待値</th>
-                        <td>{creature.hp_expected}({creature.hitPoints})</td>
-                    </tr>
-                    <tr>
-                        <th>加速</th>
-                        <td>{creature.speed}</td>
-                    </tr>
-                    <tr>
-                        <th>視界</th>
-                        <td>{creature.vision}</td>
-                    </tr>
-                    <tr>
-                        <th>警戒度</th>
-                        <td>{creature.alertness}</td>
-                    </tr>
-                    <tr>
-                        <th>AC</th>
-                        <td>{creature.armor_class}</td>
-                    </tr>
-                </tbody>
-            </table>
-            <h4 style={{ display: "flex", alignItems: "center" }}>
-                *_info
-                <button
-                    onClick={() => setShowInfo(v => !v)}
-                >
-                    {showInfo ? "閉じる" : "開く"}
-                </button>
-            </h4>
-            {showInfo && (
-                <div style={{ position: "relative", marginBottom: "0.5em" }}>
-                    <button
-                        className="to-clipboard"
-                        onClick={() => navigator.clipboard.writeText(creature.textDetails)}
-                        title="*_infoをコピー"
-                    >
-                        コピー
-                    </button>
-                    <textarea
-                        className="textdetails"
-                        value={creature.textDetails}
-                        rows={Math.max(3, creature.textDetails.split('\n').length)}
-                        style={{ width: "100%", resize: "vertical", paddingRight: "4em" }}
-                        readOnly
-                    />
-                </div>
-            )}
-            <h4 style={{ display: "flex", alignItems: "center" }}>
-                .json
-                <button
-                    onClick={() => setShowJson(v => !v)}
-                >
-                    {showJson ? "閉じる" : "開く"}
-                </button>
-            </h4>
-            {showJson && (
-                <div style={{ position: "relative", marginBottom: "0.5em" }}>
-                    <button
-                        className="to-clipboard"
-                        onClick={() => navigator.clipboard.writeText(creature.putJson())}
-                        title="JSONをコピー"
-                    >
-                        コピー
-                    </button>
-                    <textarea
-                        className="jsondetails"
-                        value={creature.putJson()}
-                        rows={Math.max(3, creature.textDetails.split('\n').length)}
-                        style={{ width: "100%", resize: "vertical", paddingRight: "4em" }}
-                        readOnly
-                    />
-                </div>
-            )}
-        </div>
-    );
-}
+            );
+        }
 
         ReactDOM.render(<FileReaderComponent />, document.getElementById('root'));
     </script>
