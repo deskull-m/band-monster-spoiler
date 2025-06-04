@@ -23,6 +23,7 @@
             const [progress, setProgress] = React.useState(0);
             const [loading, setLoading] = React.useState(false);
             const [showUniqueOnly, setShowUniqueOnly] = React.useState(false);
+            const [sortType, setSortType] = React.useState("id-asc"); // ソート状態を管理するステート
 
             const handleFileChange = (event) => {
                 const file = event.target.files[0];
@@ -64,6 +65,27 @@
             const filteredList = showUniqueOnly
                 ? infoList.filter(c => c.flags && c.flags.includes("UNIQUE"))
                 : infoList;
+
+            // ソート
+            const sortedList = [...filteredList].sort((a, b) => {
+                switch (sortType) {
+                    case "id-asc": return a.serialNumber - b.serialNumber;
+                    case "id-desc": return b.serialNumber - a.serialNumber;
+                    case "level-asc": return a.depth - b.depth;
+                    case "level-desc": return b.depth - a.depth;
+                    case "speed-asc": return a.speed - b.speed;
+                    case "speed-desc": return b.speed - a.speed;
+                    case "hp-asc": return a.hp_expected - b.hp_expected;
+                    case "hp-desc": return b.hp_expected - a.hp_expected;
+                    case "ac-asc": return a.armor_class - b.armor_class;
+                    case "ac-desc": return b.armor_class - a.armor_class;
+                    case "vision-asc": return a.vision - b.vision;
+                    case "vision-desc": return b.vision - a.vision;
+                    case "alert-asc": return a.alertness - b.alertness;
+                    case "alert-desc": return b.alertness - a.alertness;
+                    default: return 0;
+                }
+            });
 
             return (
                 <div id="container">
@@ -122,278 +144,326 @@
                                 <input type="text" id="searchText" placeholder="検索" />
                                 <button id="searchButton">検索</button>
                             </div>
-                            <div id="sort">
-                                <select id="sortSelect">
-                                    <option value="serialNumber">No</option>
-                                    <option value="name">名前</option>
-                                </select>
+                            <div id="sort" style={{ display: "flex", alignItems: "center", flexWrap: "wrap" }}>
+                                <span style={{ marginRight: "1em" }}>ソート:</span>
+                                <label style={{ marginRight: "0.5em" }}>
+                                    <input
+                                        type="radio"
+                                        name="sort"
+                                        value="id-asc"
+                                        checked={sortType === "id-asc"}
+                                        onChange={() => setSortType("id-asc")}
+                                    />
+                                    ID昇順
+                                </label>
+                                <label style={{ marginRight: "0.5em" }}>
+                                    <input
+                                        type="radio"
+                                        name="sort"
+                                        value="id-desc"
+                                        checked={sortType === "id-desc"}
+                                        onChange={() => setSortType("id-desc")}
+                                    />
+                                    ID降順
+                                </label>
+                                <label style={{ marginRight: "0.5em" }}>
+                                    <input
+                                        type="radio"
+                                        name="sort"
+                                        value="level-asc"
+                                        checked={sortType === "level-asc"}
+                                        onChange={() => setSortType("level-asc")}
+                                    />
+                                    レベル昇順
+                                </label>
+                                <label style={{ marginRight: "0.5em" }}>
+                                    <input
+                                        type="radio"
+                                        name="sort"
+                                        value="level-desc"
+                                        checked={sortType === "level-desc"}
+                                        onChange={() => setSortType("level-desc")}
+                                    />
+                                    レベル降順
+                                </label>
+                                <label style={{ marginRight: "0.5em" }}>
+                                    <input
+                                        type="radio"
+                                        name="sort"
+                                        value="speed-asc"
+                                        checked={sortType === "speed-asc"}
+                                        onChange={() => setSortType("speed-asc")}
+                                    />
+                                    加速昇順
+                                </label>
+                                <label style={{ marginRight: "0.5em" }}>
+                                    <input
+                                        type="radio"
+                                        name="sort"
+                                        value="speed-desc"
+                                        checked={sortType === "speed-desc"}
+                                        onChange={() => setSortType("speed-desc")}
+                                    />
+                                    加速降順
+                                </label>
+                                <label style={{ marginRight: "0.5em" }}>
+                                    <input
+                                        type="radio"
+                                        name="sort"
+                                        value="hp-asc"
+                                        checked={sortType === "hp-asc"}
+                                        onChange={() => setSortType("hp-asc")}
+                                    />
+                                    HP昇順
+                                </label>
+                                <label style={{ marginRight: "0.5em" }}>
+                                    <input
+                                        type="radio"
+                                        name="sort"
+                                        value="hp-desc"
+                                        checked={sortType === "hp-desc"}
+                                        onChange={() => setSortType("hp-desc")}
+                                    />
+                                    HP降順
+                                </label>
+                                <label style={{ marginRight: "0.5em" }}>
+                                    <input
+                                        type="radio"
+                                        name="sort"
+                                        value="ac-asc"
+                                        checked={sortType === "ac-asc"}
+                                        onChange={() => setSortType("ac-asc")}
+                                    />
+                                    AC昇順
+                                </label>
+                                <label style={{ marginRight: "0.5em" }}>
+                                    <input
+                                        type="radio"
+                                        name="sort"
+                                        value="ac-desc"
+                                        checked={sortType === "ac-desc"}
+                                        onChange={() => setSortType("ac-desc")}
+                                    />
+                                    AC降順
+                                </label>
+                                <label style={{ marginRight: "0.5em" }}>
+                                    <input
+                                        type="radio"
+                                        name="sort"
+                                        value="vision-asc"
+                                        checked={sortType === "vision-asc"}
+                                        onChange={() => setSortType("vision-asc")}
+                                    />
+                                    視界昇順
+                                </label>
+                                <label style={{ marginRight: "0.5em" }}>
+                                    <input
+                                        type="radio"
+                                        name="sort"
+                                        value="vision-desc"
+                                        checked={sortType === "vision-desc"}
+                                        onChange={() => setSortType("vision-desc")}
+                                    />
+                                    視界降順
+                                </label>
+                                <label style={{ marginRight: "0.5em" }}>
+                                    <input
+                                        type="radio"
+                                        name="sort"
+                                        value="alert-asc"
+                                        checked={sortType === "alert-asc"}
+                                        onChange={() => setSortType("alert-asc")}
+                                    />
+                                    警戒度昇順
+                                </label>
+                                <label style={{ marginRight: "0.5em" }}>
+                                    <input
+                                        type="radio"
+                                        name="sort"
+                                        value="alert-desc"
+                                        checked={sortType === "alert-desc"}
+                                        onChange={() => setSortType("alert-desc")}
+                                    />
+                                    警戒度降順
+                                </label>
+                                {/* UNIQUEフィルタボタン追加 */}
                                 <button
-                                    id="levelSortButton"
-                                    onClick={() => {
-                                        setInfoList([...infoList].sort((a, b) => a.depth - b.depth));
-                            }}
-                        >
-                            レベル順ソート（昇順）
-                        </button>
-                        <button
-                            id="levelSortDescButton"
-                            onClick={() => {
-                                setInfoList([...infoList].sort((a, b) => b.depth - a.depth));
-                            }}
-                        >
-                            レベル順ソート（降順）
-                        </button>
-                        <button
-                            id="speedSortButton"
-                            onClick={() => {
-                                setInfoList([...infoList].sort((a, b) => a.speed - b.speed));
-                            }}
-                        >
-                            加速順ソート（昇順）
-                        </button>
-                        <button
-                            id="speedSortDescButton"
-                            onClick={() => {
-                                setInfoList([...infoList].sort((a, b) => b.speed - a.speed));
-                            }}
-                        >
-                            加速順ソート（降順）
-                        </button>
-                        <button
-                            id="hpSortButton"
-                            onClick={() => {
-                                setInfoList([...infoList].sort((a, b) => a.hp_expected - b.hp_expected));
-                            }}
-                        >
-                            HP順ソート（昇順）
-                        </button>
-                        <button
-                            id="hpSortDescButton"
-                            onClick={() => {
-                                setInfoList([...infoList].sort((a, b) => b.hp_expected - a.hp_expected));
-                            }}
-                        >
-                            HP順ソート（降順）
-                        </button>
-                        <button
-                            id="acSortButton"
-                            onClick={() => {
-                                setInfoList([...infoList].sort((a, b) => a.armor_class - b.armor_class));
-                            }}
-                        >
-                            AC順ソート（昇順）
-                        </button>
-                        <button
-                            id="acSortDescButton"
-                            onClick={() => {
-                                setInfoList([...infoList].sort((a, b) => b.armor_class - a.armor_class));
-                            }}
-                        >
-                            AC順ソート（降順）
-                        </button>
-                        <button
-                            id="visionSortButton"
-                            onClick={() => {
-                                setInfoList([...infoList].sort((a, b) => a.vision - b.vision));
-                            }}
-                        >
-                            視界順ソート（昇順）
-                        </button>
-                        <button
-                            id="visionSortDescButton"
-                            onClick={() => {
-                                setInfoList([...infoList].sort((a, b) => b.vision - a.vision));
-                            }}
-                        >
-                            視界順ソート（降順）
-                        </button>
-                        <button
-                            id="alertSortButton"
-                            onClick={() => {
-                                setInfoList([...infoList].sort((a, b) => a.alertness - b.alertness));
-                            }}
-                        >
-                            警戒度順ソート（昇順）
-                        </button>
-                        <button
-                            id="alertSortDescButton"
-                            onClick={() => {
-                                setInfoList([...infoList].sort((a, b) => b.alertness - a.alertness));
-                            }}
-                        >
-                            警戒度順ソート（降順）
-                        </button>
-                        {/* UNIQUEフィルタボタン追加 */}
-                        <button
-                            id="uniqueFilterButton"
-                            style={{
-                                marginLeft: "1em",
-                                background: showUniqueOnly ? "#ffd700" : "#f5f5f5",
-                                color: "#333",
-                                border: "1px solid #888",
-                                borderRadius: "4px",
-                                padding: "0.3em 1em",
-                                cursor: "pointer"
-                            }}
-                            onClick={() => setShowUniqueOnly(v => !v)}
-                        >
-                            {showUniqueOnly ? "UNIQUEのみ表示中（解除）" : "UNIQUEのみ表示"}
-                        </button>
-                        {/* ...ジャンプセレクトなど... */}
-                        <div id="jump">
-                            <select
-                                id="jumpSelect"
-                                onChange={e => {
-                                    const anchorId = e.target.value;
-                                    if (anchorId) {
-                                        const anchor = document.getElementById(anchorId);
-                                        if (anchor) {
-                                            anchor.scrollIntoView({ behavior: "smooth", block: "start" });
-                                        }
-                                    }
-                                }}
-                                defaultValue=""
-                            >
-                                <option value="" disabled>モンスターへジャンプ</option>
-                                {filteredList.map((creature) => {
-                                    const label = `${creature.serialNumber} : ${creature.name}`;
-                                    const truncated = label.length > 50 ? label.slice(0, 47) + "..." : label;
-                                    return (
-                                        <option
-                                            key={creature.serialNumber}
-                                            value={`creature-${creature.serialNumber}`}
-                                        >
-                                            {truncated}
-                                        </option>
-                                    );
-                                })}
-                            </select>
+                                    id="uniqueFilterButton"
+                                    style={{
+                                        marginLeft: "1em",
+                                        background: showUniqueOnly ? "#ffd700" : "#f5f5f5",
+                                        color: "#333",
+                                        border: "1px solid #888",
+                                        borderRadius: "4px",
+                                        padding: "0.3em 1em",
+                                        cursor: "pointer"
+                                    }}
+                                    onClick={() => setShowUniqueOnly(v => !v)}
+                                >
+                                    {showUniqueOnly ? "UNIQUEのみ表示中（解除）" : "UNIQUEのみ表示"}
+                                </button>
+                                {/* ...ジャンプセレクトなど... */}
+                                <div id="jump">
+                                    <select
+                                        id="jumpSelect"
+                                        onChange={e => {
+                                            const anchorId = e.target.value;
+                                            if (anchorId) {
+                                                const anchor = document.getElementById(anchorId);
+                                                if (anchor) {
+                                                    anchor.scrollIntoView({ behavior: "smooth", block: "start" });
+                                                }
+                                            }
+                                        }}
+                                        defaultValue=""
+                                    >
+                                        <option value="" disabled>モンスターへジャンプ</option>
+                                        {filteredList.map((creature) => {
+                                            const label = `${creature.serialNumber} : ${creature.name}`;
+                                            const truncated = label.length > 50 ? label.slice(0, 47) + "..." : label;
+                                            return (
+                                                <option
+                                                    key={creature.serialNumber}
+                                                    value={`creature-${creature.serialNumber}`}
+                                                >
+                                                    {truncated}
+                                                </option>
+                                            );
+                                        })}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="detail-lists">
+                            {sortedList.map((creature, index) => (
+                                <MonsterDetail key={index} creature={creature} index={index} />
+                            ))}
                         </div>
                     </div>
                 </div>
-                <div id="detail-lists">
-                    {filteredList.map((creature, index) => (
-                        <MonsterDetail key={index} creature={creature} index={index} />
-                    ))}
-                </div>
-            </div>
-        </div>
-    );
-}
+            );
+        }
 
         function MonsterDetail({ creature, index }) {
-    // デフォルトで開いている状態にする
-    const [showInfo, setShowInfo] = React.useState(true);
-    const [showJson, setShowJson] = React.useState(true);
+            // デフォルトで開いている状態にする
+            const [showInfo, setShowInfo] = React.useState(true);
+            const [showJson, setShowJson] = React.useState(true);
 
-    return (
-        <div id={index} key={index}>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                <div>
-                    <a id={`creature-${creature.serialNumber}`}></a>
-                    <h3 style={{ display: "inline-block", margin: 0 }}>
-                        <span className="num">{creature.serialNumber}</span>{creature.name}
-                    </h3>
+            return (
+                <div id={index} key={index}>
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                        <div>
+                            <a id={`creature-${creature.serialNumber}`}></a>
+                            <h3 style={{ display: "inline-block", margin: 0 }}>
+                                <span className="num">{creature.serialNumber}</span>{creature.name}
+                            </h3>
+                        </div>
+                        <button
+                            style={{
+                                marginLeft: "1em",
+                                background: "none",
+                                border: "none",
+                                color: "#90caf9",
+                                cursor: "pointer",
+                                fontSize: "1.2em"
+                            }}
+                            title="ページトップに戻る"
+                            onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+                        >
+                            ↑
+                        </button>
+                    </div>
+                    <h4>ステータス</h4>
+                    <div
+    className="status-flex"
+    style={{
+        display: "flex",
+        flexWrap: "wrap",
+        gap: "1.5em",
+        marginBottom: "1em",
+        alignItems: "center"
+    }}
+>
+    <div>
+        <strong>レベル</strong><br />
+        {creature.depth}
+    </div>
+    <div>
+        <strong>HP期待値</strong><br />
+        {creature.hp_expected}({creature.hitPoints})
+    </div>
+    <div>
+        <strong>加速</strong><br />
+        {creature.speed}
+    </div>
+    <div>
+        <strong>視界</strong><br />
+        {creature.vision}
+    </div>
+    <div>
+        <strong>警戒度</strong><br />
+        {creature.alertness}
+    </div>
+    <div>
+        <strong>AC</strong><br />
+        {creature.armor_class}
+    </div>
+</div>
+                    <h4 style={{ display: "flex", alignItems: "center" }}>
+                        *_info
+                        <button
+                            onClick={() => setShowInfo(v => !v)}
+                        >
+                            {showInfo ? "閉じる" : "開く"}
+                        </button>
+                    </h4>
+                    {showInfo && (
+                        <div style={{ position: "relative", marginBottom: "0.5em" }}>
+                            <button
+                                className="to-clipboard"
+                                onClick={() => navigator.clipboard.writeText(creature.textDetails)}
+                                title="*_infoをコピー"
+                            >
+                                コピー
+                            </button>
+                            <textarea
+                                className="textdetails"
+                                value={creature.textDetails}
+                                rows={Math.max(3, creature.textDetails.split('\n').length)}
+                                style={{ width: "100%", resize: "vertical", paddingRight: "4em" }}
+                                readOnly
+                            />
+                        </div>
+                    )}
+                    <h4 style={{ display: "flex", alignItems: "center" }}>
+                        .json
+                        <button
+                            onClick={() => setShowJson(v => !v)}
+                        >
+                            {showJson ? "閉じる" : "開く"}
+                        </button>
+                    </h4>
+                    {showJson && (
+                        <div style={{ position: "relative", marginBottom: "0.5em" }}>
+                            <button
+                                className="to-clipboard"
+                                onClick={() => navigator.clipboard.writeText(creature.putJson())}
+                                title="JSONをコピー"
+                            >
+                                コピー
+                            </button>
+                            <textarea
+                                className="jsondetails"
+                                value={creature.putJson()}
+                                rows={Math.max(3, creature.textDetails.split('\n').length)}
+                                style={{ width: "100%", resize: "vertical", paddingRight: "4em" }}
+                                readOnly
+                            />
+                        </div>
+                    )}
                 </div>
-                <button
-                    style={{
-                        marginLeft: "1em",
-                        background: "none",
-                        border: "none",
-                        color: "#90caf9",
-                        cursor: "pointer",
-                        fontSize: "1.2em"
-                    }}
-                    title="ページトップに戻る"
-                    onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-                >
-                    ↑
-                </button>
-            </div>
-            <h4>ステータス</h4>
-            <table className="status-table">
-                <tbody>
-                    <tr>
-                        <th>レベル</th>
-                        <td>{creature.depth}</td>
-                    </tr>
-                    <tr>
-                        <th>HP期待値</th>
-                        <td>{creature.hp_expected}({creature.hitPoints})</td>
-                    </tr>
-                    <tr>
-                        <th>加速</th>
-                        <td>{creature.speed}</td>
-                    </tr>
-                    <tr>
-                        <th>視界</th>
-                        <td>{creature.vision}</td>
-                    </tr>
-                    <tr>
-                        <th>警戒度</th>
-                        <td>{creature.alertness}</td>
-                    </tr>
-                    <tr>
-                        <th>AC</th>
-                        <td>{creature.armor_class}</td>
-                    </tr>
-                </tbody>
-            </table>
-            <h4 style={{ display: "flex", alignItems: "center" }}>
-                *_info
-                <button
-                    onClick={() => setShowInfo(v => !v)}
-                >
-                    {showInfo ? "閉じる" : "開く"}
-                </button>
-            </h4>
-            {showInfo && (
-                <div style={{ position: "relative", marginBottom: "0.5em" }}>
-                    <button
-                        className="to-clipboard"
-                        onClick={() => navigator.clipboard.writeText(creature.textDetails)}
-                        title="*_infoをコピー"
-                    >
-                        コピー
-                    </button>
-                    <textarea
-                        className="textdetails"
-                        value={creature.textDetails}
-                        rows={Math.max(3, creature.textDetails.split('\n').length)}
-                        style={{ width: "100%", resize: "vertical", paddingRight: "4em" }}
-                        readOnly
-                    />
-                </div>
-            )}
-            <h4 style={{ display: "flex", alignItems: "center" }}>
-                .json
-                <button
-                    onClick={() => setShowJson(v => !v)}
-                >
-                    {showJson ? "閉じる" : "開く"}
-                </button>
-            </h4>
-            {showJson && (
-                <div style={{ position: "relative", marginBottom: "0.5em" }}>
-                    <button
-                        className="to-clipboard"
-                        onClick={() => navigator.clipboard.writeText(creature.putJson())}
-                        title="JSONをコピー"
-                    >
-                        コピー
-                    </button>
-                    <textarea
-                        className="jsondetails"
-                        value={creature.putJson()}
-                        rows={Math.max(3, creature.textDetails.split('\n').length)}
-                        style={{ width: "100%", resize: "vertical", paddingRight: "4em" }}
-                        readOnly
-                    />
-                </div>
-            )}
-        </div>
-    );
-}
+            );
+        }
 
         ReactDOM.render(<FileReaderComponent />, document.getElementById('root'));
     </script>
