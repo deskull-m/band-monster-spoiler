@@ -259,7 +259,6 @@ class Creature {
 
         // 各行を分割
         const lines = text.split("\r\n");
-        console.log(lines);
 
         this.textDetails = text;
         this.flags = [];
@@ -275,15 +274,12 @@ class Creature {
         this.speed = 0;
 
         lines.forEach(line => {
-            //console.log(line);
             const key = line.charAt(0); // 行の最初の文字で判断
             const values = line.substring(2).split(':'); // データを抽出
 
             switch (key) {
                 case 'N':
                     const [serialNumber, name] = values;
-                    //console.log("////////////////////////////");
-                    //console.log(serialNumber, name);
                     this.serialNumber = parseInt(serialNumber);
                     this.name = name;
                     break;
@@ -342,7 +338,6 @@ class Creature {
                 case 'D':
                     if (values[0][0] === '$') {
                         this.description_en += values.join(' ').substring(1);
-                        console.log(this.description_en);
                     }
                     else {
                         this.description_ja += values.join(' ');

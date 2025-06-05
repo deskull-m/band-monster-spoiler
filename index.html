@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>React File Reader with CDN</title>
+    <title>*band Monster Editor</title>
     <script src="https://unpkg.com/react@17/umd/react.production.min.js" crossorigin></script>
     <script src="https://unpkg.com/react-dom@17/umd/react-dom.production.min.js" crossorigin></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -24,6 +24,7 @@
             const [loading, setLoading] = React.useState(false);
             const [showUniqueOnly, setShowUniqueOnly] = React.useState(false);
             const [sortType, setSortType] = React.useState("id-asc"); // ソート状態を管理するステート
+            const [sorting, setSorting] = React.useState(false);
 
             const handleFileChange = (event) => {
                 const file = event.target.files[0];
@@ -67,25 +68,33 @@
                 : infoList;
 
             // ソート
-            const sortedList = [...filteredList].sort((a, b) => {
-                switch (sortType) {
-                    case "id-asc": return a.serialNumber - b.serialNumber;
-                    case "id-desc": return b.serialNumber - a.serialNumber;
-                    case "level-asc": return a.depth - b.depth;
-                    case "level-desc": return b.depth - a.depth;
-                    case "speed-asc": return a.speed - b.speed;
-                    case "speed-desc": return b.speed - a.speed;
-                    case "hp-asc": return a.hp_expected - b.hp_expected;
-                    case "hp-desc": return b.hp_expected - a.hp_expected;
-                    case "ac-asc": return a.armor_class - b.armor_class;
-                    case "ac-desc": return b.armor_class - a.armor_class;
-                    case "vision-asc": return a.vision - b.vision;
-                    case "vision-desc": return b.vision - a.vision;
-                    case "alert-asc": return a.alertness - b.alertness;
-                    case "alert-desc": return b.alertness - a.alertness;
-                    default: return 0;
-                }
-            });
+            const [sortedList, setSortedList] = React.useState([]);
+            React.useEffect(() => {
+                setSorting(true);
+                setTimeout(() => {
+                    const sorted = [...filteredList].sort((a, b) => {
+                        switch (sortType) {
+                            case "id-asc": return a.serialNumber - b.serialNumber;
+                            case "id-desc": return b.serialNumber - a.serialNumber;
+                            case "level-asc": return a.depth - b.depth;
+                            case "level-desc": return b.depth - a.depth;
+                            case "speed-asc": return a.speed - b.speed;
+                            case "speed-desc": return b.speed - a.speed;
+                            case "hp-asc": return a.hp_expected - b.hp_expected;
+                            case "hp-desc": return b.hp_expected - a.hp_expected;
+                            case "ac-asc": return a.armor_class - b.armor_class;
+                            case "ac-desc": return b.armor_class - a.armor_class;
+                            case "vision-asc": return a.vision - b.vision;
+                            case "vision-desc": return b.vision - a.vision;
+                            case "alert-asc": return a.alertness - b.alertness;
+                            case "alert-desc": return b.alertness - a.alertness;
+                            default: return 0;
+                        }
+                    });
+                    setSortedList(sorted);
+                    setSorting(false);
+                }, 0);
+            }, [filteredList, sortType]);
 
             return (
                 <div id="container">
@@ -340,6 +349,39 @@
                             ))}
                         </div>
                     </div>
+                    {sorting && (
+                        <div
+                            style={{
+                                position: "fixed",
+                                top: 0,
+                                left: 0,
+                                width: "100vw",
+                                height: "100vh",
+                                background: "rgba(255,255,255,0.6)",
+                                zIndex: 9999,
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center"
+                            }}
+                        >
+                            <div
+                                style={{
+                                    width: "60px",
+                                    height: "60px",
+                                    border: "8px solid #ccc",
+                                    borderTop: "8px solid #1976d2",
+                                    borderRadius: "50%",
+                                    animation: "spin 1s linear infinite"
+                                }}
+                            />
+                            <style>{`
+                                @keyframes spin {
+                                    0% { transform: rotate(0deg);}
+                                    100% { transform: rotate(360deg);}
+                                }
+                            `}</style>
+                        </div>
+                    )}
                 </div>
             );
         }
