@@ -109,7 +109,7 @@ class Creature {
 
         const mobFlags = this.flags.filter(f => f.startsWith("MOB_"));
         if (mobFlags.length > 0) {
-            j.mob = mobFlags[0].split("_")[1];
+            j.mob = parseInt(mobFlags[0].split("_")[1], 10);
         }
 
         const collapseOverFlags = this.flags.filter(f => f.startsWith("COLLAPSE-OVER_"));
