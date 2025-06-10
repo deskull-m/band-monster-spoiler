@@ -450,6 +450,63 @@
         <strong>AC</strong><br />
         {creature.armor_class}
     </div>
+    <div>
+        <strong>種族</strong><br />
+        {
+            (() => {
+                // フラグと日本語の対応表
+                const kindMap = {
+                    UNIQUE: "ユニーク",
+                    HUMAN: "人間",
+                    QUANTUM: "量子存在",
+                    ORC: "オーク",
+                    TROLL: "トロル",
+                    GIANT: "巨人",
+                    DRAGON: "竜",
+                    DEMON: "悪魔",
+                    UNDEAD: "アンデッド",
+                    EVIL: "邪悪",
+                    ANIMAL: "自然界の動物",
+                    AMBERITE: "アンバライト",
+                    GOOD: "善良",
+                    NONLIVING: "無生物",
+                    ANGEL: "天使",
+                    NASTY: "クッソ汚い",
+                    ELF: "エルフ",
+                    DWARF: "ドワーフ",
+                    HOBBIT: "ホビット",
+                    ELDRAZI: "エルドラージ",
+                    QUYLTHLUG: "クイルスルグ",
+                    SPIDER: "雲",
+                    WARRIOR: "戦士",
+                    ROGUE: "盗賊",
+                    MAGE: "メイジ",
+                    PRIEST: "プリースト",
+                    PALADIN: "パラディン",
+                    RANGER: "レンジャー",
+                    SAMURAI: "サムライ",
+                    NINJA: "ニンジャ",
+                    SUMOU_WRESTLER: "スモトリ",
+                    YAKUZA: "ヤクザ",
+                    KARATEKA: "カラテカ",
+                    JOKE: "フザけた",
+                    HOMO_SEXUAL: "ホモ",
+                    TANK: "戦車",
+                    HENTAI: "HENTAL",
+                    ELEMENTAL: "エレメンタル",
+                    GOLEM: "ゴーレム",
+                    PUYO: "ぷよ"
+                };
+                // creature.flagsが存在しない場合のガード
+                if (!creature.flags) return "";
+                // フラグに対応する日本語名を抽出
+                const kinds = Object.keys(kindMap)
+                    .filter(flag => creature.flags.includes(flag))
+                    .map(flag => kindMap[flag]);
+                return kinds.join(" ");
+            })()
+        }
+    </div>
 </div>
                     <h4 style={{ display: "flex", alignItems: "center" }}>
                         *_info
