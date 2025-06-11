@@ -392,9 +392,8 @@
         }
 
         function MonsterDetail({ creature, index }) {
-            // デフォルトで開いている状態にする
-            const [showInfo, setShowInfo] = React.useState(true);
-            const [showJson, setShowJson] = React.useState(true);
+            const [showModal, setShowModal] = React.useState(false);
+            const [tab, setTab] = React.useState("rinfo"); // "rinfo" or "json"
 
             return (
                 <div id={index} key={index}>
@@ -513,58 +512,99 @@
         }
     </div>
 </div>
-                    <h4 style={{ display: "flex", alignItems: "center" }}>
-                        *_info
-                        <button
-                            onClick={() => setShowInfo(v => !v)}
-                        >
-                            {showInfo ? "閉じる" : "開く"}
-                        </button>
-                    </h4>
-                    {showInfo && (
-                        <div style={{ position: "relative", marginBottom: "0.5em" }}>
+                    <div style={{ display: "flex", gap: "1em", marginBottom: "1em" }}>
+                <button
+                    className="btn btn-outline-primary btn-sm"
+                    onClick={() => {
+                        setTab("rinfo");
+                        setShowModal(true);
+                    }}
+                >
+                    編集
+                </button>
+            </div>
+
+            {/* 編集モーダル */}
+            <div
+                className={`modal fade${showModal ? " show" : ""}`}
+                tabIndex="-1"
+                style={{
+                    display: showModal ? "block" : "none",
+                    background: "rgba(0,0,0,0.5)"
+                }}
+                aria-modal={showModal ? "true" : undefined}
+                role="dialog"
+            >
+                <div className="modal-dialog modal-lg">
+                    <div className="modal-content">
+                        <div className="modal-header">
+                            <ul className="nav nav-tabs modal-title" style={{ marginBottom: 0 }}>
+                                <li className="nav-item">
+                                    <button
+                                        className={`nav-link${tab === "rinfo" ? " active" : ""}`}
+                                        onClick={() => setTab("rinfo")}
+                                        style={{ border: "none", background: "none" }}
+                                    >
+                                        r_info
+                                    </button>
+                                </li>
+                                <li className="nav-item">
+                                    <button
+                                        className={`nav-link${tab === "json" ? " active" : ""}`}
+                                        onClick={() => setTab("json")}
+                                        style={{ border: "none", background: "none" }}
+                                    >
+                                        .json
+                                    </button>
+                                </li>
+                            </ul>
                             <button
-                                className="to-clipboard"
-                                onClick={() => navigator.clipboard.writeText(creature.textDetails)}
-                                title="*_infoをコピー"
-                            >
-                                コピー
-                            </button>
-                            <textarea
-                                className="textdetails"
-                                value={creature.textDetails}
-                                rows={Math.max(3, creature.textDetails.split('\n').length)}
-                                style={{ width: "100%", resize: "vertical", paddingRight: "4em" }}
-                                readOnly
-                            />
+                                type="button"
+                                className="btn-close"
+                                onClick={() => setShowModal(false)}
+                            ></button>
                         </div>
-                    )}
-                    <h4 style={{ display: "flex", alignItems: "center" }}>
-                        .json
-                        <button
-                            onClick={() => setShowJson(v => !v)}
-                        >
-                            {showJson ? "閉じる" : "開く"}
-                        </button>
-                    </h4>
-                    {showJson && (
-                        <div style={{ position: "relative", marginBottom: "0.5em" }}>
-                            <button
-                                className="to-clipboard"
-                                onClick={() => navigator.clipboard.writeText(creature.putJson())}
-                                title="JSONをコピー"
-                            >
-                                コピー
-                            </button>
-                            <textarea
-                                className="jsondetails"
-                                value={creature.putJson()}
-                                rows={Math.max(3, creature.textDetails.split('\n').length)}
-                                style={{ width: "100%", resize: "vertical", paddingRight: "4em" }}
-                                readOnly
-                            />
+                        <div className="modal-body">
+                            {tab === "rinfo" && (
+                                <>
+                                    <button
+                                        className="btn btn-sm btn-outline-secondary mb-2"
+                                        onClick={() => navigator.clipboard.writeText(creature.textDetails)}
+                                        title="*_infoをコピー"
+                                    >
+                                        コピー
+                                    </button>
+                                    <textarea
+                                        className="form-control"
+                                        value={creature.textDetails}
+                                        rows={Math.max(3, creature.textDetails.split('\n').length)}
+                                        style={{ width: "100%", resize: "vertical" }}
+                                        readOnly
+                                    />
+                                </>
+                            )}
+                            {tab === "json" && (
+                                <>
+                                    <button
+                                        className="btn btn-sm btn-outline-secondary mb-2"
+                                        onClick={() => navigator.clipboard.writeText(creature.putJson())}
+                                        title="JSONをコピー"
+                                    >
+                                        コピー
+                                    </button>
+                                    <textarea
+                                        className="form-control"
+                                        value={creature.putJson()}
+                                        rows={Math.max(3, creature.textDetails.split('\n').length)}
+                                        style={{ width: "100%", resize: "vertical" }}
+                                        readOnly
+                                    />
+                                </>
+                            )}
                         </div>
-                    )}
+                    </div>
+                </div>
+            </div>
                 </div>
             );
         }
