@@ -93,6 +93,8 @@
                             case "vision-desc": return b.vision - a.vision;
                             case "alert-asc": return a.alertness - b.alertness;
                             case "alert-desc": return b.alertness - a.alertness;
+                            case "rarity-asc": return a.rarity - b.rarity;
+                            case "rarity-desc": return b.rarity - a.rarity;
                             default: return 0;
                         }
                     });
@@ -300,6 +302,26 @@
                                     />
                                     警戒度降順
                                 </label>
+                                <label style={{ marginRight: "0.5em" }}>
+                                    <input
+                                        type="radio"
+                                        name="sort"
+                                        value="rarity-asc"
+                                        checked={sortType === "rarity-asc"}
+                                        onChange={() => setSortType("rarity-asc")}
+                                    />
+                                    出現レア度昇順
+                                </label>
+                                <label style={{ marginRight: "0.5em" }}>
+                                    <input
+                                        type="radio"
+                                        name="sort"
+                                        value="rarity-desc"
+                                        checked={sortType === "rarity-desc"}
+                                        onChange={() => setSortType("rarity-desc")}
+                                    />
+                                    出現レア度降順
+                                </label>
                                 {/* UNIQUEフィルタボタン追加 */}
                                 <button
                                     id="uniqueFilterButton"
@@ -435,6 +457,10 @@
         {creature.depth}
     </div>
     <div>
+        <strong>出現レア度</strong><br />
+        {creature.rarity}
+    </div>
+    <div>
         <strong>HP期待値</strong><br />
         {creature.hp_expected}({creature.hitPoints})
     </div>
@@ -508,6 +534,73 @@
                     .filter(flag => creature.flags.includes(flag))
                     .map(flag => kindMap[flag]);
                 return kinds.join(" ");
+            })()
+        }
+    </div>
+    <div>
+        <strong>地表出現地域</strong><br />
+        {
+            (() => {
+                // フラグと日本語の対応表
+                const areaMap = {
+                    WILD_ONLY: "地表のみ",
+                    WILD_TOWN: "都市",
+                    WILD_SHORE: "海岸",
+                    WILD_OCEAN: "海洋",
+                    WILD_WASTE: "荒地",
+                    WILD_WOOD: "森林",
+                    WILD_VOLCANO: "火山",
+                    WILD_MOUNTAIN: "山岳",
+                    WILD_GRASS: "草原",
+                    WILD_SWAMP: "沼地",
+                    WILD_ALL: "全地域"
+                };
+                if (!creature.flags) return "";
+                const areas = Object.keys(areaMap)
+                    .filter(flag => creature.flags.includes(flag))
+                    .map(flag => areaMap[flag]);
+                return areas.length > 0 ? areas.join(" ") : "―";
+            })()
+        }
+    </div>
+    <div>
+        <strong>機動能力</strong><br />
+        {
+            (() => {
+                const featureMap = {
+                    PASS_WALL: "壁抜け",
+                    KILL_WALL: "掘削",
+                    AQUATIC: "水棲",
+                    CAN_SWIM: "水泳",
+                    CAN_FLY: "飛翔"
+                };
+                if (!creature.flags) return "";
+                const features = Object.keys(featureMap)
+                    .filter(flag => creature.flags.includes(flag))
+                    .map(flag => featureMap[flag]);
+                return features.length > 0 ? features.join(" ") : "―";
+            })()
+        }
+    </div>
+    <div>
+        <strong>光源</strong><br />
+        {
+            (() => {
+                const brightnessMap = {
+                    HAS_LITE_1: "所持光源+1",
+                    SELF_LITE_1: "発光+1",
+                    HAS_LITE_2: "所持光源+2",
+                    SELF_LITE_2: "発光+2",
+                    HAS_DARK_1: "所持暗源+1",
+                    SELF_DARK_1: "自然暗源+1",
+                    HAS_DARK_2: "所持暗源+2",
+                    SELF_DARK_2: "自然暗源+2"
+                };
+                if (!creature.flags) return "";
+                const brightness = Object.keys(brightnessMap)
+                    .filter(flag => creature.flags.includes(flag))
+                    .map(flag => brightnessMap[flag]);
+                return brightness.length > 0 ? brightness.join(" ") : "―";
             })()
         }
     </div>
