@@ -511,6 +511,32 @@
             })()
         }
     </div>
+    <div>
+        <strong>地表出現地域</strong><br />
+        {
+            (() => {
+                // フラグと日本語の対応表
+                const areaMap = {
+                    WILD_ONLY: "地表のみ",
+                    WILD_TOWN: "都市",
+                    WILD_SHORE: "海岸",
+                    WILD_OCEAN: "海洋",
+                    WILD_WASTE: "荒地",
+                    WILD_WOOD: "森林",
+                    WILD_VOLCANO: "火山",
+                    WILD_MOUNTAIN: "山岳",
+                    WILD_GRASS: "草原",
+                    WILD_SWAMP: "沼地",
+                    WILD_ALL: "全地域"
+                };
+                if (!creature.flags) return "";
+                const areas = Object.keys(areaMap)
+                    .filter(flag => creature.flags.includes(flag))
+                    .map(flag => areaMap[flag]);
+                return areas.length > 0 ? areas.join(" ") : "―";
+            })()
+        }
+    </div>
 </div>
                     <div style={{ display: "flex", gap: "1em", marginBottom: "1em" }}>
                 <button
