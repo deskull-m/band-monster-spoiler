@@ -604,6 +604,116 @@
             })()
         }
     </div>
+    <div>
+        <strong>オーラ</strong><br />
+        {
+            (() => {
+                const auraMap = {
+                    AURA_FIRE: "火炎",
+                    AURA_COLD: "冷気",
+                    AURA_ELEC: "電撃",
+                    AURA_ACID: "酸",
+                    AURA_POISON: "毒",
+                    AURA_NUKE: "放射性廃棄物",
+                    AURA_PLASMA: "プラズマ",
+                    AURA_WATER: "水流",
+                    AURA_ICEE: "極寒",
+                    AURA_LITE: "閃光",
+                    AURA_DARK: "暗黒",
+                    AURA_SHARDS: "破片",
+                    AURA_FORCE: "フォース",
+                    AURA_MANA: "魔力",
+                    AURA_METEOR: "隕石",
+                    AURA_CHAOS: "カオス",
+                    AURA_HOLINESS: "神聖",
+                    AURA_NETHER: "地獄",
+                    AURA_DISENCHANT: "劣化",
+                    AURA_NEXUS: "因果混乱",
+                    AURA_TIME: "時空",
+                    AURA_GRAVITY: "重力",
+                    AURA_VOIDS: "虚無",
+                    AURA_ABYSS: "深淵"
+                };
+                if (!creature.flags) return "";
+                const auras = Object.keys(auraMap)
+                    .filter(flag => creature.flags.includes(flag))
+                    .map(flag => auraMap[flag]);
+                return auras.length > 0 ? auras.join(" ") : "―";
+            })()
+        }
+    </div>
+    <div>
+        <strong>耐性/弱点</strong><br />
+        {
+            (() => {
+                const resistMap = {
+                    RES_ALL: "完全",
+                    HURT_ACID: "酸弱点",
+                    RES_ACID: "酸",
+                    IM_ACID: "酸(強)",
+                    HURT_ELEC: "電撃弱点",
+                    RES_ELEC: "電撃耐性",
+                    IM_ELEC: "電撃(強)",
+                    HURT_FIRE: "火炎弱点",
+                    RES_FIRE: "火炎",
+                    IM_FIRE: "火炎(強)",
+                    HURT_COLD: "冷気弱点",
+                    RES_COLD: "冷気",
+                    IM_COLD: "冷気(強)",
+                    HURT_POIS: "毒弱点",
+                    RES_POIS: "毒",
+                    IM_POIS: "毒(強)",
+                    HURT_LITE: "閃光弱点",
+                    RES_LITE: "閃光",
+                    HURT_DARK: "暗黒弱点",
+                    RES_DARK: "暗黒",
+                    HURT_NETH: "地獄弱点",
+                    RES_NETH: "地獄",
+                    HURT_WATE: "水流弱点",
+                    RES_WATE: "水流",
+                    HURT_PLAS: "プラズマ弱点",
+                    RES_PLAS: "プラズマ",
+                    HURT_SHAR: "破片弱点",
+                    RES_SHAR: "破片",
+                    HURT_SOUN: "轟音弱点",
+                    RES_SOUN: "轟音",
+                    HURT_CHAO: "カオス弱点",
+                    RES_CHAO: "カオス",
+                    HURT_NEXU: "因果混乱弱点",
+                    RES_NEXU: "因果混乱",
+                    HURT_DISE: "劣化弱点",
+                    RES_DISE: "劣化",
+                    HURT_WALL: "フォース弱点",
+                    RES_WALL: "フォース",
+                    HURT_INER: "遅鈍弱点",
+                    RES_INER: "遅鈍",
+                    HURT_TIME: "時間弱点",
+                    RES_TIME: "時間",
+                    HURT_GRAV: "重力弱点",
+                    RES_GRAV: "重力",
+                    RES_TELE: "テレポート",
+                    HURT_ROCK: "岩石融解弱点",
+                    RES_ROCK: "岩石融解",
+                    HURT_ABYSS: "深淵弱点",
+                    RES_ABYSS: "深淵",
+                    HURT_VOID: "虚無弱点",
+                    RES_VOID: "虚無",
+                    HURT_METEOR: "隕石弱点",
+                    RES_METEOR: "隕石",
+                    NO_FEAR: "恐怖",
+                    NO_STUN: "朦朧",
+                    NO_CONF: "混乱",
+                    NO_SLEEP: "睡眠",
+                    NO_INSTANTLY_DEATH: "即死"
+                };
+                if (!creature.flags) return "";
+                const resists = Object.keys(resistMap)
+                    .filter(flag => creature.flags.includes(flag))
+                    .map(flag => resistMap[flag]);
+                return resists.length > 0 ? resists.join(" ") : "―";
+            })()
+        }
+    </div>
 </div>
                     <div style={{ display: "flex", gap: "1em", marginBottom: "1em" }}>
                 <button
