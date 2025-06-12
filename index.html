@@ -604,6 +604,44 @@
             })()
         }
     </div>
+    <div>
+        <strong>オーラ</strong><br />
+        {
+            (() => {
+                const auraMap = {
+                    AURA_FIRE: "火炎",
+                    AURA_COLD: "冷気",
+                    AURA_ELEC: "電撃",
+                    AURA_ACID: "酸",
+                    AURA_POISON: "毒",
+                    AURA_NUKE: "放射性廃棄物",
+                    AURA_PLASMA: "プラズマ",
+                    AURA_WATER: "水流",
+                    AURA_ICEE: "極寒",
+                    AURA_LITE: "閃光",
+                    AURA_DARK: "暗黒",
+                    AURA_SHARDS: "破片",
+                    AURA_FORCE: "フォース",
+                    AURA_MANA: "魔力",
+                    AURA_METEOR: "隕石",
+                    AURA_CHAOS: "カオス",
+                    AURA_HOLINESS: "神聖",
+                    AURA_NETHER: "地獄",
+                    AURA_DISENCHANT: "劣化",
+                    AURA_NEXUS: "因果混乱",
+                    AURA_TIME: "時空",
+                    AURA_GRAVITY: "重力",
+                    AURA_VOIDS: "虚無",
+                    AURA_ABYSS: "深淵"
+                };
+                if (!creature.flags) return "";
+                const auras = Object.keys(auraMap)
+                    .filter(flag => creature.flags.includes(flag))
+                    .map(flag => auraMap[flag]);
+                return auras.length > 0 ? auras.join(" ") : "―";
+            })()
+        }
+    </div>
 </div>
                     <div style={{ display: "flex", gap: "1em", marginBottom: "1em" }}>
                 <button
