@@ -563,6 +563,25 @@
             })()
         }
     </div>
+    <div>
+        <strong>機動能力</strong><br />
+        {
+            (() => {
+                const featureMap = {
+                    PASS_WALL: "壁抜け",
+                    KILL_WALL: "掘削",
+                    AQUATIC: "水棲",
+                    CAN_SWIM: "水泳",
+                    CAN_FLY: "飛翔"
+                };
+                if (!creature.flags) return "";
+                const features = Object.keys(featureMap)
+                    .filter(flag => creature.flags.includes(flag))
+                    .map(flag => featureMap[flag]);
+                return features.length > 0 ? features.join(" ") : "―";
+            })()
+        }
+    </div>
 </div>
                     <div style={{ display: "flex", gap: "1em", marginBottom: "1em" }}>
                 <button
