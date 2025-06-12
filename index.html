@@ -582,6 +582,28 @@
             })()
         }
     </div>
+    <div>
+        <strong>光源</strong><br />
+        {
+            (() => {
+                const brightnessMap = {
+                    HAS_LITE_1: "所持光源+1",
+                    SELF_LITE_1: "発光+1",
+                    HAS_LITE_2: "所持光源+2",
+                    SELF_LITE_2: "発光+2",
+                    HAS_DARK_1: "所持暗源+1",
+                    SELF_DARK_1: "自然暗源+1",
+                    HAS_DARK_2: "所持暗源+2",
+                    SELF_DARK_2: "自然暗源+2"
+                };
+                if (!creature.flags) return "";
+                const brightness = Object.keys(brightnessMap)
+                    .filter(flag => creature.flags.includes(flag))
+                    .map(flag => brightnessMap[flag]);
+                return brightness.length > 0 ? brightness.join(" ") : "―";
+            })()
+        }
+    </div>
 </div>
                     <div style={{ display: "flex", gap: "1em", marginBottom: "1em" }}>
                 <button
