@@ -93,6 +93,8 @@
                             case "vision-desc": return b.vision - a.vision;
                             case "alert-asc": return a.alertness - b.alertness;
                             case "alert-desc": return b.alertness - a.alertness;
+                            case "rarity-asc": return a.rarity - b.rarity;
+                            case "rarity-desc": return b.rarity - a.rarity;
                             default: return 0;
                         }
                     });
@@ -300,6 +302,26 @@
                                     />
                                     警戒度降順
                                 </label>
+                                <label style={{ marginRight: "0.5em" }}>
+                                    <input
+                                        type="radio"
+                                        name="sort"
+                                        value="rarity-asc"
+                                        checked={sortType === "rarity-asc"}
+                                        onChange={() => setSortType("rarity-asc")}
+                                    />
+                                    出現レア度昇順
+                                </label>
+                                <label style={{ marginRight: "0.5em" }}>
+                                    <input
+                                        type="radio"
+                                        name="sort"
+                                        value="rarity-desc"
+                                        checked={sortType === "rarity-desc"}
+                                        onChange={() => setSortType("rarity-desc")}
+                                    />
+                                    出現レア度降順
+                                </label>
                                 {/* UNIQUEフィルタボタン追加 */}
                                 <button
                                     id="uniqueFilterButton"
@@ -433,6 +455,10 @@
     <div>
         <strong>レベル</strong><br />
         {creature.depth}
+    </div>
+    <div>
+        <strong>出現レア度</strong><br />
+        {creature.rarity}
     </div>
     <div>
         <strong>HP期待値</strong><br />
