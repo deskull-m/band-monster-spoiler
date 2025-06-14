@@ -799,6 +799,42 @@
         })()
     }
 </div>
+<div>
+    <strong>特殊</strong><br />
+    {
+        (() => {
+            const miscMap = {
+                FORCE_DEPTH: "浅層生成無効",
+                FORCE_MAXHP: "常時最大HD",
+                FRIENDS: "常時友軍あり",
+                ESCORT: "護衛あり",
+                ESCORTS: "大量護衛あり",
+                RIDING: "騎乗可",
+                INVISIBLE: "不可視",
+                COLD_BLOOD: "冷血動物",
+                KAGE: "影",
+                CHAMELEON: "カメレオン",
+                TANUKI: "たぬき",
+                NO_QUEST: "クエスト非対象",
+                ELDRITCH_HORROR: "エルドリッチホラー",
+                MULTIPLY: "増殖",
+                REGENERATE: "急回復",
+                POWERFUL: "魔法強化",
+                REFLECTING: "反射",
+                QUESTOR: "クエスト対象",
+                EMPTY_MIND: "無知性",
+                WEIRD_MIND: "異常知性",
+                VOCIFEROUS: "騒々しい",
+                STALKER: "瞬間追跡"
+            };
+            if (!creature.flags) return "";
+            const miscs = Object.keys(miscMap)
+                .filter(flag => creature.flags.includes(flag))
+                .map(flag => miscMap[flag]);
+            return miscs.length > 0 ? miscs.join(" ") : "―";
+        })()
+    }
+</div>
                     <div style={{ display: "flex", gap: "1em", marginBottom: "1em" }}>
                 <button
                     className="btn btn-outline-primary btn-sm"
