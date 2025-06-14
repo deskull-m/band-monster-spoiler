@@ -782,6 +782,23 @@
         })()
     }
 </div>
+<div>
+    <strong>ポップ</strong><br />
+    {
+        (() => {
+            const popMap = {
+                NAZGUL: "ナズグル生成",
+                ONLY_ONE: "単独生成",
+                BUNBUN_STRIKER: "ブンブンストライカー生成"
+            };
+            if (!creature.flags) return "";
+            const pops = Object.keys(popMap)
+                .filter(flag => creature.flags.includes(flag))
+                .map(flag => popMap[flag]);
+            return pops.length > 0 ? pops.join(" ") : "―";
+        })()
+    }
+</div>
                     <div style={{ display: "flex", gap: "1em", marginBottom: "1em" }}>
                 <button
                     className="btn btn-outline-primary btn-sm"
