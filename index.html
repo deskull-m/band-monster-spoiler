@@ -714,6 +714,73 @@
             })()
         }
     </div>
+    <div>
+        <strong>行動</strong><br />
+        {
+            (() => {
+                const behaviorMap = {
+                    NEVER_MOVE: "移動不能",
+                    NEVER_BLOW: "打撃不能",
+                    OPEN_DOOR: "ドア開閉",
+                    BASH_DOOR: "ドア破壊",
+                    MOVE_BODY: "押しのけ",
+                    KILL_BODY: "踏み潰し",
+                    TAKE_ITEM: "アイテム取得",
+                    KILL_ITEM: "アイテム破壊",
+                    RAND_25: "ランダム移動(25%)",
+                    RAND_50: "ランダム移動(50%)",
+                    STUPID: "愚鈍",
+                    SMART: "利発",
+                    FRIENDLY: "友好的"
+                };
+                if (!creature.flags) return "";
+                const behaviors = Object.keys(behaviorMap)
+                    .filter(flag => creature.flags.includes(flag))
+                    .map(flag => behaviorMap[flag]);
+                return behaviors.length > 0 ? behaviors.join(" ") : "―";
+            })()
+        }
+    </div>
+
+</div>
+<div>
+    <strong>ドロップ</strong><br />
+    {
+        (() => {
+            const dropMap = {
+                ONLY_GOLD: "金のみ",
+                ONLY_ITEM: "アイテムのみ",
+                DROP_GOOD: "上質品",
+                DROP_GREAT: "高級品",
+                DROP_CORPSE: "死体",
+                DROP_SKELETON: "骨",
+                DROP_60: "+1個(60%)",
+                DROP_90: "+1個(90%)",
+                DROP_1D2: "+1d2個",
+                DROP_2D2: "+2d2個",
+                DROP_3D2: "+3d2個",
+                DROP_4D2: "+4d2個",
+                DROP_COPPER: "銅塊",
+                DROP_SILVER: "銀塊",
+                DROP_GARNET: "ガーネット",
+                DROP_GOLD: "金塊",
+                DROP_OPAL: "オパール",
+                DROP_SAPPHIRE: "サファイア",
+                DROP_RUBY: "ルビー",
+                DROP_DIAMOND: "ダイヤモンド",
+                DROP_EMERALD: "エメラルド",
+                DROP_MITHRIL: "ミスリル",
+                DROP_ADAMANTITE: "アダマンタイト",
+                DROP_OBSIDIAN: "オブシダン",
+                DROP_NASTY: "クッソ汚い物"
+            };
+            if (!creature.flags) return "";
+            const drops = Object.keys(dropMap)
+                .filter(flag => creature.flags.includes(flag))
+                .map(flag => dropMap[flag]);
+            return drops.length > 0 ? drops.join(" ") : "―";
+        })()
+    }
 </div>
                     <div style={{ display: "flex", gap: "1em", marginBottom: "1em" }}>
                 <button
