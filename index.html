@@ -443,491 +443,491 @@
                     </div>
                     <h4>ステータス</h4>
                     <div
-    className="status-flex"
-    style={{
-        display: "flex",
-        flexWrap: "wrap",
-        gap: "1.5em",
-        marginBottom: "1em",
-        alignItems: "center"
-    }}
->
-    <div>
-        <strong>レベル</strong><br />
-        {creature.depth}
-    </div>
-    <div>
-        <strong>出現レア度</strong><br />
-        {creature.rarity}
-    </div>
-    <div>
-        <strong>HP期待値</strong><br />
-        {creature.hp_expected}({creature.hitPoints})
-    </div>
-    <div>
-        <strong>加速</strong><br />
-        {creature.speed}
-    </div>
-    <div>
-        <strong>視界</strong><br />
-        {creature.vision}
-    </div>
-    <div>
-        <strong>警戒度</strong><br />
-        {creature.alertness}
-    </div>
-    <div>
-        <strong>AC</strong><br />
-        {creature.armor_class}
-    </div>
-    <div>
-        <strong>種族</strong><br />
-        {
-            (() => {
-                // フラグと日本語の対応表
-                const kindMap = {
-                    UNIQUE: "ユニーク",
-                    HUMAN: "人間",
-                    QUANTUM: "量子存在",
-                    ORC: "オーク",
-                    TROLL: "トロル",
-                    GIANT: "巨人",
-                    DRAGON: "竜",
-                    DEMON: "悪魔",
-                    UNDEAD: "アンデッド",
-                    EVIL: "邪悪",
-                    ANIMAL: "自然界の動物",
-                    AMBERITE: "アンバライト",
-                    GOOD: "善良",
-                    NONLIVING: "無生物",
-                    ANGEL: "天使",
-                    NASTY: "クッソ汚い",
-                    ELF: "エルフ",
-                    DWARF: "ドワーフ",
-                    HOBBIT: "ホビット",
-                    ELDRAZI: "エルドラージ",
-                    QUYLTHLUG: "クイルスルグ",
-                    SPIDER: "蜘蛛",
-                    WARRIOR: "戦士",
-                    ROGUE: "盗賊",
-                    MAGE: "メイジ",
-                    PRIEST: "プリースト",
-                    PALADIN: "パラディン",
-                    RANGER: "レンジャー",
-                    SAMURAI: "サムライ",
-                    NINJA: "ニンジャ",
-                    SUMOU_WRESTLER: "スモトリ",
-                    YAKUZA: "ヤクザ",
-                    KARATEKA: "カラテカ",
-                    JOKE: "フザけた",
-                    HOMO_SEXUAL: "ホモ",
-                    TANK: "戦車",
-                    HENTAI: "HENTAL",
-                    ELEMENTAL: "エレメンタル",
-                    GOLEM: "ゴーレム",
-                    PUYO: "ぷよ"
-                };
-                // creature.flagsが存在しない場合のガード
-                if (!creature.flags) return "";
-                // フラグに対応する日本語名を抽出
-                const kinds = Object.keys(kindMap)
-                    .filter(flag => creature.flags.includes(flag))
-                    .map(flag => kindMap[flag]);
-                return kinds.join(" ");
-            })()
-        }
-    </div>
-    <div>
-        <strong>地表出現地域</strong><br />
-        {
-            (() => {
-                // フラグと日本語の対応表
-                const areaMap = {
-                    WILD_ONLY: "地表のみ",
-                    WILD_TOWN: "都市",
-                    WILD_SHORE: "海岸",
-                    WILD_OCEAN: "海洋",
-                    WILD_WASTE: "荒地",
-                    WILD_WOOD: "森林",
-                    WILD_VOLCANO: "火山",
-                    WILD_MOUNTAIN: "山岳",
-                    WILD_GRASS: "草原",
-                    WILD_SWAMP: "沼地",
-                    WILD_ALL: "全地域"
-                };
-                if (!creature.flags) return "";
-                const areas = Object.keys(areaMap)
-                    .filter(flag => creature.flags.includes(flag))
-                    .map(flag => areaMap[flag]);
-                return areas.length > 0 ? areas.join(" ") : "―";
-            })()
-        }
-    </div>
-    <div>
-        <strong>機動能力</strong><br />
-        {
-            (() => {
-                const featureMap = {
-                    PASS_WALL: "壁抜け",
-                    KILL_WALL: "掘削",
-                    AQUATIC: "水棲",
-                    CAN_SWIM: "水泳",
-                    CAN_FLY: "飛翔"
-                };
-                if (!creature.flags) return "";
-                const features = Object.keys(featureMap)
-                    .filter(flag => creature.flags.includes(flag))
-                    .map(flag => featureMap[flag]);
-                return features.length > 0 ? features.join(" ") : "―";
-            })()
-        }
-    </div>
-    <div>
-        <strong>光源</strong><br />
-        {
-            (() => {
-                const brightnessMap = {
-                    HAS_LITE_1: "所持光源+1",
-                    SELF_LITE_1: "発光+1",
-                    HAS_LITE_2: "所持光源+2",
-                    SELF_LITE_2: "発光+2",
-                    HAS_DARK_1: "所持暗源+1",
-                    SELF_DARK_1: "自然暗源+1",
-                    HAS_DARK_2: "所持暗源+2",
-                    SELF_DARK_2: "自然暗源+2"
-                };
-                if (!creature.flags) return "";
-                const brightness = Object.keys(brightnessMap)
-                    .filter(flag => creature.flags.includes(flag))
-                    .map(flag => brightnessMap[flag]);
-                return brightness.length > 0 ? brightness.join(" ") : "―";
-            })()
-        }
-    </div>
-    <div>
-        <strong>オーラ</strong><br />
-        {
-            (() => {
-                const auraMap = {
-                    AURA_FIRE: "火炎",
-                    AURA_COLD: "冷気",
-                    AURA_ELEC: "電撃",
-                    AURA_ACID: "酸",
-                    AURA_POISON: "毒",
-                    AURA_NUKE: "放射性廃棄物",
-                    AURA_PLASMA: "プラズマ",
-                    AURA_WATER: "水流",
-                    AURA_ICEE: "極寒",
-                    AURA_LITE: "閃光",
-                    AURA_DARK: "暗黒",
-                    AURA_SHARDS: "破片",
-                    AURA_FORCE: "フォース",
-                    AURA_MANA: "魔力",
-                    AURA_METEOR: "隕石",
-                    AURA_CHAOS: "カオス",
-                    AURA_HOLINESS: "神聖",
-                    AURA_NETHER: "地獄",
-                    AURA_DISENCHANT: "劣化",
-                    AURA_NEXUS: "因果混乱",
-                    AURA_TIME: "時空",
-                    AURA_GRAVITY: "重力",
-                    AURA_VOIDS: "虚無",
-                    AURA_ABYSS: "深淵"
-                };
-                if (!creature.flags) return "";
-                const auras = Object.keys(auraMap)
-                    .filter(flag => creature.flags.includes(flag))
-                    .map(flag => auraMap[flag]);
-                return auras.length > 0 ? auras.join(" ") : "―";
-            })()
-        }
-    </div>
-    <div>
-        <strong>耐性/弱点</strong><br />
-        {
-            (() => {
-                const resistMap = {
-                    RES_ALL: "完全",
-                    HURT_ACID: "酸弱点",
-                    RES_ACID: "酸",
-                    IM_ACID: "酸(強)",
-                    HURT_ELEC: "電撃弱点",
-                    RES_ELEC: "電撃耐性",
-                    IM_ELEC: "電撃(強)",
-                    HURT_FIRE: "火炎弱点",
-                    RES_FIRE: "火炎",
-                    IM_FIRE: "火炎(強)",
-                    HURT_COLD: "冷気弱点",
-                    RES_COLD: "冷気",
-                    IM_COLD: "冷気(強)",
-                    HURT_POIS: "毒弱点",
-                    RES_POIS: "毒",
-                    IM_POIS: "毒(強)",
-                    HURT_LITE: "閃光弱点",
-                    RES_LITE: "閃光",
-                    HURT_DARK: "暗黒弱点",
-                    RES_DARK: "暗黒",
-                    HURT_NETH: "地獄弱点",
-                    RES_NETH: "地獄",
-                    HURT_WATE: "水流弱点",
-                    RES_WATE: "水流",
-                    HURT_PLAS: "プラズマ弱点",
-                    RES_PLAS: "プラズマ",
-                    HURT_SHAR: "破片弱点",
-                    RES_SHAR: "破片",
-                    HURT_SOUN: "轟音弱点",
-                    RES_SOUN: "轟音",
-                    HURT_CHAO: "カオス弱点",
-                    RES_CHAO: "カオス",
-                    HURT_NEXU: "因果混乱弱点",
-                    RES_NEXU: "因果混乱",
-                    HURT_DISE: "劣化弱点",
-                    RES_DISE: "劣化",
-                    HURT_WALL: "フォース弱点",
-                    RES_WALL: "フォース",
-                    HURT_INER: "遅鈍弱点",
-                    RES_INER: "遅鈍",
-                    HURT_TIME: "時間弱点",
-                    RES_TIME: "時間",
-                    HURT_GRAV: "重力弱点",
-                    RES_GRAV: "重力",
-                    RES_TELE: "テレポート",
-                    HURT_ROCK: "岩石融解弱点",
-                    RES_ROCK: "岩石融解",
-                    HURT_ABYSS: "深淵弱点",
-                    RES_ABYSS: "深淵",
-                    HURT_VOID: "虚無弱点",
-                    RES_VOID: "虚無",
-                    HURT_METEOR: "隕石弱点",
-                    RES_METEOR: "隕石",
-                    NO_FEAR: "恐怖",
-                    NO_STUN: "朦朧",
-                    NO_CONF: "混乱",
-                    NO_SLEEP: "睡眠",
-                    NO_INSTANTLY_DEATH: "即死"
-                };
-                if (!creature.flags) return "";
-                const resists = Object.keys(resistMap)
-                    .filter(flag => creature.flags.includes(flag))
-                    .map(flag => resistMap[flag]);
-                return resists.length > 0 ? resists.join(" ") : "―";
-            })()
-        }
-    </div>
-    <div>
-        <strong>行動</strong><br />
-        {
-            (() => {
-                const behaviorMap = {
-                    NEVER_MOVE: "移動不能",
-                    NEVER_BLOW: "打撃不能",
-                    OPEN_DOOR: "ドア開閉",
-                    BASH_DOOR: "ドア破壊",
-                    MOVE_BODY: "押しのけ",
-                    KILL_BODY: "踏み潰し",
-                    TAKE_ITEM: "アイテム取得",
-                    KILL_ITEM: "アイテム破壊",
-                    RAND_25: "ランダム移動(25%)",
-                    RAND_50: "ランダム移動(50%)",
-                    STUPID: "愚鈍",
-                    SMART: "利発",
-                    FRIENDLY: "友好的"
-                };
-                if (!creature.flags) return "";
-                const behaviors = Object.keys(behaviorMap)
-                    .filter(flag => creature.flags.includes(flag))
-                    .map(flag => behaviorMap[flag]);
-                return behaviors.length > 0 ? behaviors.join(" ") : "―";
-            })()
-        }
-    </div>
-
-</div>
-<div>
-    <strong>ドロップ</strong><br />
-    {
-        (() => {
-            const dropMap = {
-                ONLY_GOLD: "金のみ",
-                ONLY_ITEM: "アイテムのみ",
-                DROP_GOOD: "上質品",
-                DROP_GREAT: "高級品",
-                DROP_CORPSE: "死体",
-                DROP_SKELETON: "骨",
-                DROP_60: "+1個(60%)",
-                DROP_90: "+1個(90%)",
-                DROP_1D2: "+1d2個",
-                DROP_2D2: "+2d2個",
-                DROP_3D2: "+3d2個",
-                DROP_4D2: "+4d2個",
-                DROP_COPPER: "銅塊",
-                DROP_SILVER: "銀塊",
-                DROP_GARNET: "ガーネット",
-                DROP_GOLD: "金塊",
-                DROP_OPAL: "オパール",
-                DROP_SAPPHIRE: "サファイア",
-                DROP_RUBY: "ルビー",
-                DROP_DIAMOND: "ダイヤモンド",
-                DROP_EMERALD: "エメラルド",
-                DROP_MITHRIL: "ミスリル",
-                DROP_ADAMANTITE: "アダマンタイト",
-                DROP_OBSIDIAN: "オブシダン",
-                DROP_NASTY: "クッソ汚い物"
-            };
-            if (!creature.flags) return "";
-            const drops = Object.keys(dropMap)
-                .filter(flag => creature.flags.includes(flag))
-                .map(flag => dropMap[flag]);
-            return drops.length > 0 ? drops.join(" ") : "―";
-        })()
-    }
-</div>
-<div>
-    <strong>ポップ</strong><br />
-    {
-        (() => {
-            const popMap = {
-                NAZGUL: "ナズグル生成",
-                ONLY_ONE: "単独生成",
-                BUNBUN_STRIKER: "ブンブンストライカー生成"
-            };
-            if (!creature.flags) return "";
-            const pops = Object.keys(popMap)
-                .filter(flag => creature.flags.includes(flag))
-                .map(flag => popMap[flag]);
-            return pops.length > 0 ? pops.join(" ") : "―";
-        })()
-    }
-</div>
-<div>
-    <strong>特殊</strong><br />
-    {
-        (() => {
-            const miscMap = {
-                FORCE_DEPTH: "浅層生成無効",
-                FORCE_MAXHP: "常時最大HD",
-                FRIENDS: "常時友軍あり",
-                ESCORT: "護衛あり",
-                ESCORTS: "大量護衛あり",
-                RIDING: "騎乗可",
-                INVISIBLE: "不可視",
-                COLD_BLOOD: "冷血動物",
-                KAGE: "影",
-                CHAMELEON: "カメレオン",
-                TANUKI: "たぬき",
-                NO_QUEST: "クエスト非対象",
-                ELDRITCH_HORROR: "エルドリッチホラー",
-                MULTIPLY: "増殖",
-                REGENERATE: "急回復",
-                POWERFUL: "魔法強化",
-                REFLECTING: "反射",
-                QUESTOR: "クエスト対象",
-                EMPTY_MIND: "無知性",
-                WEIRD_MIND: "異常知性",
-                VOCIFEROUS: "騒々しい",
-                STALKER: "瞬間追跡"
-            };
-            if (!creature.flags) return "";
-            const miscs = Object.keys(miscMap)
-                .filter(flag => creature.flags.includes(flag))
-                .map(flag => miscMap[flag]);
-            return miscs.length > 0 ? miscs.join(" ") : "―";
-        })()
-    }
-</div>
-                    <div style={{ display: "flex", gap: "1em", marginBottom: "1em" }}>
-                <button
-                    className="btn btn-outline-primary btn-sm"
-                    onClick={() => {
-                        setTab("rinfo");
-                        setShowModal(true);
-                    }}
-                >
-                    編集
-                </button>
-            </div>
-
-            {/* 編集モーダル */}
-            <div
-                className={`modal fade${showModal ? " show" : ""}`}
-                tabIndex="-1"
-                style={{
-                    display: showModal ? "block" : "none",
-                    background: "rgba(0,0,0,0.5)"
-                }}
-                aria-modal={showModal ? "true" : undefined}
-                role="dialog"
-            >
-                <div className="modal-dialog modal-lg">
-                    <div className="modal-content">
-                        <div className="modal-header">
-                            <ul className="nav nav-tabs modal-title" style={{ marginBottom: 0 }}>
-                                <li className="nav-item">
-                                    <button
-                                        className={`nav-link${tab === "rinfo" ? " active" : ""}`}
-                                        onClick={() => setTab("rinfo")}
-                                        style={{ border: "none", background: "none" }}
-                                    >
-                                        r_info
-                                    </button>
-                                </li>
-                                <li className="nav-item">
-                                    <button
-                                        className={`nav-link${tab === "json" ? " active" : ""}`}
-                                        onClick={() => setTab("json")}
-                                        style={{ border: "none", background: "none" }}
-                                    >
-                                        .json
-                                    </button>
-                                </li>
-                            </ul>
-                            <button
-                                type="button"
-                                className="btn-close"
-                                onClick={() => setShowModal(false)}
-                            ></button>
+                        className="status-flex"
+                        style={{
+                            display: "flex",
+                            flexWrap: "wrap",
+                            gap: "1.5em",
+                            marginBottom: "1em",
+                            alignItems: "center"
+                        }}
+                    >
+                        <div>
+                            <strong>レベル</strong><br />
+                            {creature.depth}
                         </div>
-                        <div className="modal-body">
-                            {tab === "rinfo" && (
-                                <>
+                        <div>
+                            <strong>出現レア度</strong><br />
+                            {creature.rarity}
+                        </div>
+                        <div>
+                            <strong>HP期待値</strong><br />
+                            {creature.hp_expected}({creature.hitPoints})
+                        </div>
+                        <div>
+                            <strong>加速</strong><br />
+                            {creature.speed}
+                        </div>
+                        <div>
+                            <strong>視界</strong><br />
+                            {creature.vision}
+                        </div>
+                        <div>
+                            <strong>警戒度</strong><br />
+                            {creature.alertness}
+                        </div>
+                        <div>
+                            <strong>AC</strong><br />
+                            {creature.armor_class}
+                        </div>
+                        <div>
+                            <strong>種族</strong><br />
+                            {
+                                (() => {
+                                    // フラグと日本語の対応表
+                                    const kindMap = {
+                                        UNIQUE: "ユニーク",
+                                        HUMAN: "人間",
+                                        QUANTUM: "量子存在",
+                                        ORC: "オーク",
+                                        TROLL: "トロル",
+                                        GIANT: "巨人",
+                                        DRAGON: "竜",
+                                        DEMON: "悪魔",
+                                        UNDEAD: "アンデッド",
+                                        EVIL: "邪悪",
+                                        ANIMAL: "自然界の動物",
+                                        AMBERITE: "アンバライト",
+                                        GOOD: "善良",
+                                        NONLIVING: "無生物",
+                                        ANGEL: "天使",
+                                        NASTY: "クッソ汚い",
+                                        ELF: "エルフ",
+                                        DWARF: "ドワーフ",
+                                        HOBBIT: "ホビット",
+                                        ELDRAZI: "エルドラージ",
+                                        QUYLTHLUG: "クイルスルグ",
+                                        SPIDER: "蜘蛛",
+                                        WARRIOR: "戦士",
+                                        ROGUE: "盗賊",
+                                        MAGE: "メイジ",
+                                        PRIEST: "プリースト",
+                                        PALADIN: "パラディン",
+                                        RANGER: "レンジャー",
+                                        SAMURAI: "サムライ",
+                                        NINJA: "ニンジャ",
+                                        SUMOU_WRESTLER: "スモトリ",
+                                        YAKUZA: "ヤクザ",
+                                        KARATEKA: "カラテカ",
+                                        JOKE: "フザけた",
+                                        HOMO_SEXUAL: "ホモ",
+                                        TANK: "戦車",
+                                        HENTAI: "HENTAL",
+                                        ELEMENTAL: "エレメンタル",
+                                        GOLEM: "ゴーレム",
+                                        PUYO: "ぷよ"
+                                    };
+                                    // creature.flagsが存在しない場合のガード
+                                    if (!creature.flags) return "";
+                                    // フラグに対応する日本語名を抽出
+                                    const kinds = Object.keys(kindMap)
+                                        .filter(flag => creature.flags.includes(flag))
+                                        .map(flag => kindMap[flag]);
+                                    return kinds.join(" ");
+                                })()
+                            }
+                        </div>
+                        <div>
+                            <strong>地表出現地域</strong><br />
+                            {
+                                (() => {
+                                    // フラグと日本語の対応表
+                                    const areaMap = {
+                                        WILD_ONLY: "地表のみ",
+                                        WILD_TOWN: "都市",
+                                        WILD_SHORE: "海岸",
+                                        WILD_OCEAN: "海洋",
+                                        WILD_WASTE: "荒地",
+                                        WILD_WOOD: "森林",
+                                        WILD_VOLCANO: "火山",
+                                        WILD_MOUNTAIN: "山岳",
+                                        WILD_GRASS: "草原",
+                                        WILD_SWAMP: "沼地",
+                                        WILD_ALL: "全地域"
+                                    };
+                                    if (!creature.flags) return "";
+                                    const areas = Object.keys(areaMap)
+                                        .filter(flag => creature.flags.includes(flag))
+                                        .map(flag => areaMap[flag]);
+                                    return areas.length > 0 ? areas.join(" ") : "―";
+                                })()
+                            }
+                        </div>
+                        <div>
+                            <strong>機動能力</strong><br />
+                            {
+                                (() => {
+                                    const featureMap = {
+                                        PASS_WALL: "壁抜け",
+                                        KILL_WALL: "掘削",
+                                        AQUATIC: "水棲",
+                                        CAN_SWIM: "水泳",
+                                        CAN_FLY: "飛翔"
+                                    };
+                                    if (!creature.flags) return "";
+                                    const features = Object.keys(featureMap)
+                                        .filter(flag => creature.flags.includes(flag))
+                                        .map(flag => featureMap[flag]);
+                                    return features.length > 0 ? features.join(" ") : "―";
+                                })()
+                            }
+                        </div>
+                        <div>
+                            <strong>光源</strong><br />
+                            {
+                                (() => {
+                                    const brightnessMap = {
+                                        HAS_LITE_1: "所持光源+1",
+                                        SELF_LITE_1: "発光+1",
+                                        HAS_LITE_2: "所持光源+2",
+                                        SELF_LITE_2: "発光+2",
+                                        HAS_DARK_1: "所持暗源+1",
+                                        SELF_DARK_1: "自然暗源+1",
+                                        HAS_DARK_2: "所持暗源+2",
+                                        SELF_DARK_2: "自然暗源+2"
+                                    };
+                                    if (!creature.flags) return "";
+                                    const brightness = Object.keys(brightnessMap)
+                                        .filter(flag => creature.flags.includes(flag))
+                                        .map(flag => brightnessMap[flag]);
+                                    return brightness.length > 0 ? brightness.join(" ") : "―";
+                                })()
+                            }
+                        </div>
+                        <div>
+                            <strong>オーラ</strong><br />
+                            {
+                                (() => {
+                                    const auraMap = {
+                                        AURA_FIRE: "火炎",
+                                        AURA_COLD: "冷気",
+                                        AURA_ELEC: "電撃",
+                                        AURA_ACID: "酸",
+                                        AURA_POISON: "毒",
+                                        AURA_NUKE: "放射性廃棄物",
+                                        AURA_PLASMA: "プラズマ",
+                                        AURA_WATER: "水流",
+                                        AURA_ICEE: "極寒",
+                                        AURA_LITE: "閃光",
+                                        AURA_DARK: "暗黒",
+                                        AURA_SHARDS: "破片",
+                                        AURA_FORCE: "フォース",
+                                        AURA_MANA: "魔力",
+                                        AURA_METEOR: "隕石",
+                                        AURA_CHAOS: "カオス",
+                                        AURA_HOLINESS: "神聖",
+                                        AURA_NETHER: "地獄",
+                                        AURA_DISENCHANT: "劣化",
+                                        AURA_NEXUS: "因果混乱",
+                                        AURA_TIME: "時空",
+                                        AURA_GRAVITY: "重力",
+                                        AURA_VOIDS: "虚無",
+                                        AURA_ABYSS: "深淵"
+                                    };
+                                    if (!creature.flags) return "";
+                                    const auras = Object.keys(auraMap)
+                                        .filter(flag => creature.flags.includes(flag))
+                                        .map(flag => auraMap[flag]);
+                                    return auras.length > 0 ? auras.join(" ") : "―";
+                                })()
+                            }
+                        </div>
+                        <div>
+                            <strong>耐性/弱点</strong><br />
+                            {
+                                (() => {
+                                    const resistMap = {
+                                        RES_ALL: "完全",
+                                        HURT_ACID: "酸弱点",
+                                        RES_ACID: "酸",
+                                        IM_ACID: "酸(強)",
+                                        HURT_ELEC: "電撃弱点",
+                                        RES_ELEC: "電撃耐性",
+                                        IM_ELEC: "電撃(強)",
+                                        HURT_FIRE: "火炎弱点",
+                                        RES_FIRE: "火炎",
+                                        IM_FIRE: "火炎(強)",
+                                        HURT_COLD: "冷気弱点",
+                                        RES_COLD: "冷気",
+                                        IM_COLD: "冷気(強)",
+                                        HURT_POIS: "毒弱点",
+                                        RES_POIS: "毒",
+                                        IM_POIS: "毒(強)",
+                                        HURT_LITE: "閃光弱点",
+                                        RES_LITE: "閃光",
+                                        HURT_DARK: "暗黒弱点",
+                                        RES_DARK: "暗黒",
+                                        HURT_NETH: "地獄弱点",
+                                        RES_NETH: "地獄",
+                                        HURT_WATE: "水流弱点",
+                                        RES_WATE: "水流",
+                                        HURT_PLAS: "プラズマ弱点",
+                                        RES_PLAS: "プラズマ",
+                                        HURT_SHAR: "破片弱点",
+                                        RES_SHAR: "破片",
+                                        HURT_SOUN: "轟音弱点",
+                                        RES_SOUN: "轟音",
+                                        HURT_CHAO: "カオス弱点",
+                                        RES_CHAO: "カオス",
+                                        HURT_NEXU: "因果混乱弱点",
+                                        RES_NEXU: "因果混乱",
+                                        HURT_DISE: "劣化弱点",
+                                        RES_DISE: "劣化",
+                                        HURT_WALL: "フォース弱点",
+                                        RES_WALL: "フォース",
+                                        HURT_INER: "遅鈍弱点",
+                                        RES_INER: "遅鈍",
+                                        HURT_TIME: "時間弱点",
+                                        RES_TIME: "時間",
+                                        HURT_GRAV: "重力弱点",
+                                        RES_GRAV: "重力",
+                                        RES_TELE: "テレポート",
+                                        HURT_ROCK: "岩石融解弱点",
+                                        RES_ROCK: "岩石融解",
+                                        HURT_ABYSS: "深淵弱点",
+                                        RES_ABYSS: "深淵",
+                                        HURT_VOID: "虚無弱点",
+                                        RES_VOID: "虚無",
+                                        HURT_METEOR: "隕石弱点",
+                                        RES_METEOR: "隕石",
+                                        NO_FEAR: "恐怖",
+                                        NO_STUN: "朦朧",
+                                        NO_CONF: "混乱",
+                                        NO_SLEEP: "睡眠",
+                                        NO_INSTANTLY_DEATH: "即死"
+                                    };
+                                    if (!creature.flags) return "";
+                                    const resists = Object.keys(resistMap)
+                                        .filter(flag => creature.flags.includes(flag))
+                                        .map(flag => resistMap[flag]);
+                                    return resists.length > 0 ? resists.join(" ") : "―";
+                                })()
+                            }
+                        </div>
+                        <div>
+                            <strong>行動</strong><br />
+                            {
+                                (() => {
+                                    const behaviorMap = {
+                                        NEVER_MOVE: "移動不能",
+                                        NEVER_BLOW: "打撃不能",
+                                        OPEN_DOOR: "ドア開閉",
+                                        BASH_DOOR: "ドア破壊",
+                                        MOVE_BODY: "押しのけ",
+                                        KILL_BODY: "踏み潰し",
+                                        TAKE_ITEM: "アイテム取得",
+                                        KILL_ITEM: "アイテム破壊",
+                                        RAND_25: "ランダム移動(25%)",
+                                        RAND_50: "ランダム移動(50%)",
+                                        STUPID: "愚鈍",
+                                        SMART: "利発",
+                                        FRIENDLY: "友好的"
+                                    };
+                                    if (!creature.flags) return "";
+                                    const behaviors = Object.keys(behaviorMap)
+                                        .filter(flag => creature.flags.includes(flag))
+                                        .map(flag => behaviorMap[flag]);
+                                    return behaviors.length > 0 ? behaviors.join(" ") : "―";
+                                })()
+                            }
+                        </div>
+
+                    </div>
+                    <div>
+                        <strong>ドロップ</strong><br />
+                        {
+                            (() => {
+                                const dropMap = {
+                                    ONLY_GOLD: "金のみ",
+                                    ONLY_ITEM: "アイテムのみ",
+                                    DROP_GOOD: "上質品",
+                                    DROP_GREAT: "高級品",
+                                    DROP_CORPSE: "死体",
+                                    DROP_SKELETON: "骨",
+                                    DROP_60: "+1個(60%)",
+                                    DROP_90: "+1個(90%)",
+                                    DROP_1D2: "+1d2個",
+                                    DROP_2D2: "+2d2個",
+                                    DROP_3D2: "+3d2個",
+                                    DROP_4D2: "+4d2個",
+                                    DROP_COPPER: "銅塊",
+                                    DROP_SILVER: "銀塊",
+                                    DROP_GARNET: "ガーネット",
+                                    DROP_GOLD: "金塊",
+                                    DROP_OPAL: "オパール",
+                                    DROP_SAPPHIRE: "サファイア",
+                                    DROP_RUBY: "ルビー",
+                                    DROP_DIAMOND: "ダイヤモンド",
+                                    DROP_EMERALD: "エメラルド",
+                                    DROP_MITHRIL: "ミスリル",
+                                    DROP_ADAMANTITE: "アダマンタイト",
+                                    DROP_OBSIDIAN: "オブシダン",
+                                    DROP_NASTY: "クッソ汚い物"
+                                };
+                                if (!creature.flags) return "";
+                                const drops = Object.keys(dropMap)
+                                    .filter(flag => creature.flags.includes(flag))
+                                    .map(flag => dropMap[flag]);
+                                return drops.length > 0 ? drops.join(" ") : "―";
+                            })()
+                        }
+                    </div>
+                    <div>
+                        <strong>ポップ</strong><br />
+                        {
+                            (() => {
+                                const popMap = {
+                                    NAZGUL: "ナズグル生成",
+                                    ONLY_ONE: "単独生成",
+                                    BUNBUN_STRIKER: "ブンブンストライカー生成"
+                                };
+                                if (!creature.flags) return "";
+                                const pops = Object.keys(popMap)
+                                    .filter(flag => creature.flags.includes(flag))
+                                    .map(flag => popMap[flag]);
+                                return pops.length > 0 ? pops.join(" ") : "―";
+                            })()
+                        }
+                    </div>
+                    <div>
+                        <strong>特殊</strong><br />
+                        {
+                            (() => {
+                                const miscMap = {
+                                    FORCE_DEPTH: "浅層生成無効",
+                                    FORCE_MAXHP: "常時最大HD",
+                                    FRIENDS: "常時友軍あり",
+                                    ESCORT: "護衛あり",
+                                    ESCORTS: "大量護衛あり",
+                                    RIDING: "騎乗可",
+                                    INVISIBLE: "不可視",
+                                    COLD_BLOOD: "冷血動物",
+                                    KAGE: "影",
+                                    CHAMELEON: "カメレオン",
+                                    TANUKI: "たぬき",
+                                    NO_QUEST: "クエスト非対象",
+                                    ELDRITCH_HORROR: "エルドリッチホラー",
+                                    MULTIPLY: "増殖",
+                                    REGENERATE: "急回復",
+                                    POWERFUL: "魔法強化",
+                                    REFLECTING: "反射",
+                                    QUESTOR: "クエスト対象",
+                                    EMPTY_MIND: "無知性",
+                                    WEIRD_MIND: "異常知性",
+                                    VOCIFEROUS: "騒々しい",
+                                    STALKER: "瞬間追跡"
+                                };
+                                if (!creature.flags) return "";
+                                const miscs = Object.keys(miscMap)
+                                    .filter(flag => creature.flags.includes(flag))
+                                    .map(flag => miscMap[flag]);
+                                return miscs.length > 0 ? miscs.join(" ") : "―";
+                            })()
+                        }
+                    </div>
+                    <div style={{ display: "flex", gap: "1em", marginBottom: "1em" }}>
+                        <button
+                            className="btn btn-outline-primary btn-sm"
+                            onClick={() => {
+                                setTab("rinfo");
+                                setShowModal(true);
+                            }}
+                        >
+                            編集
+                        </button>
+                    </div>
+
+                    {/* 編集モーダル */}
+                    <div
+                        className={`modal fade${showModal ? " show" : ""}`}
+                        tabIndex="-1"
+                        style={{
+                            display: showModal ? "block" : "none",
+                            background: "rgba(0,0,0,0.5)"
+                        }}
+                        aria-modal={showModal ? "true" : undefined}
+                        role="dialog"
+                    >
+                        <div className="modal-dialog modal-lg">
+                            <div className="modal-content">
+                                <div className="modal-header">
+                                    <ul className="nav nav-tabs modal-title" style={{ marginBottom: 0 }}>
+                                        <li className="nav-item">
+                                            <button
+                                                className={`nav-link${tab === "rinfo" ? " active" : ""}`}
+                                                onClick={() => setTab("rinfo")}
+                                                style={{ border: "none", background: "none" }}
+                                            >
+                                                r_info
+                                            </button>
+                                        </li>
+                                        <li className="nav-item">
+                                            <button
+                                                className={`nav-link${tab === "json" ? " active" : ""}`}
+                                                onClick={() => setTab("json")}
+                                                style={{ border: "none", background: "none" }}
+                                            >
+                                                .json
+                                            </button>
+                                        </li>
+                                    </ul>
                                     <button
-                                        className="btn btn-sm btn-outline-secondary mb-2"
-                                        onClick={() => navigator.clipboard.writeText(creature.textDetails)}
-                                        title="*_infoをコピー"
-                                    >
-                                        コピー
-                                    </button>
-                                    <textarea
-                                        className="form-control"
-                                        value={creature.textDetails}
-                                        rows={Math.max(3, creature.textDetails.split('\n').length)}
-                                        style={{ width: "100%", resize: "vertical" }}
-                                        readOnly
-                                    />
-                                </>
-                            )}
-                            {tab === "json" && (
-                                <>
-                                    <button
-                                        className="btn btn-sm btn-outline-secondary mb-2"
-                                        onClick={() => navigator.clipboard.writeText(creature.putJson())}
-                                        title="JSONをコピー"
-                                    >
-                                        コピー
-                                    </button>
-                                    <textarea
-                                        className="form-control"
-                                        value={creature.putJson()}
-                                        rows={Math.max(3, creature.textDetails.split('\n').length)}
-                                        style={{ width: "100%", resize: "vertical" }}
-                                        readOnly
-                                    />
-                                </>
-                            )}
+                                        type="button"
+                                        className="btn-close"
+                                        onClick={() => setShowModal(false)}
+                                    ></button>
+                                </div>
+                                <div className="modal-body">
+                                    {tab === "rinfo" && (
+                                        <>
+                                            <button
+                                                className="btn btn-sm btn-outline-secondary mb-2"
+                                                onClick={() => navigator.clipboard.writeText(creature.textDetails)}
+                                                title="*_infoをコピー"
+                                            >
+                                                コピー
+                                            </button>
+                                            <textarea
+                                                className="form-control"
+                                                value={creature.textDetails}
+                                                rows={Math.max(3, creature.textDetails.split('\n').length)}
+                                                style={{ width: "100%", resize: "vertical" }}
+                                                readOnly
+                                            />
+                                        </>
+                                    )}
+                                    {tab === "json" && (
+                                        <>
+                                            <button
+                                                className="btn btn-sm btn-outline-secondary mb-2"
+                                                onClick={() => navigator.clipboard.writeText(creature.putJson())}
+                                                title="JSONをコピー"
+                                            >
+                                                コピー
+                                            </button>
+                                            <textarea
+                                                className="form-control"
+                                                value={creature.putJson()}
+                                                rows={Math.max(3, creature.textDetails.split('\n').length)}
+                                                style={{ width: "100%", resize: "vertical" }}
+                                                readOnly
+                                            />
+                                        </>
+                                    )}
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </div>
                 </div>
             );
         }
