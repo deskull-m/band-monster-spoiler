@@ -485,6 +485,26 @@
                             {creature.exp !== undefined ? creature.exp : "―"}
                         </div>
                         <div>
+                            <strong>進化先</strong><br />
+                            {
+                                (() => {
+                                    // nextMon: 進化先モンスターのserialNumber, nextEXP: 必要経験値
+                                    if (!creature.nextMon || !creature.nextEXP) return "―";
+                                    // infoListは親コンポーネントからpropsで渡すか、上位でuseContext等で取得してください
+                                    const nextMonster = infoList.find(m => m.serialNumber == creature.nextMon);
+                                    if (!nextMonster) return `No.${creature.nextMon} (必要経験値: ${creature.nextEXP})`;
+                                    return (
+                                        <span>
+                                            <a href={`#creature-${nextMonster.serialNumber}`}>
+                                                {nextMonster.name}
+                                            </a>
+                                            {` (必要経験値: ${creature.nextEXP})`}
+                                        </span>
+                                    );
+                                })()
+                            }
+                        </div>
+                        <div>
                             <strong>種族</strong><br />
                             {
                                 (() => {
