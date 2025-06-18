@@ -859,6 +859,50 @@
                             })()
                         }
                     </div>
+                    <div>
+                        <strong>捕食時効果</strong><br />
+                        {
+                            (() => {
+                                const feedMap = {
+                                    EAT_BLIND: "盲目",
+                                    EAT_CONF: "混乱",
+                                    EAT_MANA: "MP回復",
+                                    EAT_NEXUS: "因果混乱",
+                                    EAT_SLEEP: "催眠",
+                                    EAT_BERSERKER: "狂戦士化",
+                                    EAT_ACIDIC: "酸性",
+                                    EAT_SPEED: "加速",
+                                    EAT_CURE: "HP回復",
+                                    EAT_FIRE_RES: "火炎耐性",
+                                    EAT_COLD_RES: "冷気耐性",
+                                    EAT_ACID_RES: "酸耐性",
+                                    EAT_ELEC_RES: "冷気耐性",
+                                    EAT_POIS_RES: "毒耐性",
+                                    EAT_INSANITY: "狂気を引き起こす",
+                                    EAT_DRAIN_EXP: "経験値吸収",
+                                    EAT_POISONOUS: "毒",
+                                    EAT_GIVE_STR: "腕力強化",
+                                    EAT_GIVE_INT: "知力強化",
+                                    EAT_GIVE_WIS: "賢さ強化",
+                                    EAT_GIVE_DEX: "器用さ強化",
+                                    EAT_GIVE_CON: "耐久強化",
+                                    EAT_GIVE_CHR: "魅力強化",
+                                    EAT_LOSE_STR: "腕力減少",
+                                    EAT_LOSE_INT: "知力減少",
+                                    EAT_LOSE_WIS: "賢さ減少",
+                                    EAT_LOSE_DEX: "器用さ減少",
+                                    EAT_LOSE_CON: "耐久減少",
+                                    EAT_LOSE_CHR: "魅力減少",
+                                    EAT_DRAIN_MANA: "MP減少"
+                                };
+                                if (!creature.flags) return "";
+                                const feeds = Object.keys(feedMap)
+                                    .filter(flag => creature.flags.includes(flag))
+                                    .map(flag => feedMap[flag]);
+                                return feeds.length > 0 ? feeds.join(" ") : "―";
+                            })()
+                        }
+                    </div>
                     <div style={{ display: "flex", gap: "1em", marginBottom: "1em" }}>
                         <button
                             className="btn btn-outline-primary btn-sm"
