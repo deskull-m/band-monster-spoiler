@@ -474,7 +474,36 @@
                         </div>
                         <div>
                             <strong>警戒度</strong><br />
-                            {creature.alertness}
+                            {
+                                (() => {
+                                    const alert = creature.alertness;
+                                    let desc = "";
+                                    if (alert > 200) {
+                                        desc = "（無視しがち）";
+                                    } else if (alert > 95) {
+                                        desc = "（ほとんど注意を払わない）";
+                                    } else if (alert > 75) {
+                                        desc = "（あまり注意を払わない）";
+                                    } else if (alert > 45) {
+                                        desc = "（見過ごしがち）";
+                                    } else if (alert > 25) {
+                                        desc = "（ほんの少しは見ている）";
+                                    } else if (alert > 10) {
+                                        desc = "（しばらくは見ている）";
+                                    } else if (alert > 5) {
+                                        desc = "（幾分注意深い）";
+                                    } else if (alert > 3) {
+                                        desc = "（注意深い）";
+                                    } else if (alert > 1) {
+                                        desc = "（かなり注意深い）";
+                                    } else if (alert > 0) {
+                                        desc = "（警戒している）";
+                                    } else {
+                                        desc = "（かなり警戒している）";
+                                    }
+                                    return `${alert} ${desc}`;
+                                })()
+                            }
                         </div>
                         <div>
                             <strong>AC</strong><br />
