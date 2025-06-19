@@ -372,7 +372,7 @@
                         </div>
                         <div id="detail-lists">
                             {sortedList.map((creature, index) => (
-                                <MonsterDetail key={index} creature={creature} index={index} />
+                                <MonsterDetail key={index} creature={creature} index={index} infoList={infoList} />
                             ))}
                         </div>
                     </div>
@@ -413,7 +413,7 @@
             );
         }
 
-        function MonsterDetail({ creature, index }) {
+        function MonsterDetail({ creature, index, infoList }) {
             const [showModal, setShowModal] = React.useState(false);
             const [tab, setTab] = React.useState("rinfo"); // "rinfo" or "json"
 
@@ -423,7 +423,7 @@
                         <div>
                             <a id={`creature-${creature.serialNumber}`}></a>
                             <h3 style={{ display: "inline-block", margin: 0 }}>
-                                <span className="num">{creature.serialNumber}</span>{creature.name}
+                                <span className="num">{creature.serialNumber}</span>{creature.name} / {creature.ename}
                             </h3>
                         </div>
                         <button
@@ -474,7 +474,36 @@
                         </div>
                         <div>
                             <strong>警戒度</strong><br />
-                            {creature.alertness}
+                            {
+                                (() => {
+                                    const alert = creature.alertness;
+                                    let desc = "";
+                                    if (alert > 200) {
+                                        desc = "（無視しがち）";
+                                    } else if (alert > 95) {
+                                        desc = "（ほとんど注意を払わない）";
+                                    } else if (alert > 75) {
+                                        desc = "（あまり注意を払わない）";
+                                    } else if (alert > 45) {
+                                        desc = "（見過ごしがち）";
+                                    } else if (alert > 25) {
+                                        desc = "（ほんの少しは見ている）";
+                                    } else if (alert > 10) {
+                                        desc = "（しばらくは見ている）";
+                                    } else if (alert > 5) {
+                                        desc = "（幾分注意深い）";
+                                    } else if (alert > 3) {
+                                        desc = "（注意深い）";
+                                    } else if (alert > 1) {
+                                        desc = "（かなり注意深い）";
+                                    } else if (alert > 0) {
+                                        desc = "（警戒している）";
+                                    } else {
+                                        desc = "（かなり警戒している）";
+                                    }
+                                    return `${alert} ${desc}`;
+                                })()
+                            }
                         </div>
                         <div>
                             <strong>AC</strong><br />
@@ -488,17 +517,15 @@
                             <strong>進化先</strong><br />
                             {
                                 (() => {
-                                    // nextMon: 進化先モンスターのserialNumber, nextEXP: 必要経験値
-                                    if (!creature.nextMon || !creature.nextEXP) return "―";
-                                    // infoListは親コンポーネントからpropsで渡すか、上位でuseContext等で取得してください
+                                    if (!creature.nextMon || !(creature.nextExp > 0)) return "―";
                                     const nextMonster = infoList.find(m => m.serialNumber == creature.nextMon);
-                                    if (!nextMonster) return `No.${creature.nextMon} (必要経験値: ${creature.nextEXP})`;
+                                    if (!nextMonster) return "(Invalid)";
                                     return (
                                         <span>
                                             <a href={`#creature-${nextMonster.serialNumber}`}>
                                                 {nextMonster.name}
                                             </a>
-                                            {` (必要経験値: ${creature.nextEXP})`}
+                                            {` (必要経験値: ${creature.nextExp})`}
                                         </span>
                                     );
                                 })()
