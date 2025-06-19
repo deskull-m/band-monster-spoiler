@@ -372,7 +372,7 @@
                         </div>
                         <div id="detail-lists">
                             {sortedList.map((creature, index) => (
-                                <MonsterDetail key={index} creature={creature} index={index} />
+                                <MonsterDetail key={index} creature={creature} index={index} infoList={infoList} />
                             ))}
                         </div>
                     </div>
@@ -413,7 +413,7 @@
             );
         }
 
-        function MonsterDetail({ creature, index }) {
+        function MonsterDetail({ creature, index, infoList }) {
             const [showModal, setShowModal] = React.useState(false);
             const [tab, setTab] = React.useState("rinfo"); // "rinfo" or "json"
 
@@ -517,17 +517,15 @@
                             <strong>進化先</strong><br />
                             {
                                 (() => {
-                                    // nextMon: 進化先モンスターのserialNumber, nextEXP: 必要経験値
-                                    if (!creature.nextMon || !creature.nextEXP) return "―";
-                                    // infoListは親コンポーネントからpropsで渡すか、上位でuseContext等で取得してください
+                                    if (!creature.nextMon || !(creature.nextExp > 0)) return "―";
                                     const nextMonster = infoList.find(m => m.serialNumber == creature.nextMon);
-                                    if (!nextMonster) return `No.${creature.nextMon} (必要経験値: ${creature.nextEXP})`;
+                                    if (!nextMonster) return "(Invalid)";
                                     return (
                                         <span>
                                             <a href={`#creature-${nextMonster.serialNumber}`}>
                                                 {nextMonster.name}
                                             </a>
-                                            {` (必要経験値: ${creature.nextEXP})`}
+                                            {` (必要経験値: ${creature.nextExp})`}
                                         </span>
                                     );
                                 })()
