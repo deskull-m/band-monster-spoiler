@@ -363,4 +363,145 @@ class Creature {
 
     };
 
+    /**
+     * JSONCからCreatureインスタンスを生成する静的メソッド
+     * @param {object} json モンスター1体分のJSONデータ
+     * @returns {Creature}
+     */
+    static getJson(json) {
+        const c = new Creature(""); // 空テキストで初期化
+
+        // 基本情報
+        c.serialNumber = json.id ?? 0;
+        c.name = json.name?.ja ?? "";
+        c.ename = json.name?.en ?? "";
+
+        c.symbol = json.symbol?.character ?? "";
+        // 色は逆引き不可なのでcolorSymbolの逆引き辞書を作る
+        if (json.symbol?.color) {
+            const colorEntry = Object.entries(Creature.colorSymbol)
+                .find(([k, v]) => v === json.symbol.color);
+            c.color = colorEntry ? colorEntry[0] : "";
+        } else {
+            c.color = "";
+        }
+
+        c.speed = typeof json.speed === "number" ? json.speed : 0;
+        c.hitPoints = json.hit_point ?? "";
+        c.vision = json.vision ?? 0;
+        c.armor_class = json.armor_class ?? 0;
+        c.alertness = json.alertness ?? 0;
+        c.depth = json.level ?? 0;
+        c.rarity = json.rarity ?? 1;
+        c.exp = json.exp ?? 0;
+        c.nextExp = json.next_exp ?? 0;
+        c.nextMon = json.next_mon ?? 0;
+
+        // attacks
+        c.attacks = [];
+        if (Array.isArray(json.blows)) {
+            json.blows.forEach(b => {
+                c.attacks.push({
+                    method: b.method ?? "",
+                    effect: b.effect ?? "",
+                    damage: b.damage_dice ?? ""
+                });
+            });
+        }
+        if (json.skill?.shoot) {
+            c.attacks.push({
+                method: "SHOOT",
+                effect: "",
+                damage: json.skill.shoot
+            });
+        }
+
+        // flavor
+        c.description_ja = json.flavor?.ja ?? "";
+        c.description_en = json.flavor?.en ?? "";
+
+        // flags
+        c.flags = Array.isArray(json.flags) ? [...json.flags] : [];
+
+        // sex
+        if (json.sex === "MALE") c.flags.push("MALE");
+        if (json.sex === "FEMALE") c.flags.push("FEMALE");
+
+        // alliance, collapse, perhp, mob, collapse_over, suicide, mother, father
+        if (json.alliance) c.flags.push(`ALLIANCE_${json.alliance}`);
+        if (json.collapse) c.flags.push(`COLLAPSE_${json.collapse}`);
+        if (json.perhp) c.flags.push(`PERHP_${json.perhp}`);
+        if (json.mob) c.flags.push(`MOB_${json.mob}`);
+        if (json.collapse_over) c.flags.push(`COLLAPSE-OVER_${json.collapse_over}`);
+        if (json.suicide) c.flags.push(`SUICIDE_${json.suicide}`);
+        if (json.mother) c.flags.push(`MOTHER_${json.mother}`);
+        if (json.father) c.flags.push(`FATHER_${json.father}`);
+
+        // skills
+        c.skills = [];
+        if (json.skill?.list) {
+            c.skills.push(...json.skill.list);
+        }
+        if (json.skill?.probability) {
+            c.skills.push(json.skill.probability);
+        }
+
+        // DROP_KIND_*
+        if (Array.isArray(json.drop_kind)) {
+            json.drop_kind.forEach(dk => {
+                let flag = `DROP_KIND_${dk.probability}_${dk.item_id}_${dk.grade}`;
+                if (dk.dice) flag += `_${dk.dice}`;
+                c.flags.push(flag);
+            });
+        }
+
+        // SPAWN_CREATURE_*
+        if (Array.isArray(json.spawn_creature)) {
+            json.spawn_creature.forEach(sc => {
+                c.flags.push(`SPAWN_CREATURE_${sc.probability}_${sc.id}`);
+            });
+        }
+
+        // SPAWN_ITEM_*
+        if (Array.isArray(json.spawn_item)) {
+            json.spawn_item.forEach(si => {
+                c.flags.push(`SPAWN_ITEM_${si.probability}_${si.id}`);
+            });
+        }
+
+        // DEAD_SPAWN_*
+        if (Array.isArray(json.dead_spawn)) {
+            json.dead_spawn.forEach(ds => {
+                c.flags.push(`DEAD_SPAWN_${ds.probability}_${ds.id}_${ds.dice}`);
+            });
+        }
+
+        // SPAWN_FEATURE_*
+        if (Array.isArray(json.terrain_feature)) {
+            json.terrain_feature.forEach(sf => {
+                c.flags.push(`SPAWN_FEATURE_${sf.probability}_${sf.id}`);
+            });
+        }
+
+        // その他のtextDetails
+        c.textDetails = ""; // 必要なら再構成
+
+        // HP期待値再計算
+        c.hp_expected = null;
+        const m = typeof c.hitPoints === "string" ? c.hitPoints.match(/^(\d+)d(\d+)$/) : null;
+        if (m) {
+            const x = parseInt(m[1], 10);
+            const y = parseInt(m[2], 10);
+            if (c.flags && c.flags.includes("FORCE_MAXHP")) {
+                c.hp_expected = x * y;
+            } else {
+                c.hp_expected = ((y + 1) / 2) * x;
+            }
+        } else if (!isNaN(Number(c.hitPoints))) {
+            c.hp_expected = Number(c.hitPoints);
+        }
+
+        return c;
+    }
+
 }
