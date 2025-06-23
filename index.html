@@ -67,6 +67,89 @@
                 }
             };
 
+            const handleJsonImport = (event) => {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        setLoading(true);
+                        setProgress(0);
+                        try {
+                            // コメント付きJSON（jsonc）を正規化
+                            let text = e.target.result;
+                            // コメント除去（//と/* */両方対応）
+                            text = text.replace(/\/\/.*$/mg, "")
+                                       .replace(/\/\*[\s\S]*?\*\//g, "");
+                            let obj;
+                            try {
+                                obj = JSON.parse(text);
+                            } catch (jsonErr) {
+                                alert("JSONのパースに失敗しました: " + jsonErr.message);
+                                setLoading(false);
+                                return;
+                            }
+                            let monstersArr = [];
+                            if (Array.isArray(obj)) {
+                                monstersArr = obj;
+                            } else if (Array.isArray(obj.monsters)) {
+                                monstersArr = obj.monsters;
+                            } else {
+                                alert("不正なJSON形式です（配列またはmonstersプロパティが必要）");
+                                setLoading(false);
+                                return;
+                            }
+                            let creatures = [];
+                            try {
+                                creatures = monstersArr.map((data, idx) => {
+                                    try {
+                                        // evolve対応
+                                        if (data.evolve) {
+                                            data.next_exp = data.evolve.need_exp ?? 0;
+                                            data.next_mon = data.evolve.to ?? 0;
+                                        }
+                                        // attacks/blows対応
+                                        if (Array.isArray(data.blows)) {
+                                            data.blows = data.blows.map(b => ({
+                                                method: b.method ?? "",
+                                                effect: b.effect ?? "",
+                                                damage_dice: b.damage_dice ?? ""
+                                            }));
+                                        }
+                                        // escorts対応
+                                        if (Array.isArray(data.escorts)) {
+                                            data.escorts = data.escorts.map(e => ({
+                                                escorts_id: e.escorts_id,
+                                                escort_num: e.escort_num
+                                            }));
+                                        }
+                                        // artifacts対応
+                                        if (Array.isArray(data.artifacts)) {
+                                            data.artifacts = data.artifacts.map(a => ({
+                                                drop_artifact_id: a.drop_artifact_id,
+                                                drop_probability: a.drop_probability
+                                            }));
+                                        }
+                                        return Creature.getJson(data);
+                                    } catch (e) {
+                                        throw new Error(`monsters[${idx}]の変換に失敗: ${e.message}`);
+                                    }
+                                });
+                            } catch (convErr) {
+                                alert("データ変換エラー: " + convErr.message);
+                                setLoading(false);
+                                return;
+                            }
+                            setInfoList(creatures);
+                            setProgress(100);
+                        } catch (e) {
+                            alert("JSONの読み込みに失敗しました: " + e.message);
+                        }
+                        setLoading(false);
+                    };
+                    reader.readAsText(file);
+                }
+            };
+
             // フィルタリング
             const filteredList = showUniqueOnly
                 ? infoList.filter(c => c.flags && c.flags.includes("UNIQUE"))
@@ -106,8 +189,16 @@
             return (
                 <div id="container">
                     <h1>*bandモンスターエディタ</h1>
-                    <p>モンスター定義ファイルを読み込んで下さい</p>
-                    <input type="file" accept=".txt" onChange={handleFileChange} />
+                    <p>
+                    <input type="file" accept=".txt" onChange={handleFileChange} />(旧型式)
+                    </p>
+                    <p>
+                    <input
+                        type="file"
+                        accept=".json,.jsonc,application/json"
+                        onChange={handleJsonImport}
+                    />
+                    (json/jsonc)</p>
                     {loading && (
                         <div style={{ margin: "1em 0" }}>
                             <div style={{
