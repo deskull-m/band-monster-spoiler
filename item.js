@@ -213,5 +213,61 @@ function ItemViewer() {
     );
 }
 
-// HTML側で <div id="item-root"></div> を用意し、以下でマウント
-//
+Item.prototype.toJson = function () {
+    // 色名変換
+    const colorMap = {
+        'D': 'Black', 'w': 'White', 's': 'Gray', 'o': 'Orange',
+        'r': 'Red', 'g': 'Green', 'b': 'Blue', 'u': 'Brown',
+        'd': 'Dark Gray', 'W': 'Light Gray', 'v': 'Violet', 'y': 'Yellow',
+        'R': 'Light Red', 'G': 'Light Green', 'B': 'Light Blue', 'U': 'Light Brown'
+    };
+    // allocations
+    let allocations = [];
+    if (this.alloc) {
+        allocations = this.alloc.map(a => {
+            const [depth, rarity] = a.split(":").map(x => Number(x.trim()));
+            return { depth, rarity };
+        });
+    }
+    // flavor抽出（例: F:FLAVOR_JA:xxx|FLAVOR_EN:yyy|... などがあれば対応）
+    let flavor_ja = "";
+    let flavor_en = "";
+    if (this.flags) {
+        this.flags.forEach(f => {
+            if (f.startsWith("FLAVOR_JA:")) flavor_ja = f.replace("FLAVOR_JA:", "");
+            if (f.startsWith("FLAVOR_EN:")) flavor_en = f.replace("FLAVOR_EN:", "");
+        });
+    }
+    return {
+        id: Number(this.serialNumber),
+        name: {
+            ja: this.name ?? "",
+            en: this.ename ?? ""
+        },
+        symbol: {
+            character: this.symbol ?? "",
+            color: colorMap[this.color] ?? this.color ?? ""
+        },
+        itemkind: {
+            type_value: Number(this.tval),
+            subtype_value: Number(this.sval)
+        },
+        parameter_value: Number(this.pval) || 0,
+        level: Number(this.depth) || 0,
+        weight: Number(this.weight) || 0,
+        cost: Number(this.cost) || 0,
+        base_ac: Number(this.base_ac) || 0,
+        base_dice: this.base_damage ?? "",
+        hit_bonus: Number(this.plus_to_hit) || 0,
+        damage_bonus: Number(this.plus_to_dam) || 0,
+        ac_bonus: Number(this.plus_to_ac) || 0,
+        allocations,
+        flavor: {
+            ja: flavor_ja,
+            en: flavor_en
+        }
+    };
+};
+
+// 使い方例：
+// const jsonList = items.map(item => item.toJson());
