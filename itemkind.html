@@ -69,6 +69,34 @@
                     <h1>*band アイテム種リスト</h1>
                     <p>アイテム定義ファイルを読み込んで下さい</p>
                     <input type="file" accept=".txt" onChange={handleFileChange} />
+                    <div style={{ textAlign: "right", margin: "1em 0" }}>
+                        <button
+                            style={{
+                                background: "#333c44",
+                                color: "#e0e0e0",
+                                border: "1px solid #555",
+                                borderRadius: "4px",
+                                padding: "0.5em 1em",
+                                cursor: "pointer"
+                            }}
+                            onClick={() => {
+                                const itemBlock = JSON.stringify(itemList.map(item => item.toJson()), null, 2);
+                                const allJson = `{\n  "version": 1.0,\n  "items": ${itemBlock}\n}`;
+                                const blob = new Blob([allJson], { type: "application/json" });
+                                const url = URL.createObjectURL(blob);
+                                const a = document.createElement("a");
+                                a.href = url;
+                                a.download = "all_items.jsonc";
+                                document.body.appendChild(a);
+                                a.click();
+                                document.body.removeChild(a);
+                                URL.revokeObjectURL(url);
+                            }}
+                        >
+                            JSONCエクスポート
+                        </button>
+                    </div>
+
                     {loading && (
                         <div style={{ margin: "1em 0" }}>
                             <div style={{
