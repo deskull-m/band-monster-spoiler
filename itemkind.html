@@ -81,7 +81,7 @@
                             }}
                             onClick={() => {
                                 const itemBlock = JSON.stringify(itemList.map(item => item.toJson()), null, 2);
-                                const allJson = `{\n  "version": 1.0,\n  "items": ${itemBlock}\n}`;
+                                const allJson = `{\n  "version": 1.0,\n  "baseitems": ${itemBlock}\n}`;
                                 const blob = new Blob([allJson], { type: "application/json" });
                                 const url = URL.createObjectURL(blob);
                                 const a = document.createElement("a");

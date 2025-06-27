@@ -17,7 +17,7 @@ class Item {
                     [this.tval, this.sval, this.pval] = values.map(v => v.trim());
                     break;
                 case "W":
-                    [this.depth, this.rarity, this.weight, this.cost] = values.map(v => v.trim());
+                    [this.depth, this.weight, this.cost] = values.map(v => v.trim());
                     break;
                 case "P":
                     [this.base_ac, this.base_damage, this.plus_to_hit, this.plus_to_dam, this.plus_to_ac] = values.map(v => v.trim());
@@ -132,8 +132,8 @@ function ItemDetail({ item }) {
                         {item.tval} / {item.sval} / {item.pval}
                     </div>
                     <div>
-                        <strong>階/レア/重さ/値段</strong><br />
-                        {item.depth} / {item.rarity} / {item.weight} / {item.cost}
+                        <strong>階/重さ/値段</strong><br />
+                        {item.depth} / {item.weight} / {item.cost}
                     </div>
                     <div>
                         <strong>基礎AC/ダメ/命中/ダメ+/AC+</strong><br />
@@ -245,23 +245,26 @@ Item.prototype.toJson = function () {
             en: this.ename ?? ""
         },
         symbol: {
-            character: this.symbol ?? "",
+            character: this.symbol != "" && this.symbol != null ? this.symbol : " ",
             color: colorMap[this.color] ?? this.color ?? ""
         },
         itemkind: {
-            type_value: Number(this.tval),
-            subtype_value: Number(this.sval)
+            type_value: Number(this.tval) || 0,
+            subtype_value: Number(this.sval) || 0
         },
         parameter_value: Number(this.pval) || 0,
         level: Number(this.depth) || 0,
         weight: Number(this.weight) || 0,
         cost: Number(this.cost) || 0,
         base_ac: Number(this.base_ac) || 0,
-        base_dice: this.base_damage ?? "",
+        base_dice: this.base_damage || "0d0",
         hit_bonus: Number(this.plus_to_hit) || 0,
         damage_bonus: Number(this.plus_to_dam) || 0,
         ac_bonus: Number(this.plus_to_ac) || 0,
-        allocations,
+        allocations: [ {
+            depth: Number(this.depth) || 0,
+            rarity: Number(this.rarity) || 1,
+        } ],
         flavor: {
             ja: flavor_ja,
             en: flavor_en
