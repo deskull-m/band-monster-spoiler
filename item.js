@@ -249,19 +249,22 @@ Item.prototype.toJson = function () {
             color: colorMap[this.color] ?? this.color ?? ""
         },
         itemkind: {
-            type_value: Number(this.tval),
-            subtype_value: Number(this.sval)
+            type_value: Number(this.tval) || 0,
+            subtype_value: Number(this.sval) || 0
         },
         parameter_value: Number(this.pval) || 0,
         level: Number(this.depth) || 0,
         weight: Number(this.weight) || 0,
         cost: Number(this.cost) || 0,
         base_ac: Number(this.base_ac) || 0,
-        base_dice: this.base_damage ?? "",
+        base_dice: this.base_damage || "0d0",
         hit_bonus: Number(this.plus_to_hit) || 0,
         damage_bonus: Number(this.plus_to_dam) || 0,
         ac_bonus: Number(this.plus_to_ac) || 0,
-        allocations,
+        allocations: [ {
+            depth: Number(this.depth) || 0,
+            rarity: Number(this.rarity) || 1,
+        } ],
         flavor: {
             ja: flavor_ja,
             en: flavor_en
