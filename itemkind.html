@@ -142,8 +142,8 @@
                                 {item.tval} / {item.sval} / {item.pval}
                             </div>
                             <div>
-                                <strong>階/レア/重さ/値段</strong><br />
-                                {item.depth} / {item.rarity} / {item.weight} / {item.cost}
+                                <strong>階/重さ/値段</strong><br />
+                                {item.depth} / {item.weight} / {item.cost}
                             </div>
                             <div>
                                 <strong>基礎AC/ダメ/命中/ダメ+/AC+</strong><br />
@@ -170,6 +170,12 @@
                         <details style={{ marginTop: "1em" }}>
                             <summary>生データ</summary>
                             <pre style={{ whiteSpace: "pre-wrap" }}>{item.rawText}</pre>
+                        </details>
+                        <details style={{ marginTop: "1em" }}>
+                            <summary>JSONデータ</summary>
+                            <pre style={{ whiteSpace: "pre-wrap" }}>
+                                {JSON.stringify(item.toJson(), null, 2)}
+                            </pre>
                         </details>
                     </div>
                 </div>
