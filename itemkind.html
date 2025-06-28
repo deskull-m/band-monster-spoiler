@@ -125,6 +125,57 @@
             );
         }
 
+        function ItemDetail({ item }) {
+            return (
+                <div className="card mb-3">
+                    <div className="card-header">
+                        <strong>No.{item.serialNumber}</strong> {item.name}
+                    </div>
+                    <div className="card-body">
+                        <div style={{ display: "flex", flexWrap: "wrap", gap: "1.5em" }}>
+                            <div>
+                                <strong>記号/色</strong><br />
+                                {item.symbol} / {item.color}
+                            </div>
+                            <div>
+                                <strong>tval/sval/pval</strong><br />
+                                {item.tval} / {item.sval} / {item.pval}
+                            </div>
+                            <div>
+                                <strong>階/レア/重さ/値段</strong><br />
+                                {item.depth} / {item.rarity} / {item.weight} / {item.cost}
+                            </div>
+                            <div>
+                                <strong>基礎AC/ダメ/命中/ダメ+/AC+</strong><br />
+                                {item.base_ac} / {item.base_damage} / {item.plus_to_hit} / {item.plus_to_dam} / {item.plus_to_ac}
+                            </div>
+                            <div>
+                                <strong>配分</strong><br />
+                                {item.alloc ? item.alloc.join(", ") : "―"}
+                            </div>
+                            <div>
+                                <strong>フラグ</strong><br />
+                                {item.flags ? item.flags.join(", ") : "―"}
+                            </div>
+                        </div>
+                        {/* フレーバー表示を追加 */}
+                        <div style={{ marginTop: "1em" }}>
+                            <strong>フレーバー（日本語）</strong><br />
+                            <span style={{ whiteSpace: "pre-line" }}>{item.flavor_ja || "―"}</span>
+                        </div>
+                        <div style={{ marginTop: "0.5em" }}>
+                            <strong>Flavor (English)</strong><br />
+                            <span style={{ whiteSpace: "pre-line" }}>{item.flavor_en || "―"}</span>
+                        </div>
+                        <details style={{ marginTop: "1em" }}>
+                            <summary>生データ</summary>
+                            <pre style={{ whiteSpace: "pre-wrap" }}>{item.rawText}</pre>
+                        </details>
+                    </div>
+                </div>
+            );
+        }
+
         ReactDOM.render(<ItemKindViewer />, document.getElementById('item-root'));
     </script>
 

@@ -2,6 +2,8 @@ class Item {
     constructor(text) {
         const lines = text.split(/\r?\n/);
         this.rawText = text;
+        this.flavor_ja = "";
+        this.flavor_en = "";
         for (const line of lines) {
             if (!line.trim()) continue;
             const key = line.charAt(0);
@@ -29,6 +31,14 @@ class Item {
                 case "F":
                     if (!this.flags) this.flags = [];
                     this.flags.push(...line.substring(2).split("|").map(f => f.trim()).filter(f => f));
+                    break;
+                case "D":
+                    const flavorLine = line.substring(2).trim();
+                    if (flavorLine.startsWith("$")) {
+                        this.flavor_en += flavorLine.substring(1).trim();
+                    } else {
+                        this.flavor_ja += flavorLine;
+                    }
                     break;
             }
         }
@@ -229,15 +239,6 @@ Item.prototype.toJson = function () {
             return { depth, rarity };
         });
     }
-    // flavor抽出（例: F:FLAVOR_JA:xxx|FLAVOR_EN:yyy|... などがあれば対応）
-    let flavor_ja = "";
-    let flavor_en = "";
-    if (this.flags) {
-        this.flags.forEach(f => {
-            if (f.startsWith("FLAVOR_JA:")) flavor_ja = f.replace("FLAVOR_JA:", "");
-            if (f.startsWith("FLAVOR_EN:")) flavor_en = f.replace("FLAVOR_EN:", "");
-        });
-    }
     return {
         id: Number(this.serialNumber),
         name: {
@@ -266,8 +267,8 @@ Item.prototype.toJson = function () {
             rarity: Number(this.rarity) || 1,
         } ],
         flavor: {
-            ja: flavor_ja,
-            en: flavor_en
+            ja: this.flavor_ja,
+            en: this.flavor_en
         }
     };
 };
