@@ -119,6 +119,33 @@ function ArtifactViewer() {
                     <div style={{ textAlign: "right", fontSize: "0.9em" }}>{progress}%</div>
                 </div>
             )}
+            <div style={{ textAlign: "right", margin: "1em 0" }}>
+                <button
+                    style={{
+                        background: "#333c44",
+                        color: "#e0e0e0",
+                        border: "1px solid #555",
+                        borderRadius: "4px",
+                        padding: "0.5em 1em",
+                        cursor: "pointer"
+                    }}
+                    onClick={() => {
+                        const artifactBlock = JSON.stringify(artifacts.map(a => a.toJson()), null, 2);
+                        const allJson = `{\n  "version": 1.0,\n  "artifacts": ${artifactBlock}\n}`;
+                        const blob = new Blob([allJson], { type: "application/json" });
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement("a");
+                        a.href = url;
+                        a.download = "all_artifacts.jsonc";
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
+                        URL.revokeObjectURL(url);
+                    }}
+                >
+                    JSONCエクスポート
+                </button>
+            </div>
             <div>
                 {artifacts.map(artifact => (
                     <ArtifactDetail key={artifact.serialNumber} artifact={artifact} />
@@ -127,3 +154,41 @@ function ArtifactViewer() {
         </div>
     );
 }
+
+Artifact.prototype.toJson = function () {
+    // フレーバー抽出（F:FLAVOR_JA:xxx|FLAVOR_EN:yyy|... などがあれば対応）
+    let flavor_ja = "";
+    let flavor_en = "";
+    if (this.flags) {
+        this.flags.forEach(f => {
+            if (f.startsWith("FLAVOR_JA:")) flavor_ja = f.replace("FLAVOR_JA:", "");
+            if (f.startsWith("FLAVOR_EN:")) flavor_en = f.replace("FLAVOR_EN:", "");
+        });
+    }
+    return {
+        id: Number(this.serialNumber),
+        name: {
+            ja: this.name ?? "",
+            en: this.ename ?? ""
+        },
+        base_item: {
+            type_value: Number(this.tval) || 0,
+            subtype_value: Number(this.sval) || 0
+        },
+        parameter_value: Number(this.pval) || 0,
+        level: Number(this.depth) || 0,
+        rarity: Number(this.rarity) || 0,
+        weight: Number(this.weight) || 0,
+        cost: Number(this.cost) || 0,
+        base_ac: Number(this.base_ac) || 0,
+        base_dice: this.base_damage ?? "",
+        hit_bonus: Number(this.plus_to_hit) || 0,
+        damage_bonus: Number(this.plus_to_dam) || 0,
+        ac_bonus: Number(this.plus_to_ac) || 0,
+        flags: this.flags ? [...this.flags] : [],
+        flavor: {
+            ja: flavor_ja,
+            en: flavor_en
+        }
+    };
+};
