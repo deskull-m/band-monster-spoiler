@@ -181,7 +181,7 @@ Artifact.prototype.toJson = function () {
         weight: Number(this.weight) || 0,
         cost: Number(this.cost) || 0,
         base_ac: Number(this.base_ac) || 0,
-        base_dice: this.base_damage ?? "",
+        base_dice: this.base_damage ?? "1d1",
         hit_bonus: Number(this.plus_to_hit) || 0,
         damage_bonus: Number(this.plus_to_dam) || 0,
         ac_bonus: Number(this.plus_to_ac) || 0,
