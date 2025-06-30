@@ -9,7 +9,7 @@ class Creature {
     }
 
     static colorSymbol = {
-        'D': 'Black',
+        'D': 'Dark Gray',
         'w': 'White',
         's': 'Gray',
         'o': 'Orange',
@@ -17,7 +17,7 @@ class Creature {
         'g': 'Green',
         'b': 'Blue',
         'u': 'Brown',
-        'd': 'Dark Gray',
+        'd': 'Black',
         'W': 'Light Gray',
         'v': 'Violet',
         'y': 'Yellow',
