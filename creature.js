@@ -307,12 +307,22 @@ class Creature {
                     this.alertness = Number(alertness);
                     break;
                 case 'W':
-                    const [depth, rarity, exp, nextExp, nextMon] = values.map(Number);
-                    this.depth = depth;
-                    this.rarity = rarity;
-                    this.exp = exp;
-                    this.nextExp = nextExp;
-                    this.nextMon = nextMon;
+                    if(values.length == 5) {
+                        const [depth, rarity, exp, nextExp, nextMon] = values.map(Number);
+                        this.depth = depth;
+                        this.rarity = rarity;
+                        this.exp = exp;
+                        this.nextExp = nextExp;
+                        this.nextMon = nextMon;
+                    }
+                    else if (values.length == 6) {
+                        const [depth, rarity, _, exp, nextExp, nextMon] = values.map(Number);
+                        this.depth = depth;
+                        this.rarity = rarity;
+                        this.exp = exp;
+                        this.nextExp = nextExp;
+                        this.nextMon = nextMon;
+                    }
                     break;
                 case 'B':
                     if (!this.attacks) this.attacks = [];
