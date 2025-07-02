@@ -266,6 +266,7 @@ Item.prototype.toJson = function () {
             depth: Number(this.depth) || 0,
             rarity: Number(this.rarity) || 1,
         } ],
+        flags: this.flags ? [...this.flags] : [],
         flavor: {
             ja: this.flavor_ja,
             en: this.flavor_en
