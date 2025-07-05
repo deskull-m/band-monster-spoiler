@@ -12,6 +12,9 @@ class Item {
                 case "N":
                     [this.serialNumber, this.name] = values.map(v => v.trim());
                     break;
+                case "E":
+                    [this.ename] = values.map(v => v.trim());
+                    break;
                 case "G":
                     [this.symbol, this.color] = values.map(v => v.trim());
                     break;
@@ -60,7 +63,7 @@ function ItemDetail({ item }) {
     return (
         <div className="card mb-3">
             <div className="card-header">
-                <strong>No.{item.serialNumber}</strong> {item.name}
+                <strong>No.{item.serialNumber}</strong> {item.name} / {item.ename}
             </div>
             <div className="card-body">
                 <div style={{ display: "flex", flexWrap: "wrap", gap: "1.5em" }}>
