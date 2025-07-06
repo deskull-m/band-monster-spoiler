@@ -79,7 +79,7 @@
                             let text = e.target.result;
                             // コメント除去（//と/* */両方対応）
                             text = text.replace(/\/\/.*$/mg, "")
-                                       .replace(/\/\*[\s\S]*?\*\//g, "");
+                                .replace(/\/\*[\s\S]*?\*\//g, "");
                             let obj;
                             try {
                                 obj = JSON.parse(text);
@@ -190,15 +190,15 @@
                 <div id="container">
                     <h1>*bandモンスターエディタ</h1>
                     <p>
-                    <input type="file" accept=".txt" onChange={handleFileChange} />(旧型式)
+                        <input type="file" accept=".txt" onChange={handleFileChange} />(旧型式)
                     </p>
                     <p>
-                    <input
-                        type="file"
-                        accept=".json,.jsonc,application/json"
-                        onChange={handleJsonImport}
-                    />
-                    (json/jsonc)</p>
+                        <input
+                            type="file"
+                            accept=".json,.jsonc,application/json"
+                            onChange={handleJsonImport}
+                        />
+                        (json/jsonc)</p>
                     {loading && (
                         <div style={{ margin: "1em 0" }}>
                             <div style={{
@@ -880,6 +880,95 @@
                                         .filter(flag => creature.flags.includes(flag))
                                         .map(flag => behaviorMap[flag]);
                                     return behaviors.length > 0 ? behaviors.join(" ") : "―";
+                                })()
+                            }
+                        </div>
+                        <div>
+                            <strong>打撃</strong><br />
+                            {
+                                (() => {
+                                    if (!creature.attacks || creature.attacks.length === 0) return "―";
+
+                                    return creature.attacks.map((attack, idx) => {
+                                        const method = attack.method || "不明";
+                                        const effect = attack.effect || "なし";
+                                        const damage = attack.damage || "";
+
+                                        // 打撃手段の日本語化
+                                        const methodMap = {
+                                            "HIT": "殴る",
+                                            "TOUCH": "触る",
+                                            "PUNCH": "パンチ",
+                                            "KICK": "蹴る",
+                                            "CLAW": "ひっかく",
+                                            "BITE": "噛む",
+                                            "STING": "刺す",
+                                            "SLASH": "切る",
+                                            "BUTT": "突く",
+                                            "CRUSH": "押し潰す",
+                                            "ENGULF": "飲み込む",
+                                            "CHARGE": "突進",
+                                            "CRAWL": "這い回る",
+                                            "DROOL": "よだれ",
+                                            "SPIT": "唾を吐く",
+                                            "EXPLODE": "爆発",
+                                            "GAZE": "睨む",
+                                            "WAIL": "泣き叫ぶ",
+                                            "SPORE": "胞子",
+                                            "BEG": "物乞い",
+                                            "INSULT": "侮辱",
+                                            "MOAN": "うめく",
+                                            "SHOW": "見せる"
+                                        };
+
+                                        // 打撃属性の日本語化
+                                        const effectMap = {
+                                            "HURT": "通常",
+                                            "POISON": "毒",
+                                            "UN_BONUS": "劣化",
+                                            "UN_POWER": "弱体化",
+                                            "EAT_GOLD": "金銭窃盗",
+                                            "EAT_ITEM": "アイテム窃盗",
+                                            "EAT_FOOD": "食料窃盗",
+                                            "EAT_LITE": "光源窃盗",
+                                            "ACID": "酸",
+                                            "ELEC": "電撃",
+                                            "FIRE": "火炎",
+                                            "COLD": "冷気",
+                                            "BLIND": "盲目",
+                                            "CONFUSE": "混乱",
+                                            "TERRIFY": "恐怖",
+                                            "PARALYZE": "麻痺",
+                                            "LOSE_STR": "腕力減少",
+                                            "LOSE_INT": "知力減少",
+                                            "LOSE_WIS": "賢さ減少",
+                                            "LOSE_DEX": "器用さ減少",
+                                            "LOSE_CON": "耐久減少",
+                                            "LOSE_CHR": "魅力減少",
+                                            "LOSE_ALL": "全能力減少",
+                                            "SHATTER": "粉砕",
+                                            "EXP_10": "経験値吸収(10%)",
+                                            "EXP_20": "経験値吸収(20%)",
+                                            "EXP_40": "経験値吸収(40%)",
+                                            "EXP_80": "経験値吸収(80%)",
+                                            "DISEASE": "病気",
+                                            "TIME": "時間逆転",
+                                            "EXP_VAMP": "経験値吸血",
+                                            "DR_MANA": "MP吸収",
+                                            "SUPERHURT": "強打",
+                                            "INERTIA": "遅鈍",
+                                            "STUN": "朦朧",
+                                            "HUNGRY": "空腹",
+                                            "CHAOS": "カオス",
+                                            "FLAVOR": "無害"
+                                        };
+
+                                        const methodJa = methodMap[method] || method;
+                                        const effectJa = effectMap[effect] || effect;
+                                        const damageStr = damage ? `(${damage})` : "";
+
+                                        return `${methodJa}/${effectJa}${damageStr}`;
+                                    }).join(", ");
                                 })()
                             }
                         </div>
