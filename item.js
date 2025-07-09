@@ -1,6 +1,7 @@
 class Item {
     constructor(text) {
         const lines = text.split(/\r?\n/);
+        let _ = undefined;
         this.rawText = text;
         this.flavor_ja = "";
         this.flavor_en = "";
@@ -22,7 +23,12 @@ class Item {
                     [this.tval, this.sval, this.pval] = values.map(v => v.trim());
                     break;
                 case "W":
-                    [this.depth, this.weight, this.cost] = values.map(v => v.trim());
+                    if(values.length === 4) {
+                        [this.depth, _, this.weight, this.cost] = values.map(v => v.trim());
+                    }
+                    else if (values.length === 3) {
+                        [this.depth, this.weight, this.cost] = values.map(v => v.trim());
+                    }
                     break;
                 case "P":
                     [this.base_ac, this.base_damage, this.plus_to_hit, this.plus_to_dam, this.plus_to_ac] = values.map(v => v.trim());
