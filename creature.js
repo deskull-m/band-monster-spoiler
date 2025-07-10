@@ -52,6 +52,7 @@ class Creature {
             exp: this.exp,
             next_exp: this.nextExp,
             next_mon: this.nextMon,
+            escorts: this.escorts
         };
 
         // blows
@@ -262,6 +263,7 @@ class Creature {
 
         this.textDetails = text;
         this.flags = [];
+        this.escorts = [];
         this.skills = [];
         this.description_ja = "";
         this.description_en = "";
@@ -314,8 +316,7 @@ class Creature {
                         this.exp = exp;
                         this.nextExp = nextExp;
                         this.nextMon = nextMon;
-                    }
-                    else if (values.length == 6) {
+                    } else if (values.length == 6) {
                         const [depth, rarity, _, exp, nextExp, nextMon] = values.map(Number);
                         this.depth = depth;
                         this.rarity = rarity;
@@ -353,6 +354,11 @@ class Creature {
                         this.description_ja += values.join(' ');
                     }
                     break;
+                case 'R':
+                    const [escorts_id, escort_num] = values;
+                    this.escorts.push(
+                        { escorts_id: Number(escorts_id), escort_num: escort_num }
+                    );
             }
         });
 
@@ -406,6 +412,12 @@ class Creature {
         c.exp = json.exp ?? 0;
         c.nextExp = json.next_exp ?? 0;
         c.nextMon = json.next_mon ?? 0;
+
+        if(c.escorts.length > 0){
+            c.escorts = json.escorts.map(e => {
+                return [e.id, e.num];
+            });
+        }
 
         // attacks
         c.attacks = [];
