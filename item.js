@@ -233,13 +233,7 @@ function ItemViewer() {
 }
 
 Item.prototype.toJson = function () {
-    // 色名変換
-    const colorMap = {
-        'D': 'Black', 'w': 'White', 's': 'Gray', 'o': 'Orange',
-        'r': 'Red', 'g': 'Green', 'b': 'Blue', 'u': 'Brown',
-        'd': 'Dark Gray', 'W': 'Light Gray', 'v': 'Violet', 'y': 'Yellow',
-        'R': 'Light Red', 'G': 'Light Green', 'B': 'Light Blue', 'U': 'Light Brown'
-    };
+
     // allocations
     let allocations = [];
     if (this.alloc) {
@@ -256,7 +250,7 @@ Item.prototype.toJson = function () {
         },
         symbol: {
             character: this.symbol != "" && this.symbol != null ? this.symbol : " ",
-            color: colorMap[this.color] ?? this.color ?? ""
+            color: colorSymbol[this.color] ?? this.color ?? ""
         },
         itemkind: {
             type_value: Number(this.tval) || 0,

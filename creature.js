@@ -8,25 +8,6 @@ class Creature {
         return v;
     }
 
-    static colorSymbol = {
-        'D': 'Dark Gray',
-        'w': 'White',
-        's': 'Gray',
-        'o': 'Orange',
-        'r': 'Red',
-        'g': 'Green',
-        'b': 'Blue',
-        'u': 'Brown',
-        'd': 'Black',
-        'W': 'Light Gray',
-        'v': 'Violet',
-        'y': 'Yellow',
-        'R': 'Light Red',
-        'G': 'Light Green',
-        'B': 'Light Blue',
-        'U': 'Light Brown'
-    };
-
     displayInfo() {
         return `${this.serialNumber} ${this.name} (${this.symbol})`;
     }
@@ -40,7 +21,7 @@ class Creature {
             },
             symbol: {
                 character: this.symbol,
-                color: Creature.colorSymbol[this.color],
+                color: colorSymbol[this.color],
             },
             speed: this.speed,
             hit_point: this.hitPoints,
@@ -395,7 +376,7 @@ class Creature {
         c.symbol = json.symbol?.character ?? "";
         // 色は逆引き不可なのでcolorSymbolの逆引き辞書を作る
         if (json.symbol?.color) {
-            const colorEntry = Object.entries(Creature.colorSymbol)
+            const colorEntry = Object.entries(colorSymbol)
                 .find(([k, v]) => v === json.symbol.color);
             c.color = colorEntry ? colorEntry[0] : "";
         } else {
