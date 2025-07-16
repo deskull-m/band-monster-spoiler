@@ -89,12 +89,6 @@ function TerrainDetail({ terrain }) {
 }
 
 Terrain.prototype.toJson = function () {
-    const colorMap = {
-        'D': 'Black', 'w': 'White', 's': 'Gray', 'o': 'Orange',
-        'r': 'Red', 'g': 'Green', 'b': 'Blue', 'u': 'Brown',
-        'd': 'Dark Gray', 'W': 'Light Gray', 'v': 'Violet', 'y': 'Yellow',
-        'R': 'Light Red', 'G': 'Light Green', 'B': 'Light Blue', 'U': 'Light Brown'
-    };
 
     return {
         id: Number(this.serialNumber),
@@ -104,7 +98,7 @@ Terrain.prototype.toJson = function () {
         },
         symbol: {
             character: this.symbol ?? "",
-            color: colorMap[this.color] ?? this.color ?? ""
+            color: colorSymbol[this.color] ?? this.color ?? ""
         },
         movement: {
             cost: Number(this.move_cost) || 0,
