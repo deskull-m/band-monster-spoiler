@@ -17,14 +17,14 @@ function FileReaderComponent() {
                 const datas = text.split(/\r\nN\:/);
                 let list = [];
                 const total = datas.length - 1;
-                
+
                 function processChunk(i) {
                     if (i < datas.length) {
                         let data = "N:" + datas[i];
                         let creature = new Creature(data);
                         list.push(creature);
                         setProgress(Math.round((i / total) * 100));
-                        
+
                         if (i % 10 === 0) {
                             setTimeout(() => processChunk(i + 1), 0);
                         } else {
@@ -168,7 +168,7 @@ function FileReaderComponent() {
                 />
                 <span style={{ margin: "0 0.5em" }}>(json/jsonc)</span>
             </div>
-            
+
             {loading && (
                 <div style={{ margin: "1em 0" }}>
                     <div style={{
@@ -188,7 +188,7 @@ function FileReaderComponent() {
                     <div style={{ textAlign: "right", fontSize: "0.9em" }}>{progress}%</div>
                 </div>
             )}
-            
+
             <div style={{ textAlign: "right", margin: "1em 0" }}>
                 <button
                     style={{
@@ -216,7 +216,7 @@ function FileReaderComponent() {
                     JSONCエクスポート
                 </button>
             </div>
-            
+
             <div id="editor">
                 <div id="pagenation">
                     <div id="search">

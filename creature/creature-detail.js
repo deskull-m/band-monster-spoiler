@@ -5,12 +5,12 @@ function MonsterDetail({ creature, index, infoList }) {
     // 魔法・特殊能力の日本語化マップ
     const spellMap = {
         "SHRIEK": "叫ぶ",
-        "DISPEL": "魔力消去", 
+        "DISPEL": "魔力消去",
         "ROCKET": "ロケット",
         "SHOOT": "射撃",
         "BR_ACID": "酸のブレス",
         "BR_ELEC": "電撃のブレス",
-        "BR_FIRE": "火炎のブレス", 
+        "BR_FIRE": "火炎のブレス",
         "BR_COLD": "冷気のブレス",
         "BR_POIS": "毒のブレス",
         "BR_NETH": "地獄のブレス",
@@ -170,7 +170,7 @@ function MonsterDetail({ creature, index, infoList }) {
                             if (!creature.skills || creature.skills.length === 0) return "―";
 
                             let skillList = [];
-                            
+
                             if (Array.isArray(creature.skills)) {
                                 skillList = creature.skills;
                             } else if (typeof creature.skills === 'string') {
@@ -197,7 +197,7 @@ function MonsterDetail({ creature, index, infoList }) {
                 </div>
                 {/* 他のステータス要素も同様に... */}
             </div>
-            
+
             <div style={{ display: "flex", gap: "1em", marginBottom: "1em" }}>
                 <button
                     className="btn btn-outline-primary btn-sm"

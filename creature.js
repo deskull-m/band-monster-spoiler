@@ -1,9 +1,9 @@
 class Creature {
 
     inRange(v, min, max) {
-        if(v < min)
+        if (v < min)
             return min;
-        if(v > max)
+        if (v > max)
             return max;
         return v;
     }
@@ -290,7 +290,7 @@ class Creature {
                     this.alertness = Number(alertness);
                     break;
                 case 'W':
-                    if(values.length == 5) {
+                    if (values.length == 5) {
                         const [depth, rarity, exp, nextExp, nextMon] = values.map(Number);
                         this.depth = depth;
                         this.rarity = rarity;
@@ -394,7 +394,7 @@ class Creature {
         c.nextExp = json.next_exp ?? 0;
         c.nextMon = json.next_mon ?? 0;
 
-        if(c.escorts.length > 0){
+        if (c.escorts.length > 0) {
             c.escorts = json.escorts.map(e => {
                 return [e.id, e.num];
             });
