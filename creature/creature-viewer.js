@@ -293,9 +293,23 @@ function FileReaderComponent() {
                     </div>
                 </div>
                 <div id="detail-lists">
-                    {sortedList.map((creature, index) => (
-                        <MonsterDetail key={index} creature={creature} index={index} infoList={infoList} />
-                    ))}
+                    <table className="table table-striped table-dark">
+                        <thead>
+                            <tr>
+                                <th style={{ width: "80px" }}>ID</th>
+                                <th style={{ width: "200px" }}>日本語名</th>
+                                <th style={{ width: "200px" }}>英語名</th>
+                                <th style={{ width: "80px" }}>レベル</th>
+                                <th style={{ width: "100px", textAlign: "center" }}>シンボル</th>
+                                <th style={{ width: "100px", textAlign: "center" }}>編集</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {sortedList.map((creature, index) => (
+                                <MonsterTableRow key={index} creature={creature} index={index} infoList={infoList} />
+                            ))}
+                        </tbody>
+                    </table>
                 </div>
             </div>
             {sorting && (
