@@ -101,16 +101,38 @@ button:hover {
     width: 100%;
 }
 
-#detail-lists > div {
-    min-width: 320px;
-    max-width: 100%;
-    flex: 0 0 auto;
-    border: 1px solid #333;
-    border-radius: 8px;
+/* モンスターテーブル用のスタイル */
+#detail-lists .table {
+    background: #23272b !important;
+    color: #e0e0e0 !important;
+    border: 1px solid #333 !important;
+    margin: 0;
+}
+
+#detail-lists .table th {
+    background: #181a1b !important;
+    color: #90caf9 !important;
+    border: 1px solid #333 !important;
+    font-weight: bold;
+    padding: 0.75rem 0.5rem;
+    vertical-align: middle;
+}
+
+#detail-lists .table td {
+    background: #23272b !important;
+    color: #e0e0e0 !important;
+    border: 1px solid #333 !important;
     padding: 0.5rem;
-    background: #23272b;
-    box-sizing: border-box;
-    box-shadow: 0 1px 4px #0006;
+    vertical-align: middle;
+}
+
+#detail-lists .table tbody tr:hover {
+    background: #2a2f33 !important;
+}
+
+#detail-lists .table .num {
+    color: #90caf9;
+    font-weight: bold;
 }
 
 .num {
@@ -192,6 +214,10 @@ pre.jsondetails {
 .card-body {
     background: #23272b !important;
     color: #e0e0e0 !important;
+}
+
+.status-detail {
+    color: black;
 }
 
 details summary {
