@@ -1,6 +1,95 @@
 function MonsterDetail({ creature, index, infoList }) {
     const [showModal, setShowModal] = React.useState(false);
-    const [tab, setTab] = React.useState("rinfo");
+    const [tab, setTab] = React.useState("detail");
+
+    // フラグの日本語化マップ
+    const flagTranslation = {
+        "UNIQUE": "ユニーク",
+        "QUESTOR": "クエスト",
+        "MALE": "雄",
+        "FEMALE": "雌",
+        "CHAR_CLEAR": "透明な文字",
+        "ATTR_CLEAR": "透明",
+        "ATTR_MULTI": "色変化",
+        "FORCE_DEPTH": "階層固定",
+        "FORCE_MAXHP": "最大HP固定",
+        "FORCE_SLEEP": "睡眠固定",
+        "FORCE_EXTRA": "追加能力固定",
+        "FRIEND": "友好的",
+        "FRIENDS": "集団出現",
+        "ESCORT": "護衛付き",
+        "ESCORTS": "護衛集団",
+        "NEVER_BLOW": "打撃なし",
+        "NEVER_MOVE": "移動なし",
+        "RAND_25": "1/4確率出現",
+        "RAND_50": "1/2確率出現",
+        "ONLY_GOLD": "金のみドロップ",
+        "ONLY_ITEM": "アイテムのみドロップ",
+        "DROP_60": "60%でドロップ",
+        "DROP_90": "90%でドロップ",
+        "DROP_1D2": "1-2個ドロップ",
+        "DROP_2D2": "2-4個ドロップ",
+        "DROP_3D2": "3-6個ドロップ",
+        "DROP_4D2": "4-8個ドロップ",
+        "DROP_GOOD": "良質ドロップ",
+        "DROP_GREAT": "高品質ドロップ",
+        "DROP_USEFUL": "有用ドロップ",
+        "DROP_CHOSEN": "選択ドロップ",
+        "STUPID": "愚鈍",
+        "SMART": "賢い",
+        "CAN_SPEAK": "発言",
+        "REFLECTING": "反射",
+        "INVISIBLE": "透明",
+        "COLD_BLOOD": "冷血",
+        "EMPTY_MIND": "空虚な心",
+        "WEIRD_MIND": "異質な心",
+        "MULTIPLY": "増殖",
+        "REGENERATE": "再生",
+        "SHAPECHANGER": "変身",
+        "ATTR_ANY": "任意の色",
+        "POWERFUL": "強力",
+        "ELDRITCH_HORROR": "狂気誘発",
+        "AURA_FIRE": "火炎オーラ",
+        "AURA_ELEC": "電撃オーラ",
+        "AURA_COLD": "冷気オーラ",
+        "OPEN_DOOR": "扉開放",
+        "BASH_DOOR": "扉破壊",
+        "PASS_WALL": "壁通過",
+        "KILL_WALL": "壁破壊",
+        "MOVE_BODY": "死体押し退け",
+        "KILL_BODY": "死体破壊",
+        "TAKE_ITEM": "アイテム拾得",
+        "KILL_ITEM": "アイテム破壊",
+        "BRAIN_1": "脳1",
+        "BRAIN_2": "脳2",
+        "BRAIN_3": "脳3",
+        "BRAIN_4": "脳4",
+        "BRAIN_5": "脳5",
+        "BRAIN_6": "脳6",
+        "BRAIN_7": "脳7",
+        "BRAIN_8": "脳8",
+        "NO_CONF": "混乱無効",
+        "NO_SLEEP": "睡眠無効",
+        "NO_FEAR": "恐怖無効",
+        "NO_STUN": "朦朧無効",
+        "IM_ACID": "酸免疫",
+        "IM_ELEC": "電撃免疫",
+        "IM_FIRE": "火炎免疫",
+        "IM_COLD": "冷気免疫",
+        "IM_POIS": "毒免疫",
+        "RES_TELE": "テレポート耐性",
+        "RES_NETH": "地獄耐性",
+        "RES_WATE": "水耐性",
+        "RES_PLAS": "プラズマ耐性",
+        "RES_NEXU": "因果混乱耐性",
+        "RES_DISE": "劣化耐性",
+        "RES_ALL": "全耐性",
+        "HURT_ROCK": "岩石弱点",
+        "HURT_LITE": "光弱点",
+        "HURT_FIRE": "火炎弱点",
+        "HURT_COLD": "冷気弱点",
+        "IM_MELEE": "打撃免疫"
+    };
 
     // 魔法・特殊能力の日本語化マップ
     const spellMap = {
@@ -133,80 +222,15 @@ function MonsterDetail({ creature, index, infoList }) {
                 </button>
             </div>
             <h4>ステータス</h4>
-            <div
-                className="status-flex"
-                style={{
-                    display: "flex",
-                    flexWrap: "wrap",
-                    gap: "1.5em",
-                    marginBottom: "1em",
-                    alignItems: "center"
-                }}
-            >
-                <div>
-                    <strong>レベル</strong><br />
-                    {creature.depth}
-                </div>
-                <div>
-                    <strong>出現レア度</strong><br />
-                    {creature.rarity}
-                </div>
-                <div>
-                    <strong>HP期待値</strong><br />
-                    {creature.hp_expected}({creature.hitPoints})
-                </div>
-                <div>
-                    <strong>加速</strong><br />
-                    {creature.speed}
-                </div>
-                <div>
-                    <strong>視界</strong><br />
-                    {creature.vision}
-                </div>
-                <div>
-                    <strong>魔法・特殊能力</strong><br />
-                    {
-                        (() => {
-                            if (!creature.skills || creature.skills.length === 0) return "―";
-
-                            let skillList = [];
-
-                            if (Array.isArray(creature.skills)) {
-                                skillList = creature.skills;
-                            } else if (typeof creature.skills === 'string') {
-                                skillList = creature.skills.split(/[|,\s]+/).map(s => s.trim()).filter(s => s);
-                            } else if (creature.skills && typeof creature.skills === 'object') {
-                                if (Array.isArray(creature.skills.list)) {
-                                    skillList = creature.skills.list;
-                                } else if (creature.skills.list && typeof creature.skills.list === 'string') {
-                                    skillList = creature.skills.list.split(/[|,\s]+/).map(s => s.trim()).filter(s => s);
-                                }
-                            }
-
-                            if (skillList.length === 0) {
-                                return "―";
-                            }
-
-                            const spells = skillList.map(spell => {
-                                return spellMap[spell] || spell;
-                            });
-
-                            return spells.join(", ");
-                        })()
-                    }
-                </div>
-                {/* 他のステータス要素も同様に... */}
-            </div>
-
             <div style={{ display: "flex", gap: "1em", marginBottom: "1em" }}>
                 <button
                     className="btn btn-outline-primary btn-sm"
                     onClick={() => {
-                        setTab("rinfo");
+                        setTab("detail");
                         setShowModal(true);
                     }}
                 >
-                    編集
+                    詳細表示
                 </button>
             </div>
 
@@ -225,6 +249,15 @@ function MonsterDetail({ creature, index, infoList }) {
                     <div className="modal-content">
                         <div className="modal-header">
                             <ul className="nav nav-tabs modal-title" style={{ marginBottom: 0 }}>
+                                <li className="nav-item">
+                                    <button
+                                        className={`nav-link${tab === "detail" ? " active" : ""}`}
+                                        onClick={() => setTab("detail")}
+                                        style={{ border: "none", background: "none" }}
+                                    >
+                                        詳細
+                                    </button>
+                                </li>
                                 <li className="nav-item">
                                     <button
                                         className={`nav-link${tab === "rinfo" ? " active" : ""}`}
@@ -251,6 +284,119 @@ function MonsterDetail({ creature, index, infoList }) {
                             ></button>
                         </div>
                         <div className="modal-body">
+                            {tab === "detail" && (
+                                <div class="status-detail">
+                                    <h5>ステータス詳細</h5>
+                                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "1em", marginBottom: "1.5em" }}>
+                                        <div>
+                                            <strong>レベル</strong><br />
+                                            {creature.depth}
+                                        </div>
+                                        <div>
+                                            <strong>出現レア度</strong><br />
+                                            {creature.rarity}
+                                        </div>
+                                        <div>
+                                            <strong>HP期待値</strong><br />
+                                            {creature.hp_expected}({creature.hitPoints})
+                                        </div>
+                                        <div>
+                                            <strong>加速</strong><br />
+                                            {creature.speed}
+                                        </div>
+                                        <div>
+                                            <strong>視界</strong><br />
+                                            {creature.vision}
+                                        </div>
+                                        <div>
+                                            <strong>アーマークラス</strong><br />
+                                            {creature.armor}
+                                        </div>
+                                        <div>
+                                            <strong>体力</strong><br />
+                                            {creature.hitPoints}
+                                        </div>
+                                        <div>
+                                            <strong>睡眠</strong><br />
+                                            {creature.sleep}
+                                        </div>
+                                    </div>
+
+                                    <h6>攻撃</h6>
+                                    <div style={{ marginBottom: "1.5em" }}>
+                                        {creature.attacks && creature.attacks.length > 0 ? (
+                                            <ul>
+                                                {creature.attacks.map((attack, idx) => (
+                                                    <li key={idx}>{attack.description || `${attack.method} ${attack.damage}`}</li>
+                                                ))}
+                                            </ul>
+                                        ) : (
+                                            <p>攻撃なし</p>
+                                        )}
+                                    </div>
+
+                                    <h6>魔法・特殊能力</h6>
+                                    <div style={{ marginBottom: "1.5em" }}>
+                                        {
+                                            (() => {
+                                                if (!creature.skills || creature.skills.length === 0) return <p>なし</p>;
+
+                                                let skillList = [];
+
+                                                if (Array.isArray(creature.skills)) {
+                                                    skillList = creature.skills;
+                                                } else if (typeof creature.skills === 'string') {
+                                                    skillList = creature.skills.split(/[|,\s]+/).map(s => s.trim()).filter(s => s);
+                                                } else if (creature.skills && typeof creature.skills === 'object') {
+                                                    if (Array.isArray(creature.skills.list)) {
+                                                        skillList = creature.skills.list;
+                                                    } else if (creature.skills.list && typeof creature.skills.list === 'string') {
+                                                        skillList = creature.skills.list.split(/[|,\s]+/).map(s => s.trim()).filter(s => s);
+                                                    }
+                                                }
+
+                                                if (skillList.length === 0) {
+                                                    return <p>なし</p>;
+                                                }
+
+                                                const spells = skillList.map(spell => {
+                                                    return spellMap[spell] || spell;
+                                                });
+
+                                                return (
+                                                    <ul>
+                                                        {spells.map((spell, idx) => (
+                                                            <li key={idx}>{spell}</li>
+                                                        ))}
+                                                    </ul>
+                                                );
+                                            })()
+                                        }
+                                    </div>
+
+                                    <h6>フラグ</h6>
+                                    <div>
+                                        {creature.flags && creature.flags.length > 0 ? (
+                                            <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5em" }}>
+                                                {creature.flags.map((flag, idx) => (
+                                                    <span key={idx} className="badge bg-secondary">
+                                                        {flagTranslation[flag] || flag}
+                                                    </span>
+                                                ))}
+                                            </div>
+                                        ) : (
+                                            <p>フラグなし</p>
+                                        )}
+                                    </div>
+
+                                    {creature.description && (
+                                        <div style={{ marginTop: "1.5em" }}>
+                                            <h6>説明</h6>
+                                            <p>{creature.description}</p>
+                                        </div>
+                                    )}
+                                </div>
+                            )}
                             {tab === "rinfo" && (
                                 <>
                                     <button

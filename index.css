@@ -194,6 +194,10 @@ pre.jsondetails {
     color: #e0e0e0 !important;
 }
 
+.status-detail {
+    color: black;
+}
+
 details summary {
     color: #90caf9;
     cursor: pointer;
