@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="jp">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,7 +12,7 @@
     <script type="text/babel" src="item.js"></script>
     <!-- ↑Babelで変換する場合はtype="text/babel"を付ける -->
     <script type="text/babel">
-      // ここでItem, ItemDetail, parseItemDataなどが使える
+        // ここでItem, ItemDetail, parseItemDataなどが使える
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
         crossorigin="anonymous"></script>
@@ -19,6 +20,7 @@
         crossorigin="anonymous">
     <link rel="stylesheet" href="index.css">
 </head>
+
 <body>
     <div id="item-root"></div>
     <script type="text/babel">
@@ -114,7 +116,7 @@
                     <h1>*band アイテム種リスト</h1>
                     <p>アイテム定義ファイルを読み込んで下さい</p>
                     <input type="file" accept=".txt" onChange={handleFileChange} />
-                    
+
                     {/* フィルタ機能 */}
                     {itemList.length > 0 && (
                         <div style={{ margin: "1em 0", padding: "1em", background: "#23272b", borderRadius: "8px", border: "1px solid #333" }}>
@@ -748,4 +750,5 @@
     </script>
 
 </body>
+
 </html>
