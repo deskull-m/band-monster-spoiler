@@ -28,6 +28,9 @@
             const [itemList, setItemList] = React.useState([]);
             const [progress, setProgress] = React.useState(0);
             const [loading, setLoading] = React.useState(false);
+            const [categoryFilter, setCategoryFilter] = React.useState("");
+            const [japaneseNameFilter, setJapaneseNameFilter] = React.useState("");
+            const [englishNameFilter, setEnglishNameFilter] = React.useState("");
 
             const handleFileChange = (event) => {
                 const file = event.target.files[0];
@@ -65,11 +68,138 @@
                 }
             };
 
+            // フィルタリング処理
+            const filteredItems = React.useMemo(() => {
+                return itemList.filter(item => {
+                    // カテゴリフィルタ
+                    if (categoryFilter) {
+                        const tvalId = Number(item.tval);
+                        const tvalName = tvalMap.hasOwnProperty(tvalId) ? tvalMap[tvalId] : "不明";
+                        if (!tvalName.toLowerCase().includes(categoryFilter.toLowerCase())) {
+                            return false;
+                        }
+                    }
+
+                    // 日本語名フィルタ
+                    if (japaneseNameFilter) {
+                        if (!item.name || !item.name.toLowerCase().includes(japaneseNameFilter.toLowerCase())) {
+                            return false;
+                        }
+                    }
+
+                    // 英語名フィルタ
+                    if (englishNameFilter) {
+                        if (!item.ename || !item.ename.toLowerCase().includes(englishNameFilter.toLowerCase())) {
+                            return false;
+                        }
+                    }
+
+                    return true;
+                });
+            }, [itemList, categoryFilter, japaneseNameFilter, englishNameFilter]);
+
+            // ユニークなカテゴリリストを取得
+            const uniqueCategories = React.useMemo(() => {
+                const categories = new Set();
+                itemList.forEach(item => {
+                    const tvalId = Number(item.tval);
+                    const tvalName = tvalMap.hasOwnProperty(tvalId) ? tvalMap[tvalId] : "不明";
+                    categories.add(tvalName);
+                });
+                return Array.from(categories).sort();
+            }, [itemList]);
+
             return (
                 <div className="container mt-4">
                     <h1>*band アイテム種リスト</h1>
                     <p>アイテム定義ファイルを読み込んで下さい</p>
                     <input type="file" accept=".txt" onChange={handleFileChange} />
+                    
+                    {/* フィルタ機能 */}
+                    {itemList.length > 0 && (
+                        <div style={{ margin: "1em 0", padding: "1em", background: "#23272b", borderRadius: "8px", border: "1px solid #333" }}>
+                            <h5 style={{ marginBottom: "1em", color: "#90caf9" }}>フィルタ</h5>
+                            <div style={{ display: "flex", flexWrap: "wrap", gap: "1em", alignItems: "end" }}>
+                                <div style={{ minWidth: "200px" }}>
+                                    <label style={{ display: "block", marginBottom: "0.5em", fontWeight: "bold" }}>カテゴリ</label>
+                                    <select
+                                        value={categoryFilter}
+                                        onChange={(e) => setCategoryFilter(e.target.value)}
+                                        style={{
+                                            background: "#181a1b",
+                                            color: "#e0e0e0",
+                                            border: "1px solid #444",
+                                            borderRadius: "4px",
+                                            padding: "0.5em",
+                                            width: "100%"
+                                        }}
+                                    >
+                                        <option value="">すべてのカテゴリ</option>
+                                        {uniqueCategories.map(category => (
+                                            <option key={category} value={category}>{category}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                                <div style={{ minWidth: "200px" }}>
+                                    <label style={{ display: "block", marginBottom: "0.5em", fontWeight: "bold" }}>日本語名</label>
+                                    <input
+                                        type="text"
+                                        value={japaneseNameFilter}
+                                        onChange={(e) => setJapaneseNameFilter(e.target.value)}
+                                        placeholder="日本語名で検索..."
+                                        style={{
+                                            background: "#181a1b",
+                                            color: "#e0e0e0",
+                                            border: "1px solid #444",
+                                            borderRadius: "4px",
+                                            padding: "0.5em",
+                                            width: "100%"
+                                        }}
+                                    />
+                                </div>
+                                <div style={{ minWidth: "200px" }}>
+                                    <label style={{ display: "block", marginBottom: "0.5em", fontWeight: "bold" }}>英語名</label>
+                                    <input
+                                        type="text"
+                                        value={englishNameFilter}
+                                        onChange={(e) => setEnglishNameFilter(e.target.value)}
+                                        placeholder="英語名で検索..."
+                                        style={{
+                                            background: "#181a1b",
+                                            color: "#e0e0e0",
+                                            border: "1px solid #444",
+                                            borderRadius: "4px",
+                                            padding: "0.5em",
+                                            width: "100%"
+                                        }}
+                                    />
+                                </div>
+                                <div>
+                                    <button
+                                        onClick={() => {
+                                            setCategoryFilter("");
+                                            setJapaneseNameFilter("");
+                                            setEnglishNameFilter("");
+                                        }}
+                                        style={{
+                                            background: "#dc3545",
+                                            color: "#fff",
+                                            border: "1px solid #dc3545",
+                                            borderRadius: "4px",
+                                            padding: "0.5em 1em",
+                                            cursor: "pointer"
+                                        }}
+                                    >
+                                        クリア
+                                    </button>
+                                </div>
+                            </div>
+                            <div style={{ marginTop: "0.5em", fontSize: "0.9em", color: "#ccc" }}>
+                                {filteredItems.length} / {itemList.length} 件のアイテムを表示中
+                            </div>
+                        </div>
+                    )}
+
                     <div style={{ textAlign: "right", margin: "1em 0" }}>
                         <button
                             style={{
@@ -81,7 +211,8 @@
                                 cursor: "pointer"
                             }}
                             onClick={() => {
-                                const itemBlock = JSON.stringify(itemList.map(item => item.toJson()), null, 2);
+                                const itemsToExport = filteredItems.length > 0 ? filteredItems : itemList;
+                                const itemBlock = JSON.stringify(itemsToExport.map(item => item.toJson()), null, 2);
                                 const allJson = `{\n  "version": 1.0,\n  "baseitems": ${itemBlock}\n}`;
                                 const blob = new Blob([allJson], { type: "application/json" });
                                 const url = URL.createObjectURL(blob);
@@ -93,8 +224,9 @@
                                 document.body.removeChild(a);
                                 URL.revokeObjectURL(url);
                             }}
+                            disabled={itemList.length === 0}
                         >
-                            JSONCエクスポート
+                            JSONCエクスポート {filteredItems.length !== itemList.length ? `(フィルタ済み ${filteredItems.length}件)` : `(${itemList.length}件)`}
                         </button>
                     </div>
 
@@ -130,11 +262,16 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                {itemList.map(item => (
+                                {filteredItems.map(item => (
                                     <ItemTableRow key={item.serialNumber} item={item} />
                                 ))}
                             </tbody>
                         </table>
+                        {filteredItems.length === 0 && itemList.length > 0 && (
+                            <div style={{ textAlign: "center", padding: "2em", color: "#ccc" }}>
+                                フィルタ条件に一致するアイテムが見つかりません
+                            </div>
+                        )}
                     </div>
                 </div>
             );
