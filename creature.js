@@ -238,16 +238,14 @@ class Creature {
     }
 
     constructor(text) {
-
-        // 各行を分割
-        const lines = text.split("\r\n");
-
-        this.textDetails = text;
+        // 基本的なプロパティの初期化
+        this.textDetails = text || "";
         this.flags = [];
         this.escorts = [];
         this.skills = [];
         this.description_ja = "";
         this.description_en = "";
+        this.attacks = [];
 
         this.depth = 0;
         this.rarity = 1;
@@ -255,40 +253,61 @@ class Creature {
         this.nextExp = 0;
         this.nextMon = 0;
         this.speed = 0;
+        this.hitPoints = "1d1"; // デフォルト値を設定
+        this.vision = 0;
+        this.armor_class = 0;
+        this.alertness = 0;
+        this.serialNumber = 0;
+        this.name = "";
+        this.ename = "";
+        this.symbol = "";
+        this.color = "";
 
-        lines.forEach(line => {
-            const key = line.charAt(0); // 行の最初の文字で判断
-            const values = line.substring(2).split(':'); // データを抽出
+        // テキストが空の場合は処理を終了
+        if (!text || !text.trim()) {
+            console.warn('Empty text provided to Creature constructor');
+            return;
+        }
 
-            switch (key) {
-                case 'N':
-                    const [serialNumber, name] = values;
-                    this.serialNumber = parseInt(serialNumber);
-                    this.name = name;
-                    break;
-                case 'E':
-                    const [ename] = values;
-                    this.ename = ename;
-                    break;
-                case 'G':
-                    const [symbol, color] = values;
-                    this.symbol = symbol;
-                    this.color = color;
-                    break;
-                case 'I':
-                    const [speed, hitPoints, vision, armorClass, alertness] = values;
-                    this.speed = Number(speed) - 110; // jsonでは基準が0になったので110を引く
-                    if (this.speed < -50) {
-                        this.speed = -50;
-                    }
-                    if (this.speed >= 100) {
-                        this.speed = 99;
-                    }
-                    this.hitPoints = hitPoints;
-                    this.vision = Number(vision);
-                    this.armor_class = Number(armorClass);
-                    this.alertness = Number(alertness);
-                    break;
+        // 各行を分割
+        const lines = text.split(/\r?\n/);
+
+        lines.forEach((line, lineIndex) => {
+            try {
+                if (!line || line.length < 2) return; // 空行や短すぎる行をスキップ
+                
+                const key = line.charAt(0); // 行の最初の文字で判断
+                const values = line.substring(2).split(':'); // データを抽出
+
+                switch (key) {
+                    case 'N':
+                        const [serialNumber, name] = values;
+                        this.serialNumber = parseInt(serialNumber) || 0;
+                        this.name = name || "";
+                        break;
+                    case 'E':
+                        const [ename] = values;
+                        this.ename = ename || "";
+                        break;
+                    case 'G':
+                        const [symbol, color] = values;
+                        this.symbol = symbol || "";
+                        this.color = color || "";
+                        break;
+                    case 'I':
+                        const [speed, hitPoints, vision, armorClass, alertness] = values;
+                        this.speed = Number(speed || 110) - 110; // jsonでは基準が0になったので110を引く
+                        if (this.speed < -50) {
+                            this.speed = -50;
+                        }
+                        if (this.speed >= 100) {
+                            this.speed = 99;
+                        }
+                        this.hitPoints = hitPoints || "1d1";
+                        this.vision = Number(vision || 0);
+                        this.armor_class = Number(armorClass || 0);
+                        this.alertness = Number(alertness || 0);
+                        break;
                 case 'W':
                     if (values.length == 5) {
                         const [depth, rarity, exp, nextExp, nextMon] = values.map(Number);
@@ -312,50 +331,63 @@ class Creature {
                     this.attacks.push({ method, effect, damage });
                     break;
                 case 'S':
-                    this.skills.push(
-                        ...values[0]
-                            .split(/\s*\|\s*/)
-                            .map(f => f.trim())
-                            .filter(f => f.length > 0)
-                    );
+                    if (values[0]) {
+                        this.skills.push(
+                            ...values[0]
+                                .split(/\s*\|\s*/)
+                                .map(f => f.trim())
+                                .filter(f => f.length > 0)
+                        );
+                    }
                     break;
                 case 'F':
-                    this.flags.push(
-                        ...values[0]
-                            .split(/\s*\|\s*/)
-                            .map(f => f.trim())
-                            .filter(f => f.length > 0)
-                    );
+                    if (values[0]) {
+                        this.flags.push(
+                            ...values[0]
+                                .split(/\s*\|\s*/)
+                                .map(f => f.trim())
+                                .filter(f => f.length > 0)
+                        );
+                    }
                     break;
                 case 'D':
-                    if (values[0][0] === '$') {
+                    if (values[0] && values[0][0] === '$') {
                         this.description_en += values.join(' ').substring(1);
                     }
-                    else {
+                    else if (values[0]) {
                         this.description_ja += values.join(' ');
                     }
                     break;
                 case 'R':
                     const [escorts_id, escort_num] = values;
                     this.escorts.push(
-                        { escorts_id: Number(escorts_id), escort_num: escort_num }
+                        { escorts_id: Number(escorts_id) || 0, escort_num: escort_num || "" }
                     );
+                    break;
+                }
+            } catch (lineError) {
+                console.warn(`行 ${lineIndex} の解析でエラー:`, lineError.message, 'Line:', line);
+                // エラーのある行はスキップして続行
             }
         });
 
         // HP期待値計算
         this.hp_expected = null;
-        const m = this.hitPoints.match(/^(\d+)d(\d+)$/);
-        if (m) {
-            const x = parseInt(m[1], 10);
-            const y = parseInt(m[2], 10);
-            if (this.flags && this.flags.includes("FORCE_MAXHP")) {
-                this.hp_expected = x * y;
-            } else {
-                this.hp_expected = ((y + 1) / 2) * x;
+        if (this.hitPoints && typeof this.hitPoints === 'string') {
+            const m = this.hitPoints.match(/^(\d+)d(\d+)$/);
+            if (m) {
+                const x = parseInt(m[1], 10);
+                const y = parseInt(m[2], 10);
+                if (this.flags && this.flags.includes("FORCE_MAXHP")) {
+                    this.hp_expected = x * y;
+                } else {
+                    this.hp_expected = ((y + 1) / 2) * x;
+                }
+            } else if (!isNaN(Number(this.hitPoints))) {
+                this.hp_expected = Number(this.hitPoints);
             }
-        } else if (!isNaN(Number(hitPoints))) {
-            this.hp_expected = Number(hitPoints);
+        } else if (this.hitPoints && !isNaN(Number(this.hitPoints))) {
+            this.hp_expected = Number(this.hitPoints);
         }
 
     };

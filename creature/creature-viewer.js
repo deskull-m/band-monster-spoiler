@@ -42,6 +42,93 @@ function FileReaderComponent() {
         }
     };
 
+    const handleUrlLoad = async () => {
+        setLoading(true);
+        setProgress(0);
+        try {
+            const response = await fetch('https://raw.githubusercontent.com/deskull-m/bakabakaband/refs/heads/master/lib/edit/MonsterRaceDefinitions.txt');
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            const text = await response.text();
+
+            // デバッグ: データの最初の部分を確認
+            console.log('取得したデータの最初の1000文字:', text.substring(0, 1000));
+
+            // GitHubデータは改行コードが\nのみの可能性があるので、より柔軟な分割を行う
+            const datas = text.split(/\r?\n(?=N:)/);
+            console.log('分割されたデータ数:', datas.length);
+            console.log('最初のエントリ:', datas[0]?.substring(0, 300));
+            console.log('2番目のエントリ:', datas[1]?.substring(0, 300));
+
+            let list = [];
+            const total = datas.length;
+            let processedCount = 0;
+
+            // バッチ処理でタイムアウトを防ぐ
+            function processChunk(startIndex) {
+                const batchSize = 50; // 一度に処理する件数を減らす
+                const endIndex = Math.min(startIndex + batchSize, datas.length);
+
+                for (let i = startIndex; i < endIndex; i++) {
+                    let data = datas[i];
+
+                    // データの前処理と検証を強化
+                    if (!data || !data.trim()) continue;
+
+                    // N:で始まっていない場合はスキップ
+                    if (!data.trim().startsWith('N:')) {
+                        console.log(`エントリ ${i} はN:で始まっていません:`, data.substring(0, 50));
+                        continue;
+                    }
+
+                    // 改行コードを統一（GitHubは\nだけの可能性）
+                    data = data.replace(/\r?\n/g, '\r\n');
+
+                    try {
+                        console.log(`処理中のモンスター ${i}:`, data.substring(0, 100));
+                        let creature = new Creature(data);
+                        if (creature && creature.serialNumber != null && creature.name) {
+                            list.push(creature);
+                            console.log(`成功: モンスター ${i} - ID:${creature.serialNumber} - ${creature.name}`);
+                        } else {
+                            console.warn(`モンスター ${i} データが不完全:`, {
+                                serialNumber: creature?.serialNumber,
+                                name: creature?.name
+                            });
+                        }
+                    } catch (creatureError) {
+                        console.warn(`モンスター ${i} の解析に失敗:`, creatureError.message);
+                        console.warn('失敗したデータの先頭部分:', data.substring(0, 300));
+                        // エラーのあるエントリはスキップして続行
+                    }
+                    processedCount++;
+                }
+
+                const progress = Math.round((processedCount / total) * 100);
+                setProgress(progress);
+
+                if (endIndex < datas.length) {
+                    // 次のバッチを非同期で処理
+                    setTimeout(() => processChunk(endIndex), 10); // より短いタイムアウト
+                } else {
+                    console.log('読み込み完了。総数:', list.length);
+                    setInfoList(list);
+                    setProgress(100);
+                    setLoading(false);
+                }
+            }
+
+            // 処理開始
+            processChunk(0);
+        } catch (error) {
+            console.error('GitHubからの読み込みエラー:', error);
+            alert('GitHubからの読み込みに失敗しました: ' + error.message);
+            setLoading(false);
+            setProgress(0);
+        }
+    };
+
     const handleJsonImport = (event) => {
         const file = event.target.files[0];
         if (file) {
@@ -157,16 +244,33 @@ function FileReaderComponent() {
         <div id="container">
             <h1>*bandモンスターエディタ</h1>
             <div style={{ marginBottom: "1em" }}>
-                <input type="file" accept=".txt" onChange={handleFileChange} />
-                <span style={{ margin: "0 0.5em" }}>(旧型式)</span>
-            </div>
-            <div style={{ marginBottom: "1em" }}>
-                <input
-                    type="file"
-                    accept=".json,.jsonc,application/json"
-                    onChange={handleJsonImport}
-                />
-                <span style={{ margin: "0 0.5em" }}>(json/jsonc)</span>
+                <div style={{ marginBottom: "0.5em" }}>
+                    <input type="file" accept=".txt" onChange={handleFileChange} />
+                    <span style={{ margin: "0 0.5em", color: "#ccc" }}>(ローカルファイル)</span>
+                    <button
+                        onClick={handleUrlLoad}
+                        style={{
+                            background: "#007bff",
+                            color: "white",
+                            border: "none",
+                            borderRadius: "4px",
+                            padding: "0.5em 1em",
+                            cursor: "pointer",
+                            marginLeft: "0.5em"
+                        }}
+                        disabled={loading}
+                    >
+                        GitHubから読み込み
+                    </button>
+                </div>
+                <div>
+                    <input
+                        type="file"
+                        accept=".json,.jsonc,application/json"
+                        onChange={handleJsonImport}
+                    />
+                    <span style={{ margin: "0 0.5em", color: "#ccc" }}>(json/jsonc)</span>
+                </div>
             </div>
 
             {loading && (
