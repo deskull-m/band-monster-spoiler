@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="jp">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,7 +12,7 @@
     <script type="text/babel" src="item.js"></script>
     <!-- ↑Babelで変換する場合はtype="text/babel"を付ける -->
     <script type="text/babel">
-      // ここでItem, ItemDetail, parseItemDataなどが使える
+        // ここでItem, ItemDetail, parseItemDataなどが使える
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
         crossorigin="anonymous"></script>
@@ -19,6 +20,7 @@
         crossorigin="anonymous">
     <link rel="stylesheet" href="index.css">
 </head>
+
 <body>
     <div id="item-root"></div>
     <script type="text/babel">
@@ -28,6 +30,9 @@
             const [itemList, setItemList] = React.useState([]);
             const [progress, setProgress] = React.useState(0);
             const [loading, setLoading] = React.useState(false);
+            const [categoryFilter, setCategoryFilter] = React.useState("");
+            const [japaneseNameFilter, setJapaneseNameFilter] = React.useState("");
+            const [englishNameFilter, setEnglishNameFilter] = React.useState("");
 
             const handleFileChange = (event) => {
                 const file = event.target.files[0];
@@ -65,11 +70,138 @@
                 }
             };
 
+            // フィルタリング処理
+            const filteredItems = React.useMemo(() => {
+                return itemList.filter(item => {
+                    // カテゴリフィルタ
+                    if (categoryFilter) {
+                        const tvalId = Number(item.tval);
+                        const tvalName = tvalMap.hasOwnProperty(tvalId) ? tvalMap[tvalId] : "不明";
+                        if (!tvalName.toLowerCase().includes(categoryFilter.toLowerCase())) {
+                            return false;
+                        }
+                    }
+
+                    // 日本語名フィルタ
+                    if (japaneseNameFilter) {
+                        if (!item.name || !item.name.toLowerCase().includes(japaneseNameFilter.toLowerCase())) {
+                            return false;
+                        }
+                    }
+
+                    // 英語名フィルタ
+                    if (englishNameFilter) {
+                        if (!item.ename || !item.ename.toLowerCase().includes(englishNameFilter.toLowerCase())) {
+                            return false;
+                        }
+                    }
+
+                    return true;
+                });
+            }, [itemList, categoryFilter, japaneseNameFilter, englishNameFilter]);
+
+            // ユニークなカテゴリリストを取得
+            const uniqueCategories = React.useMemo(() => {
+                const categories = new Set();
+                itemList.forEach(item => {
+                    const tvalId = Number(item.tval);
+                    const tvalName = tvalMap.hasOwnProperty(tvalId) ? tvalMap[tvalId] : "不明";
+                    categories.add(tvalName);
+                });
+                return Array.from(categories).sort();
+            }, [itemList]);
+
             return (
                 <div className="container mt-4">
                     <h1>*band アイテム種リスト</h1>
                     <p>アイテム定義ファイルを読み込んで下さい</p>
                     <input type="file" accept=".txt" onChange={handleFileChange} />
+
+                    {/* フィルタ機能 */}
+                    {itemList.length > 0 && (
+                        <div style={{ margin: "1em 0", padding: "1em", background: "#23272b", borderRadius: "8px", border: "1px solid #333" }}>
+                            <h5 style={{ marginBottom: "1em", color: "#90caf9" }}>フィルタ</h5>
+                            <div style={{ display: "flex", flexWrap: "wrap", gap: "1em", alignItems: "end" }}>
+                                <div style={{ minWidth: "200px" }}>
+                                    <label style={{ display: "block", marginBottom: "0.5em", fontWeight: "bold" }}>カテゴリ</label>
+                                    <select
+                                        value={categoryFilter}
+                                        onChange={(e) => setCategoryFilter(e.target.value)}
+                                        style={{
+                                            background: "#181a1b",
+                                            color: "#e0e0e0",
+                                            border: "1px solid #444",
+                                            borderRadius: "4px",
+                                            padding: "0.5em",
+                                            width: "100%"
+                                        }}
+                                    >
+                                        <option value="">すべてのカテゴリ</option>
+                                        {uniqueCategories.map(category => (
+                                            <option key={category} value={category}>{category}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                                <div style={{ minWidth: "200px" }}>
+                                    <label style={{ display: "block", marginBottom: "0.5em", fontWeight: "bold" }}>日本語名</label>
+                                    <input
+                                        type="text"
+                                        value={japaneseNameFilter}
+                                        onChange={(e) => setJapaneseNameFilter(e.target.value)}
+                                        placeholder="日本語名で検索..."
+                                        style={{
+                                            background: "#181a1b",
+                                            color: "#e0e0e0",
+                                            border: "1px solid #444",
+                                            borderRadius: "4px",
+                                            padding: "0.5em",
+                                            width: "100%"
+                                        }}
+                                    />
+                                </div>
+                                <div style={{ minWidth: "200px" }}>
+                                    <label style={{ display: "block", marginBottom: "0.5em", fontWeight: "bold" }}>英語名</label>
+                                    <input
+                                        type="text"
+                                        value={englishNameFilter}
+                                        onChange={(e) => setEnglishNameFilter(e.target.value)}
+                                        placeholder="英語名で検索..."
+                                        style={{
+                                            background: "#181a1b",
+                                            color: "#e0e0e0",
+                                            border: "1px solid #444",
+                                            borderRadius: "4px",
+                                            padding: "0.5em",
+                                            width: "100%"
+                                        }}
+                                    />
+                                </div>
+                                <div>
+                                    <button
+                                        onClick={() => {
+                                            setCategoryFilter("");
+                                            setJapaneseNameFilter("");
+                                            setEnglishNameFilter("");
+                                        }}
+                                        style={{
+                                            background: "#dc3545",
+                                            color: "#fff",
+                                            border: "1px solid #dc3545",
+                                            borderRadius: "4px",
+                                            padding: "0.5em 1em",
+                                            cursor: "pointer"
+                                        }}
+                                    >
+                                        クリア
+                                    </button>
+                                </div>
+                            </div>
+                            <div style={{ marginTop: "0.5em", fontSize: "0.9em", color: "#ccc" }}>
+                                {filteredItems.length} / {itemList.length} 件のアイテムを表示中
+                            </div>
+                        </div>
+                    )}
+
                     <div style={{ textAlign: "right", margin: "1em 0" }}>
                         <button
                             style={{
@@ -81,7 +213,8 @@
                                 cursor: "pointer"
                             }}
                             onClick={() => {
-                                const itemBlock = JSON.stringify(itemList.map(item => item.toJson()), null, 2);
+                                const itemsToExport = filteredItems.length > 0 ? filteredItems : itemList;
+                                const itemBlock = JSON.stringify(itemsToExport.map(item => item.toJson()), null, 2);
                                 const allJson = `{\n  "version": 1.0,\n  "baseitems": ${itemBlock}\n}`;
                                 const blob = new Blob([allJson], { type: "application/json" });
                                 const url = URL.createObjectURL(blob);
@@ -93,8 +226,9 @@
                                 document.body.removeChild(a);
                                 URL.revokeObjectURL(url);
                             }}
+                            disabled={itemList.length === 0}
                         >
-                            JSONCエクスポート
+                            JSONCエクスポート {filteredItems.length !== itemList.length ? `(フィルタ済み ${filteredItems.length}件)` : `(${itemList.length}件)`}
                         </button>
                     </div>
 
@@ -118,68 +252,497 @@
                         </div>
                     )}
                     <div>
-                        {itemList.map(item => (
-                            <ItemDetail key={item.serialNumber} item={item} />
-                        ))}
+                        <table className="table table-striped table-dark">
+                            <thead>
+                                <tr>
+                                    <th style={{ width: "80px" }}>ID</th>
+                                    <th style={{ width: "200px" }}>日本語名</th>
+                                    <th style={{ width: "200px" }}>英語名</th>
+                                    <th style={{ width: "80px" }}>種別</th>
+                                    <th style={{ width: "100px", textAlign: "center" }}>シンボル</th>
+                                    <th style={{ width: "100px", textAlign: "center" }}>編集</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {filteredItems.map(item => (
+                                    <ItemTableRow key={item.serialNumber} item={item} />
+                                ))}
+                            </tbody>
+                        </table>
+                        {filteredItems.length === 0 && itemList.length > 0 && (
+                            <div style={{ textAlign: "center", padding: "2em", color: "#ccc" }}>
+                                フィルタ条件に一致するアイテムが見つかりません
+                            </div>
+                        )}
                     </div>
                 </div>
             );
         }
 
         function ItemDetail({ item }) {
+            const [showModal, setShowModal] = React.useState(false);
+            const [tab, setTab] = React.useState("detail");
+
             return (
-                <div className="card mb-3">
-                    <div className="card-header">
-                        <strong>No.{item.serialNumber}</strong> {item.name}
+                <>
+                    <div className="card mb-3">
+                        <div className="card-header d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>No.{item.serialNumber}</strong> {item.name}
+                            </div>
+                            <button
+                                className="btn btn-outline-primary btn-sm"
+                                onClick={() => {
+                                    setTab("detail");
+                                    setShowModal(true);
+                                }}
+                            >
+                                詳細表示
+                            </button>
+                        </div>
+                        <div className="card-body">
+                            <div style={{ display: "flex", flexWrap: "wrap", gap: "1.5em" }}>
+                                <div>
+                                    <strong>記号/色</strong><br />
+                                    {item.symbol} / {item.color}
+                                </div>
+                                <div>
+                                    <strong>tval/sval/pval</strong><br />
+                                    {item.tval} / {item.sval} / {item.pval}
+                                </div>
+                                <div>
+                                    <strong>階/重さ/値段</strong><br />
+                                    {item.depth} / {item.weight} / {item.cost}
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div className="card-body">
-                        <div style={{ display: "flex", flexWrap: "wrap", gap: "1.5em" }}>
-                            <div>
-                                <strong>記号/色</strong><br />
-                                {item.symbol} / {item.color}
-                            </div>
-                            <div>
-                                <strong>tval/sval/pval</strong><br />
-                                {item.tval} / {item.sval} / {item.pval}
-                            </div>
-                            <div>
-                                <strong>階/重さ/値段</strong><br />
-                                {item.depth} / {item.weight} / {item.cost}
-                            </div>
-                            <div>
-                                <strong>基礎AC/ダメ/命中/ダメ+/AC+</strong><br />
-                                {item.base_ac} / {item.base_damage} / {item.plus_to_hit} / {item.plus_to_dam} / {item.plus_to_ac}
-                            </div>
-                            <div>
-                                <strong>配分</strong><br />
-                                {item.alloc ? item.alloc.join(", ") : "―"}
-                            </div>
-                            <div>
-                                <strong>フラグ</strong><br />
-                                {item.flags ? item.flags.join(", ") : "―"}
+
+                    {/* 詳細モーダル */}
+                    {showModal && (
+                        <div
+                            className={`modal fade show`}
+                            tabIndex="-1"
+                            style={{
+                                display: "block",
+                                background: "rgba(0,0,0,0.5)"
+                            }}
+                            aria-modal="true"
+                            role="dialog"
+                        >
+                            <div className="modal-dialog modal-lg">
+                                <div className="modal-content">
+                                    <div className="modal-header">
+                                        <h5 className="modal-title">
+                                            No.{item.serialNumber}: {item.name} / {item.ename}
+                                        </h5>
+                                        <ul className="nav nav-tabs" style={{ marginLeft: "auto", marginRight: "1rem" }}>
+                                            <li className="nav-item">
+                                                <button
+                                                    className={`nav-link${tab === "detail" ? " active" : ""}`}
+                                                    onClick={() => setTab("detail")}
+                                                    style={{ border: "none", background: "none" }}
+                                                >
+                                                    詳細
+                                                </button>
+                                            </li>
+                                            <li className="nav-item">
+                                                <button
+                                                    className={`nav-link${tab === "raw" ? " active" : ""}`}
+                                                    onClick={() => setTab("raw")}
+                                                    style={{ border: "none", background: "none" }}
+                                                >
+                                                    生データ
+                                                </button>
+                                            </li>
+                                            <li className="nav-item">
+                                                <button
+                                                    className={`nav-link${tab === "json" ? " active" : ""}`}
+                                                    onClick={() => setTab("json")}
+                                                    style={{ border: "none", background: "none" }}
+                                                >
+                                                    JSON
+                                                </button>
+                                            </li>
+                                        </ul>
+                                        <button
+                                            type="button"
+                                            className="btn-close"
+                                            onClick={() => setShowModal(false)}
+                                        ></button>
+                                    </div>
+                                    <div className="modal-body">
+                                        {tab === "detail" && (
+                                            <div class="item-detail">
+                                                <h5>アイテム詳細</h5>
+                                                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "1em", marginBottom: "1.5em" }}>
+                                                    <div>
+                                                        <strong>記号/色</strong><br />
+                                                        <span style={{ fontFamily: "monospace", fontSize: "1.2em", color: item.color }}>
+                                                            {item.symbol}
+                                                        </span> / {item.color}
+                                                    </div>
+                                                    <div>
+                                                        <strong>種別</strong><br />
+                                                        {
+                                                            (() => {
+                                                                const tvalId = Number(item.tval);
+                                                                const tvalName = tvalMap.hasOwnProperty(tvalId) ? tvalMap[tvalId] : "不明";
+                                                                return `${item.tval} (${tvalName})`;
+                                                            })()
+                                                        }
+                                                    </div>
+                                                    <div>
+                                                        <strong>tval/sval/pval</strong><br />
+                                                        {item.tval} / {item.sval} / {item.pval}
+                                                    </div>
+                                                    <div>
+                                                        <strong>階/重さ/値段</strong><br />
+                                                        {item.depth} / {item.weight} / {item.cost}
+                                                    </div>
+                                                    <div>
+                                                        <strong>基礎AC</strong><br />
+                                                        {item.base_ac}
+                                                    </div>
+                                                    <div>
+                                                        <strong>基礎ダメージ</strong><br />
+                                                        {item.base_damage}
+                                                    </div>
+                                                    <div>
+                                                        <strong>命中補正</strong><br />
+                                                        {item.plus_to_hit}
+                                                    </div>
+                                                    <div>
+                                                        <strong>ダメージ補正</strong><br />
+                                                        {item.plus_to_dam}
+                                                    </div>
+                                                    <div>
+                                                        <strong>AC補正</strong><br />
+                                                        {item.plus_to_ac}
+                                                    </div>
+                                                </div>
+
+                                                <h6>配分情報</h6>
+                                                <div style={{ marginBottom: "1.5em" }}>
+                                                    {item.alloc && item.alloc.length > 0 ? (
+                                                        <ul>
+                                                            {item.alloc.map((alloc, idx) => (
+                                                                <li key={idx}>{alloc}</li>
+                                                            ))}
+                                                        </ul>
+                                                    ) : (
+                                                        <p>配分情報なし</p>
+                                                    )}
+                                                </div>
+
+                                                <h6>フラグ</h6>
+                                                <div style={{ marginBottom: "1.5em" }}>
+                                                    {item.flags && item.flags.length > 0 ? (
+                                                        <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5em" }}>
+                                                            {item.flags.map((flag, idx) => (
+                                                                <span key={idx} className="badge bg-secondary">
+                                                                    {flag}
+                                                                </span>
+                                                            ))}
+                                                        </div>
+                                                    ) : (
+                                                        <p>フラグなし</p>
+                                                    )}
+                                                </div>
+
+                                                <h6>フレーバーテキスト</h6>
+                                                <div style={{ marginBottom: "1em" }}>
+                                                    <strong>日本語：</strong><br />
+                                                    <div style={{ whiteSpace: "pre-line", background: "#181a1b", padding: "0.5rem", borderRadius: "4px", marginTop: "0.5rem" }}>
+                                                        {item.flavor_ja || "―"}
+                                                    </div>
+                                                </div>
+                                                <div style={{ marginBottom: "1.5em" }}>
+                                                    <strong>English：</strong><br />
+                                                    <div style={{ whiteSpace: "pre-line", background: "#181a1b", padding: "0.5rem", borderRadius: "4px", marginTop: "0.5rem" }}>
+                                                        {item.flavor_en || "―"}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
+                                        {tab === "raw" && (
+                                            <div>
+                                                <h5>生データ</h5>
+                                                <button
+                                                    className="btn btn-sm btn-outline-secondary mb-2"
+                                                    onClick={() => navigator.clipboard.writeText(item.rawText)}
+                                                    title="生データをコピー"
+                                                >
+                                                    コピー
+                                                </button>
+                                                <textarea
+                                                    className="form-control"
+                                                    value={item.rawText}
+                                                    rows={Math.max(3, item.rawText.split('\n').length)}
+                                                    style={{ width: "100%", resize: "vertical" }}
+                                                    readOnly
+                                                />
+                                            </div>
+                                        )}
+                                        {tab === "json" && (
+                                            <div>
+                                                <h5>JSON</h5>
+                                                <button
+                                                    className="btn btn-sm btn-outline-secondary mb-2"
+                                                    onClick={() => navigator.clipboard.writeText(JSON.stringify(item.toJson(), null, 2))}
+                                                    title="JSONをコピー"
+                                                >
+                                                    コピー
+                                                </button>
+                                                <textarea
+                                                    className="form-control"
+                                                    value={JSON.stringify(item.toJson(), null, 2)}
+                                                    rows={Math.max(3, JSON.stringify(item.toJson(), null, 2).split('\n').length)}
+                                                    style={{ width: "100%", resize: "vertical" }}
+                                                    readOnly
+                                                />
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        {/* フレーバー表示を追加 */}
-                        <div style={{ marginTop: "1em" }}>
-                            <strong>フレーバー（日本語）</strong><br />
-                            <span style={{ whiteSpace: "pre-line" }}>{item.flavor_ja || "―"}</span>
+                    )}
+                </>
+            );
+        }
+
+        // テーブル行用のコンポーネント
+        function ItemTableRow({ item }) {
+            const [showModal, setShowModal] = React.useState(false);
+            const [tab, setTab] = React.useState("detail");
+
+            return (
+                <>
+                    <tr>
+                        <td>
+                            <span className="num">{item.serialNumber}</span>
+                        </td>
+                        <td>{item.name}</td>
+                        <td>{item.ename}</td>
+                        <td>
+                            {
+                                (() => {
+                                    const tvalId = Number(item.tval);
+                                    const tvalName = tvalMap.hasOwnProperty(tvalId) ? tvalMap[tvalId] : "不明";
+                                    return tvalName;
+                                })()
+                            }
+                        </td>
+                        <td style={{ textAlign: "center", fontFamily: "monospace", fontSize: "1.2em" }}>
+                            <span style={{ color: item.color || "#e0e0e0" }}>
+                                {item.symbol}
+                            </span>
+                        </td>
+                        <td style={{ textAlign: "center" }}>
+                            <button
+                                className="btn btn-outline-primary btn-sm"
+                                onClick={() => {
+                                    setTab("detail");
+                                    setShowModal(true);
+                                }}
+                            >
+                                編集
+                            </button>
+                        </td>
+                    </tr>
+
+                    {/* 詳細モーダル */}
+                    {showModal && (
+                        <div
+                            className={`modal fade show`}
+                            tabIndex="-1"
+                            style={{
+                                display: "block",
+                                background: "rgba(0,0,0,0.5)"
+                            }}
+                            aria-modal="true"
+                            role="dialog"
+                        >
+                            <div className="modal-dialog modal-lg">
+                                <div className="modal-content">
+                                    <div className="modal-header">
+                                        <h5 className="modal-title">
+                                            No.{item.serialNumber}: {item.name} / {item.ename}
+                                        </h5>
+                                        <ul className="nav nav-tabs" style={{ marginLeft: "auto", marginRight: "1rem" }}>
+                                            <li className="nav-item">
+                                                <button
+                                                    className={`nav-link${tab === "detail" ? " active" : ""}`}
+                                                    onClick={() => setTab("detail")}
+                                                    style={{ border: "none", background: "none" }}
+                                                >
+                                                    詳細
+                                                </button>
+                                            </li>
+                                            <li className="nav-item">
+                                                <button
+                                                    className={`nav-link${tab === "raw" ? " active" : ""}`}
+                                                    onClick={() => setTab("raw")}
+                                                    style={{ border: "none", background: "none" }}
+                                                >
+                                                    生データ
+                                                </button>
+                                            </li>
+                                            <li className="nav-item">
+                                                <button
+                                                    className={`nav-link${tab === "json" ? " active" : ""}`}
+                                                    onClick={() => setTab("json")}
+                                                    style={{ border: "none", background: "none" }}
+                                                >
+                                                    JSON
+                                                </button>
+                                            </li>
+                                        </ul>
+                                        <button
+                                            type="button"
+                                            className="btn-close"
+                                            onClick={() => setShowModal(false)}
+                                        ></button>
+                                    </div>
+                                    <div className="modal-body">
+                                        {tab === "detail" && (
+                                            <div className="item-detail">
+                                                <h5>アイテム詳細</h5>
+                                                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "1em", marginBottom: "1.5em" }}>
+                                                    <div>
+                                                        <strong>記号/色</strong><br />
+                                                        <span style={{ fontFamily: "monospace", fontSize: "1.2em", color: item.color }}>
+                                                            {item.symbol}
+                                                        </span> / {item.color}
+                                                    </div>
+                                                    <div>
+                                                        <strong>種別</strong><br />
+                                                        {
+                                                            (() => {
+                                                                const tvalId = Number(item.tval);
+                                                                const tvalName = tvalMap.hasOwnProperty(tvalId) ? tvalMap[tvalId] : "不明";
+                                                                return `${item.tval} (${tvalName})`;
+                                                            })()
+                                                        }
+                                                    </div>
+                                                    <div>
+                                                        <strong>tval/sval/pval</strong><br />
+                                                        {item.tval} / {item.sval} / {item.pval}
+                                                    </div>
+                                                    <div>
+                                                        <strong>階/重さ/値段</strong><br />
+                                                        {item.depth} / {item.weight} / {item.cost}
+                                                    </div>
+                                                    <div>
+                                                        <strong>基礎AC</strong><br />
+                                                        {item.base_ac}
+                                                    </div>
+                                                    <div>
+                                                        <strong>基礎ダメージ</strong><br />
+                                                        {item.base_damage}
+                                                    </div>
+                                                    <div>
+                                                        <strong>命中補正</strong><br />
+                                                        {item.plus_to_hit}
+                                                    </div>
+                                                    <div>
+                                                        <strong>ダメージ補正</strong><br />
+                                                        {item.plus_to_dam}
+                                                    </div>
+                                                    <div>
+                                                        <strong>AC補正</strong><br />
+                                                        {item.plus_to_ac}
+                                                    </div>
+                                                </div>
+
+                                                <h6>配分情報</h6>
+                                                <div style={{ marginBottom: "1.5em" }}>
+                                                    {item.alloc && item.alloc.length > 0 ? (
+                                                        <ul>
+                                                            {item.alloc.map((alloc, idx) => (
+                                                                <li key={idx}>{alloc}</li>
+                                                            ))}
+                                                        </ul>
+                                                    ) : (
+                                                        <p>配分情報なし</p>
+                                                    )}
+                                                </div>
+
+                                                <h6>フラグ</h6>
+                                                <div style={{ marginBottom: "1.5em" }}>
+                                                    {item.flags && item.flags.length > 0 ? (
+                                                        <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5em" }}>
+                                                            {item.flags.map((flag, idx) => (
+                                                                <span key={idx} className="badge bg-secondary">
+                                                                    {flag}
+                                                                </span>
+                                                            ))}
+                                                        </div>
+                                                    ) : (
+                                                        <p>フラグなし</p>
+                                                    )}
+                                                </div>
+
+                                                <h6>フレーバーテキスト</h6>
+                                                <div style={{ marginBottom: "1em" }}>
+                                                    <strong>日本語：</strong><br />
+                                                    <div style={{ whiteSpace: "pre-line", background: "#181a1b", padding: "0.5rem", borderRadius: "4px", marginTop: "0.5rem" }}>
+                                                        {item.flavor_ja || "―"}
+                                                    </div>
+                                                </div>
+                                                <div style={{ marginBottom: "1.5em" }}>
+                                                    <strong>English：</strong><br />
+                                                    <div style={{ whiteSpace: "pre-line", background: "#181a1b", padding: "0.5rem", borderRadius: "4px", marginTop: "0.5rem" }}>
+                                                        {item.flavor_en || "―"}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
+                                        {tab === "raw" && (
+                                            <div>
+                                                <h5>生データ</h5>
+                                                <button
+                                                    className="btn btn-sm btn-outline-secondary mb-2"
+                                                    onClick={() => navigator.clipboard.writeText(item.rawText)}
+                                                    title="生データをコピー"
+                                                >
+                                                    コピー
+                                                </button>
+                                                <textarea
+                                                    className="form-control"
+                                                    value={item.rawText}
+                                                    rows={Math.max(3, item.rawText.split('\n').length)}
+                                                    style={{ width: "100%", resize: "vertical" }}
+                                                    readOnly
+                                                />
+                                            </div>
+                                        )}
+                                        {tab === "json" && (
+                                            <div>
+                                                <h5>JSON</h5>
+                                                <button
+                                                    className="btn btn-sm btn-outline-secondary mb-2"
+                                                    onClick={() => navigator.clipboard.writeText(JSON.stringify(item.toJson(), null, 2))}
+                                                    title="JSONをコピー"
+                                                >
+                                                    コピー
+                                                </button>
+                                                <textarea
+                                                    className="form-control"
+                                                    value={JSON.stringify(item.toJson(), null, 2)}
+                                                    rows={Math.max(3, JSON.stringify(item.toJson(), null, 2).split('\n').length)}
+                                                    style={{ width: "100%", resize: "vertical" }}
+                                                    readOnly
+                                                />
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div style={{ marginTop: "0.5em" }}>
-                            <strong>Flavor (English)</strong><br />
-                            <span style={{ whiteSpace: "pre-line" }}>{item.flavor_en || "―"}</span>
-                        </div>
-                        <details style={{ marginTop: "1em" }}>
-                            <summary>生データ</summary>
-                            <pre style={{ whiteSpace: "pre-wrap" }}>{item.rawText}</pre>
-                        </details>
-                        <details style={{ marginTop: "1em" }}>
-                            <summary>JSONデータ</summary>
-                            <pre style={{ whiteSpace: "pre-wrap" }}>
-                                {JSON.stringify(item.toJson(), null, 2)}
-                            </pre>
-                        </details>
-                    </div>
-                </div>
+                    )}
+                </>
             );
         }
 
@@ -187,4 +750,5 @@
     </script>
 
 </body>
+
 </html>
