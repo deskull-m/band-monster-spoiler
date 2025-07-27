@@ -118,9 +118,23 @@
                         </div>
                     )}
                     <div>
-                        {itemList.map(item => (
-                            <ItemDetail key={item.serialNumber} item={item} />
-                        ))}
+                        <table className="table table-striped table-dark">
+                            <thead>
+                                <tr>
+                                    <th style={{ width: "80px" }}>ID</th>
+                                    <th style={{ width: "200px" }}>日本語名</th>
+                                    <th style={{ width: "200px" }}>英語名</th>
+                                    <th style={{ width: "80px" }}>種別</th>
+                                    <th style={{ width: "100px", textAlign: "center" }}>シンボル</th>
+                                    <th style={{ width: "100px", textAlign: "center" }}>編集</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {itemList.map(item => (
+                                    <ItemTableRow key={item.serialNumber} item={item} />
+                                ))}
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             );
@@ -221,6 +235,240 @@
                                     <div className="modal-body">
                                         {tab === "detail" && (
                                             <div class="item-detail">
+                                                <h5>アイテム詳細</h5>
+                                                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "1em", marginBottom: "1.5em" }}>
+                                                    <div>
+                                                        <strong>記号/色</strong><br />
+                                                        <span style={{ fontFamily: "monospace", fontSize: "1.2em", color: item.color }}>
+                                                            {item.symbol}
+                                                        </span> / {item.color}
+                                                    </div>
+                                                    <div>
+                                                        <strong>種別</strong><br />
+                                                        {
+                                                            (() => {
+                                                                const tvalId = Number(item.tval);
+                                                                const tvalName = tvalMap.hasOwnProperty(tvalId) ? tvalMap[tvalId] : "不明";
+                                                                return `${item.tval} (${tvalName})`;
+                                                            })()
+                                                        }
+                                                    </div>
+                                                    <div>
+                                                        <strong>tval/sval/pval</strong><br />
+                                                        {item.tval} / {item.sval} / {item.pval}
+                                                    </div>
+                                                    <div>
+                                                        <strong>階/重さ/値段</strong><br />
+                                                        {item.depth} / {item.weight} / {item.cost}
+                                                    </div>
+                                                    <div>
+                                                        <strong>基礎AC</strong><br />
+                                                        {item.base_ac}
+                                                    </div>
+                                                    <div>
+                                                        <strong>基礎ダメージ</strong><br />
+                                                        {item.base_damage}
+                                                    </div>
+                                                    <div>
+                                                        <strong>命中補正</strong><br />
+                                                        {item.plus_to_hit}
+                                                    </div>
+                                                    <div>
+                                                        <strong>ダメージ補正</strong><br />
+                                                        {item.plus_to_dam}
+                                                    </div>
+                                                    <div>
+                                                        <strong>AC補正</strong><br />
+                                                        {item.plus_to_ac}
+                                                    </div>
+                                                </div>
+
+                                                <h6>配分情報</h6>
+                                                <div style={{ marginBottom: "1.5em" }}>
+                                                    {item.alloc && item.alloc.length > 0 ? (
+                                                        <ul>
+                                                            {item.alloc.map((alloc, idx) => (
+                                                                <li key={idx}>{alloc}</li>
+                                                            ))}
+                                                        </ul>
+                                                    ) : (
+                                                        <p>配分情報なし</p>
+                                                    )}
+                                                </div>
+
+                                                <h6>フラグ</h6>
+                                                <div style={{ marginBottom: "1.5em" }}>
+                                                    {item.flags && item.flags.length > 0 ? (
+                                                        <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5em" }}>
+                                                            {item.flags.map((flag, idx) => (
+                                                                <span key={idx} className="badge bg-secondary">
+                                                                    {flag}
+                                                                </span>
+                                                            ))}
+                                                        </div>
+                                                    ) : (
+                                                        <p>フラグなし</p>
+                                                    )}
+                                                </div>
+
+                                                <h6>フレーバーテキスト</h6>
+                                                <div style={{ marginBottom: "1em" }}>
+                                                    <strong>日本語：</strong><br />
+                                                    <div style={{ whiteSpace: "pre-line", background: "#181a1b", padding: "0.5rem", borderRadius: "4px", marginTop: "0.5rem" }}>
+                                                        {item.flavor_ja || "―"}
+                                                    </div>
+                                                </div>
+                                                <div style={{ marginBottom: "1.5em" }}>
+                                                    <strong>English：</strong><br />
+                                                    <div style={{ whiteSpace: "pre-line", background: "#181a1b", padding: "0.5rem", borderRadius: "4px", marginTop: "0.5rem" }}>
+                                                        {item.flavor_en || "―"}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
+                                        {tab === "raw" && (
+                                            <div>
+                                                <h5>生データ</h5>
+                                                <button
+                                                    className="btn btn-sm btn-outline-secondary mb-2"
+                                                    onClick={() => navigator.clipboard.writeText(item.rawText)}
+                                                    title="生データをコピー"
+                                                >
+                                                    コピー
+                                                </button>
+                                                <textarea
+                                                    className="form-control"
+                                                    value={item.rawText}
+                                                    rows={Math.max(3, item.rawText.split('\n').length)}
+                                                    style={{ width: "100%", resize: "vertical" }}
+                                                    readOnly
+                                                />
+                                            </div>
+                                        )}
+                                        {tab === "json" && (
+                                            <div>
+                                                <h5>JSON</h5>
+                                                <button
+                                                    className="btn btn-sm btn-outline-secondary mb-2"
+                                                    onClick={() => navigator.clipboard.writeText(JSON.stringify(item.toJson(), null, 2))}
+                                                    title="JSONをコピー"
+                                                >
+                                                    コピー
+                                                </button>
+                                                <textarea
+                                                    className="form-control"
+                                                    value={JSON.stringify(item.toJson(), null, 2)}
+                                                    rows={Math.max(3, JSON.stringify(item.toJson(), null, 2).split('\n').length)}
+                                                    style={{ width: "100%", resize: "vertical" }}
+                                                    readOnly
+                                                />
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                </>
+            );
+        }
+
+        // テーブル行用のコンポーネント
+        function ItemTableRow({ item }) {
+            const [showModal, setShowModal] = React.useState(false);
+            const [tab, setTab] = React.useState("detail");
+
+            return (
+                <>
+                    <tr>
+                        <td>
+                            <span className="num">{item.serialNumber}</span>
+                        </td>
+                        <td>{item.name}</td>
+                        <td>{item.ename}</td>
+                        <td>
+                            {
+                                (() => {
+                                    const tvalId = Number(item.tval);
+                                    const tvalName = tvalMap.hasOwnProperty(tvalId) ? tvalMap[tvalId] : "不明";
+                                    return tvalName;
+                                })()
+                            }
+                        </td>
+                        <td style={{ textAlign: "center", fontFamily: "monospace", fontSize: "1.2em" }}>
+                            <span style={{ color: item.color || "#e0e0e0" }}>
+                                {item.symbol}
+                            </span>
+                        </td>
+                        <td style={{ textAlign: "center" }}>
+                            <button
+                                className="btn btn-outline-primary btn-sm"
+                                onClick={() => {
+                                    setTab("detail");
+                                    setShowModal(true);
+                                }}
+                            >
+                                編集
+                            </button>
+                        </td>
+                    </tr>
+
+                    {/* 詳細モーダル */}
+                    {showModal && (
+                        <div
+                            className={`modal fade show`}
+                            tabIndex="-1"
+                            style={{
+                                display: "block",
+                                background: "rgba(0,0,0,0.5)"
+                            }}
+                            aria-modal="true"
+                            role="dialog"
+                        >
+                            <div className="modal-dialog modal-lg">
+                                <div className="modal-content">
+                                    <div className="modal-header">
+                                        <h5 className="modal-title">
+                                            No.{item.serialNumber}: {item.name} / {item.ename}
+                                        </h5>
+                                        <ul className="nav nav-tabs" style={{ marginLeft: "auto", marginRight: "1rem" }}>
+                                            <li className="nav-item">
+                                                <button
+                                                    className={`nav-link${tab === "detail" ? " active" : ""}`}
+                                                    onClick={() => setTab("detail")}
+                                                    style={{ border: "none", background: "none" }}
+                                                >
+                                                    詳細
+                                                </button>
+                                            </li>
+                                            <li className="nav-item">
+                                                <button
+                                                    className={`nav-link${tab === "raw" ? " active" : ""}`}
+                                                    onClick={() => setTab("raw")}
+                                                    style={{ border: "none", background: "none" }}
+                                                >
+                                                    生データ
+                                                </button>
+                                            </li>
+                                            <li className="nav-item">
+                                                <button
+                                                    className={`nav-link${tab === "json" ? " active" : ""}`}
+                                                    onClick={() => setTab("json")}
+                                                    style={{ border: "none", background: "none" }}
+                                                >
+                                                    JSON
+                                                </button>
+                                            </li>
+                                        </ul>
+                                        <button
+                                            type="button"
+                                            className="btn-close"
+                                            onClick={() => setShowModal(false)}
+                                        ></button>
+                                    </div>
+                                    <div className="modal-body">
+                                        {tab === "detail" && (
+                                            <div className="item-detail">
                                                 <h5>アイテム詳細</h5>
                                                 <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "1em", marginBottom: "1.5em" }}>
                                                     <div>
