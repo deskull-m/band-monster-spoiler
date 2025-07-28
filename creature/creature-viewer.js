@@ -5,6 +5,8 @@ function FileReaderComponent() {
     const [showUniqueOnly, setShowUniqueOnly] = React.useState(false);
     const [sortType, setSortType] = React.useState("id-asc");
     const [sorting, setSorting] = React.useState(false);
+    const [editingCreature, setEditingCreature] = React.useState(null);
+    const [editingIndex, setEditingIndex] = React.useState(-1);
 
     const handleFileChange = (event) => {
         const file = event.target.files[0];
@@ -350,7 +352,7 @@ F:BASH_DOOR`;
                     }
                 }, 100);
                 
-                alert(`モンスター（ID: ${newId}）がコピーされました`);
+                alert(`モンスター「${originalCreature.name}」がコピーされました（新ID: ${newId}）`);
             } else {
                 alert('モンスターのコピーに失敗しました');
             }
@@ -358,6 +360,25 @@ F:BASH_DOOR`;
             console.error('モンスターコピーエラー:', error);
             alert('モンスターのコピー中にエラーが発生しました: ' + error.message);
         }
+    };
+
+    const handleEditMonster = (creature, index) => {
+        setEditingCreature(creature);
+        setEditingIndex(index);
+    };
+
+    const handleSaveEdit = (updatedCreature) => {
+        const newList = [...infoList];
+        newList[editingIndex] = updatedCreature;
+        setInfoList(newList);
+        setEditingCreature(null);
+        setEditingIndex(-1);
+        alert('モンスターが更新されました');
+    };
+
+    const handleCancelEdit = () => {
+        setEditingCreature(null);
+        setEditingIndex(-1);
     };
 
     const filteredList = showUniqueOnly
@@ -647,7 +668,7 @@ F:BASH_DOOR`;
                                 <th style={{ width: "200px" }}>英語名</th>
                                 <th style={{ width: "80px" }}>レベル</th>
                                 <th style={{ width: "100px", textAlign: "center" }}>シンボル</th>
-                                <th style={{ width: "180px", textAlign: "center" }}>操作</th>
+                                <th style={{ width: "220px", textAlign: "center" }}>操作</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -659,6 +680,7 @@ F:BASH_DOOR`;
                                     infoList={infoList} 
                                     onDelete={handleDeleteMonster}
                                     onCopy={handleCopyMonster}
+                                    onEdit={handleEditMonster}
                                 />
                             ))}
                         </tbody>
@@ -697,6 +719,15 @@ F:BASH_DOOR`;
                         }
                     `}</style>
                 </div>
+            )}
+            
+            {/* 編集フォーム */}
+            {editingCreature && (
+                <MonsterEditForm
+                    creature={editingCreature}
+                    onSave={handleSaveEdit}
+                    onCancel={handleCancelEdit}
+                />
             )}
         </div>
     );
