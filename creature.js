@@ -275,7 +275,7 @@ class Creature {
         lines.forEach((line, lineIndex) => {
             try {
                 if (!line || line.length < 2) return; // 空行や短すぎる行をスキップ
-                
+
                 const key = line.charAt(0); // 行の最初の文字で判断
                 const values = line.substring(2).split(':'); // データを抽出
 
@@ -308,62 +308,62 @@ class Creature {
                         this.armor_class = Number(armorClass || 0);
                         this.alertness = Number(alertness || 0);
                         break;
-                case 'W':
-                    if (values.length == 5) {
-                        const [depth, rarity, exp, nextExp, nextMon] = values.map(Number);
-                        this.depth = depth;
-                        this.rarity = rarity;
-                        this.exp = exp;
-                        this.nextExp = nextExp;
-                        this.nextMon = nextMon;
-                    } else if (values.length == 6) {
-                        const [depth, rarity, _, exp, nextExp, nextMon] = values.map(Number);
-                        this.depth = depth;
-                        this.rarity = rarity;
-                        this.exp = exp;
-                        this.nextExp = nextExp;
-                        this.nextMon = nextMon;
-                    }
-                    break;
-                case 'B':
-                    if (!this.attacks) this.attacks = [];
-                    const [method, effect, damage] = values;
-                    this.attacks.push({ method, effect, damage });
-                    break;
-                case 'S':
-                    if (values[0]) {
-                        this.skills.push(
-                            ...values[0]
-                                .split(/\s*\|\s*/)
-                                .map(f => f.trim())
-                                .filter(f => f.length > 0)
+                    case 'W':
+                        if (values.length == 5) {
+                            const [depth, rarity, exp, nextExp, nextMon] = values.map(Number);
+                            this.depth = depth;
+                            this.rarity = rarity;
+                            this.exp = exp;
+                            this.nextExp = nextExp;
+                            this.nextMon = nextMon;
+                        } else if (values.length == 6) {
+                            const [depth, rarity, _, exp, nextExp, nextMon] = values.map(Number);
+                            this.depth = depth;
+                            this.rarity = rarity;
+                            this.exp = exp;
+                            this.nextExp = nextExp;
+                            this.nextMon = nextMon;
+                        }
+                        break;
+                    case 'B':
+                        if (!this.attacks) this.attacks = [];
+                        const [method, effect, damage] = values;
+                        this.attacks.push({ method, effect, damage });
+                        break;
+                    case 'S':
+                        if (values[0]) {
+                            this.skills.push(
+                                ...values[0]
+                                    .split(/\s*\|\s*/)
+                                    .map(f => f.trim())
+                                    .filter(f => f.length > 0)
+                            );
+                        }
+                        break;
+                    case 'F':
+                        if (values[0]) {
+                            this.flags.push(
+                                ...values[0]
+                                    .split(/\s*\|\s*/)
+                                    .map(f => f.trim())
+                                    .filter(f => f.length > 0)
+                            );
+                        }
+                        break;
+                    case 'D':
+                        if (values[0] && values[0][0] === '$') {
+                            this.description_en += values.join(' ').substring(1);
+                        }
+                        else if (values[0]) {
+                            this.description_ja += values.join(' ');
+                        }
+                        break;
+                    case 'R':
+                        const [escorts_id, escort_num] = values;
+                        this.escorts.push(
+                            { escorts_id: Number(escorts_id) || 0, escort_num: escort_num || "" }
                         );
-                    }
-                    break;
-                case 'F':
-                    if (values[0]) {
-                        this.flags.push(
-                            ...values[0]
-                                .split(/\s*\|\s*/)
-                                .map(f => f.trim())
-                                .filter(f => f.length > 0)
-                        );
-                    }
-                    break;
-                case 'D':
-                    if (values[0] && values[0][0] === '$') {
-                        this.description_en += values.join(' ').substring(1);
-                    }
-                    else if (values[0]) {
-                        this.description_ja += values.join(' ');
-                    }
-                    break;
-                case 'R':
-                    const [escorts_id, escort_num] = values;
-                    this.escorts.push(
-                        { escorts_id: Number(escorts_id) || 0, escort_num: escort_num || "" }
-                    );
-                    break;
+                        break;
                 }
             } catch (lineError) {
                 console.warn(`行 ${lineIndex} の解析でエラー:`, lineError.message, 'Line:', line);
