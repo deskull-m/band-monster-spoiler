@@ -1106,8 +1106,14 @@ D:$${formData.description_en}` : ''}`;
                                 </label>
                                 <input
                                     type="number"
+                                    min="-99"
+                                    max="99"
                                     value={formData.speed}
-                                    onChange={(e) => handleChange('speed', parseInt(e.target.value) || 0)}
+                                    onChange={(e) => {
+                                        const value = parseInt(e.target.value) || 0;
+                                        const clampedValue = Math.max(-99, Math.min(99, value));
+                                        handleChange('speed', clampedValue);
+                                    }}
                                     style={{
                                         width: '100%',
                                         padding: '5px',
