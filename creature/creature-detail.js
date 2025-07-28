@@ -913,6 +913,113 @@ function MonsterTableRow({ creature, index, infoList, onDelete, onCopy, onEdit }
 
 // モンスター編集フォームコンポーネント
 function MonsterEditForm({ creature, onSave, onCancel }) {
+    // フラグの定義（カテゴリ別に整理）
+    const flagCategories = {
+        "基本属性": {
+            "UNIQUE": "ユニーク",
+            "QUESTOR": "クエスト",
+            "MALE": "雄",
+            "FEMALE": "雌"
+        },
+        "外見": {
+            "CHAR_CLEAR": "透明な文字",
+            "ATTR_CLEAR": "透明",
+            "ATTR_MULTI": "色変化",
+            "ATTR_ANY": "任意の色",
+            "SHAPECHANGER": "変身",
+            "INVISIBLE": "透明"
+        },
+        "強制設定": {
+            "FORCE_DEPTH": "階層固定",
+            "FORCE_MAXHP": "最大HP固定",
+            "FORCE_SLEEP": "睡眠固定",
+            "FORCE_EXTRA": "追加能力固定"
+        },
+        "集団行動": {
+            "FRIEND": "友好的",
+            "FRIENDS": "集団出現",
+            "ESCORT": "護衛付き",
+            "ESCORTS": "護衛集団"
+        },
+        "行動制限": {
+            "NEVER_BLOW": "打撃なし",
+            "NEVER_MOVE": "移動なし",
+            "RAND_25": "1/4確率出現",
+            "RAND_50": "1/2確率出現"
+        },
+        "ドロップ": {
+            "ONLY_GOLD": "金のみドロップ",
+            "ONLY_ITEM": "アイテムのみドロップ",
+            "DROP_60": "60%でドロップ",
+            "DROP_90": "90%でドロップ",
+            "DROP_1D2": "1-2個ドロップ",
+            "DROP_2D2": "2-4個ドロップ",
+            "DROP_3D2": "3-6個ドロップ",
+            "DROP_4D2": "4-8個ドロップ",
+            "DROP_GOOD": "良質ドロップ",
+            "DROP_GREAT": "高品質ドロップ",
+            "DROP_USEFUL": "有用ドロップ",
+            "DROP_CHOSEN": "選択ドロップ"
+        },
+        "知能・特性": {
+            "STUPID": "愚鈍",
+            "SMART": "賢い",
+            "CAN_SPEAK": "発言",
+            "REFLECTING": "反射",
+            "COLD_BLOOD": "冷血",
+            "EMPTY_MIND": "空虚な心",
+            "WEIRD_MIND": "異質な心",
+            "MULTIPLY": "増殖",
+            "REGENERATE": "再生",
+            "POWERFUL": "強力",
+            "ELDRITCH_HORROR": "狂気誘発"
+        },
+        "オーラ": {
+            "AURA_FIRE": "火炎オーラ",
+            "AURA_ELEC": "電撃オーラ",
+            "AURA_COLD": "冷気オーラ"
+        },
+        "移動能力": {
+            "OPEN_DOOR": "扉開放",
+            "BASH_DOOR": "扉破壊",
+            "PASS_WALL": "壁通過",
+            "KILL_WALL": "壁破壊",
+            "MOVE_BODY": "死体押し退け",
+            "KILL_BODY": "死体破壊",
+            "TAKE_ITEM": "アイテム拾得",
+            "KILL_ITEM": "アイテム破壊"
+        },
+        "状態異常耐性": {
+            "NO_CONF": "混乱無効",
+            "NO_SLEEP": "睡眠無効",
+            "NO_FEAR": "恐怖無効",
+            "NO_STUN": "朦朧無効"
+        },
+        "完全免疫": {
+            "IM_ACID": "酸免疫",
+            "IM_ELEC": "電撃免疫",
+            "IM_FIRE": "火炎免疫",
+            "IM_COLD": "冷気免疫",
+            "IM_POIS": "毒免疫",
+            "IM_MELEE": "打撃免疫"
+        },
+        "耐性": {
+            "RES_TELE": "テレポート耐性",
+            "RES_NETH": "地獄耐性",
+            "RES_WATE": "水耐性",
+            "RES_PLAS": "プラズマ耐性",
+            "RES_NEXU": "因果混乱耐性",
+            "RES_DISE": "劣化耐性",
+            "RES_ALL": "全耐性"
+        },
+        "弱点": {
+            "HURT_ROCK": "岩石弱点",
+            "HURT_LITE": "光弱点",
+            "HURT_FIRE": "火炎弱点",
+            "HURT_COLD": "冷気弱点"
+        }
+    };
+
     // 色の選択肢を定義
     const colorOptions = [
         { code: 'D', name: 'Black', color: '#000000' },
@@ -952,6 +1059,14 @@ function MonsterEditForm({ creature, onSave, onCancel }) {
 
     const initialHp = parseHitPoints(creature.hitPoints || "1d1");
 
+    // 初期フラグ状態を設定
+    const initialFlags = {};
+    Object.values(flagCategories).forEach(category => {
+        Object.keys(category).forEach(flag => {
+            initialFlags[flag] = creature.flags ? creature.flags.includes(flag) : false;
+        });
+    });
+
     const [formData, setFormData] = React.useState({
         serialNumber: creature.serialNumber,
         name: creature.name || "",
@@ -969,7 +1084,7 @@ function MonsterEditForm({ creature, onSave, onCancel }) {
         exp: creature.exp,
         nextExp: creature.nextExp,
         nextMon: creature.nextMon,
-        flags: creature.flags ? creature.flags.join(' | ') : "",
+        flags: initialFlags,
         description_ja: creature.description_ja || "",
         description_en: creature.description_en || ""
     });
@@ -981,18 +1096,47 @@ function MonsterEditForm({ creature, onSave, onCancel }) {
         }));
     };
 
+    const handleFlagChange = (flag, checked) => {
+        setFormData(prev => ({
+            ...prev,
+            flags: {
+                ...prev.flags,
+                [flag]: checked
+            }
+        }));
+    };
+
+    const handleCategoryToggle = (categoryFlags, allChecked) => {
+        setFormData(prev => {
+            const newFlags = { ...prev.flags };
+            Object.keys(categoryFlags).forEach(flag => {
+                newFlags[flag] = !allChecked;
+            });
+            return {
+                ...prev,
+                flags: newFlags
+            };
+        });
+    };
+
     const handleSave = () => {
         try {
             // HPダイスを文字列形式に変換
             const hitPoints = `${formData.hpDice}d${formData.hpSides}`;
+            
+            // フラグを文字列形式に変換
+            const activeFlags = Object.entries(formData.flags)
+                .filter(([flag, isActive]) => isActive)
+                .map(([flag]) => flag);
+            const flagString = activeFlags.join(' | ');
             
             // フォームデータからCreatureテキスト形式を再構築
             const textData = `N:${formData.serialNumber}:${formData.name}
 E:${formData.ename}
 G:${formData.symbol}:${formData.color}
 I:${formData.speed + 110}:${hitPoints}:${formData.vision}:${formData.armor_class}:${formData.alertness}
-W:${formData.depth}:${formData.rarity}:${formData.exp}:${formData.nextExp}:${formData.nextMon}${formData.flags ? `
-F:${formData.flags}` : ''}${formData.description_ja ? `
+W:${formData.depth}:${formData.rarity}:${formData.exp}:${formData.nextExp}:${formData.nextMon}${activeFlags.length > 0 ? `
+F:${flagString}` : ''}${formData.description_ja ? `
 D:${formData.description_ja}` : ''}${formData.description_en ? `
 D:$${formData.description_en}` : ''}`;
 
@@ -1022,9 +1166,9 @@ D:$${formData.description_en}` : ''}`;
                 background: '#2b3035',
                 borderRadius: '8px',
                 padding: '20px',
-                maxWidth: '800px',
-                width: '100%',
-                maxHeight: '90vh',
+                maxWidth: '1000px',
+                width: '95%',
+                maxHeight: '95vh',
                 overflow: 'auto',
                 border: '1px solid #555'
             }}>
@@ -1317,24 +1461,120 @@ D:$${formData.description_en}` : ''}`;
                     </div>
 
                     {/* フラグ */}
-                    <div>
+                    <div style={{ gridColumn: '1 / -1' }}>
                         <h4 style={{ color: '#ccc' }}>フラグ</h4>
-                        <textarea
-                            value={formData.flags}
-                            onChange={(e) => handleChange('flags', e.target.value)}
-                            rows="4"
-                            style={{
-                                width: '100%',
-                                padding: '5px',
-                                background: '#1a1a1a',
-                                border: '1px solid #555',
-                                color: '#e0e0e0',
-                                borderRadius: '3px',
+                        <div style={{ 
+                            display: 'grid', 
+                            gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', 
+                            gap: '15px',
+                            maxHeight: '400px',
+                            overflow: 'auto',
+                            border: '1px solid #555',
+                            borderRadius: '5px',
+                            padding: '10px',
+                            background: '#1a1a1a'
+                        }}>
+                            {Object.entries(flagCategories).map(([categoryName, flags]) => {
+                                const categoryFlagKeys = Object.keys(flags);
+                                const checkedCount = categoryFlagKeys.filter(flag => formData.flags[flag]).length;
+                                const allChecked = checkedCount === categoryFlagKeys.length;
+                                const someChecked = checkedCount > 0;
+                                
+                                return (
+                                    <div key={categoryName} style={{ marginBottom: '10px' }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                            <h5 style={{ 
+                                                color: '#ffd700', 
+                                                fontSize: '14px', 
+                                                margin: '0 0 8px 0',
+                                                flex: 1
+                                            }}>
+                                                {categoryName} ({checkedCount}/{categoryFlagKeys.length})
+                                            </h5>
+                                            <button
+                                                onClick={() => handleCategoryToggle(flags, allChecked)}
+                                                style={{
+                                                    background: someChecked ? '#dc3545' : '#28a745',
+                                                    color: 'white',
+                                                    border: 'none',
+                                                    borderRadius: '3px',
+                                                    padding: '2px 6px',
+                                                    fontSize: '10px',
+                                                    cursor: 'pointer',
+                                                    marginBottom: '8px'
+                                                }}
+                                                title={allChecked ? '全て解除' : '全て選択'}
+                                            >
+                                                {allChecked ? '全解除' : '全選択'}
+                                            </button>
+                                        </div>
+                                        <div style={{ 
+                                            borderBottom: '1px solid #555',
+                                            paddingBottom: '8px',
+                                            marginBottom: '8px'
+                                        }}>
+                                            <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '4px' }}>
+                                                {Object.entries(flags).map(([flag, description]) => (
+                                                    <label 
+                                                        key={flag} 
+                                                        style={{ 
+                                                            display: 'flex', 
+                                                            alignItems: 'center',
+                                                            color: '#e0e0e0',
+                                                            fontSize: '12px',
+                                                            cursor: 'pointer',
+                                                            padding: '2px 0'
+                                                        }}
+                                                    >
+                                                        <input
+                                                            type="checkbox"
+                                                            checked={formData.flags[flag] || false}
+                                                            onChange={(e) => handleFlagChange(flag, e.target.checked)}
+                                                            style={{ 
+                                                                marginRight: '6px',
+                                                                transform: 'scale(0.9)'
+                                                            }}
+                                                        />
+                                                        <span style={{ 
+                                                            fontFamily: 'monospace',
+                                                            color: formData.flags[flag] ? '#4caf50' : '#ccc',
+                                                            fontWeight: formData.flags[flag] ? 'bold' : 'normal'
+                                                        }}>
+                                                            {flag}
+                                                        </span>
+                                                        <span style={{ 
+                                                            marginLeft: '8px',
+                                                            color: '#aaa',
+                                                            fontSize: '11px'
+                                                        }}>
+                                                            {description}
+                                                        </span>
+                                                    </label>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                        
+                        {/* 選択済みフラグの概要表示 */}
+                        <div style={{ marginTop: '10px', padding: '8px', background: '#2a2a2a', borderRadius: '4px' }}>
+                            <h6 style={{ color: '#ccc', fontSize: '12px', margin: '0 0 5px 0' }}>
+                                選択済みフラグ ({Object.values(formData.flags).filter(Boolean).length}個):
+                            </h6>
+                            <div style={{ 
+                                fontSize: '11px', 
+                                color: '#4caf50',
                                 fontFamily: 'monospace',
-                                fontSize: '12px'
-                            }}
-                            placeholder="フラグを | で区切って入力"
-                        />
+                                lineHeight: '1.3'
+                            }}>
+                                {Object.entries(formData.flags)
+                                    .filter(([flag, isActive]) => isActive)
+                                    .map(([flag]) => flag)
+                                    .join(' | ') || '(フラグなし)'}
+                            </div>
+                        </div>
                     </div>
                 </div>
 
