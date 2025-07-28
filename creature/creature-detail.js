@@ -913,6 +913,26 @@ function MonsterTableRow({ creature, index, infoList, onDelete, onCopy, onEdit }
 
 // モンスター編集フォームコンポーネント
 function MonsterEditForm({ creature, onSave, onCancel }) {
+    // 色の選択肢を定義
+    const colorOptions = [
+        { code: 'D', name: 'Black', color: '#000000' },
+        { code: 'w', name: 'White', color: '#ffffff' },
+        { code: 's', name: 'Gray', color: '#808080' },
+        { code: 'o', name: 'Orange', color: '#ff8000' },
+        { code: 'r', name: 'Red', color: '#ff0000' },
+        { code: 'g', name: 'Green', color: '#00ff00' },
+        { code: 'b', name: 'Blue', color: '#0000ff' },
+        { code: 'u', name: 'Brown', color: '#8b4513' },
+        { code: 'd', name: 'Dark Gray', color: '#404040' },
+        { code: 'W', name: 'Light Gray', color: '#c0c0c0' },
+        { code: 'v', name: 'Violet', color: '#8000ff' },
+        { code: 'y', name: 'Yellow', color: '#ffff00' },
+        { code: 'R', name: 'Light Red', color: '#ff8080' },
+        { code: 'G', name: 'Light Green', color: '#80ff80' },
+        { code: 'B', name: 'Light Blue', color: '#8080ff' },
+        { code: 'U', name: 'Light Brown', color: '#daa520' }
+    ];
+
     const [formData, setFormData] = React.useState({
         serialNumber: creature.serialNumber,
         name: creature.name || "",
@@ -1053,8 +1073,7 @@ D:$${formData.description_en}` : ''}`;
                                 <label style={{ display: 'block', marginBottom: '5px', color: '#ccc' }}>
                                     色:
                                 </label>
-                                <input
-                                    type="text"
+                                <select
                                     value={formData.color}
                                     onChange={(e) => handleChange('color', e.target.value)}
                                     style={{
@@ -1065,7 +1084,14 @@ D:$${formData.description_en}` : ''}`;
                                         color: '#e0e0e0',
                                         borderRadius: '3px'
                                     }}
-                                />
+                                >
+                                    <option value="">色を選択</option>
+                                    {colorOptions.map(option => (
+                                        <option key={option.code} value={option.code}>
+                                            {option.code} - {option.name}
+                                        </option>
+                                    ))}
+                                </select>
                             </div>
                         </div>
                     </div>
