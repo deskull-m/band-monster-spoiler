@@ -442,7 +442,7 @@ function MonsterDetail({ creature, index, infoList }) {
 }
 
 // テーブル行用のコンポーネント
-function MonsterTableRow({ creature, index, infoList, onDelete, onCopy }) {
+function MonsterTableRow({ creature, index, infoList, onDelete, onCopy, onEdit }) {
     const [showModal, setShowModal] = React.useState(false);
     const [tab, setTab] = React.useState("detail");
 
@@ -657,15 +657,26 @@ function MonsterTableRow({ creature, index, infoList, onDelete, onCopy }) {
                 </td>
                 <td style={{ textAlign: "center" }}>
                     <button
-                        className="btn btn-outline-primary btn-sm"
+                        className="btn btn-outline-info btn-sm"
                         onClick={() => {
                             setTab("detail");
                             setShowModal(true);
                         }}
                         style={{ marginRight: "0.3em" }}
+                        title="詳細を表示"
                     >
-                        編集
+                        📄
                     </button>
+                    {onEdit && (
+                        <button
+                            className="btn btn-outline-primary btn-sm"
+                            onClick={() => onEdit(creature, index)}
+                            title="このモンスターを編集"
+                            style={{ marginRight: "0.3em" }}
+                        >
+                            ✏️
+                        </button>
+                    )}
                     {onCopy && (
                         <button
                             className="btn btn-outline-info btn-sm"
@@ -897,5 +908,422 @@ function MonsterTableRow({ creature, index, infoList, onDelete, onCopy }) {
                 </div>
             )}
         </>
+    );
+}
+
+// モンスター編集フォームコンポーネント
+function MonsterEditForm({ creature, onSave, onCancel }) {
+    const [formData, setFormData] = React.useState({
+        serialNumber: creature.serialNumber,
+        name: creature.name || "",
+        ename: creature.ename || "",
+        symbol: creature.symbol || "",
+        color: creature.color || "",
+        speed: creature.speed,
+        hitPoints: creature.hitPoints || "1d1",
+        vision: creature.vision,
+        armor_class: creature.armor_class,
+        alertness: creature.alertness,
+        depth: creature.depth,
+        rarity: creature.rarity,
+        exp: creature.exp,
+        nextExp: creature.nextExp,
+        nextMon: creature.nextMon,
+        flags: creature.flags ? creature.flags.join(' | ') : "",
+        description_ja: creature.description_ja || "",
+        description_en: creature.description_en || ""
+    });
+
+    const handleChange = (field, value) => {
+        setFormData(prev => ({
+            ...prev,
+            [field]: value
+        }));
+    };
+
+    const handleSave = () => {
+        try {
+            // フォームデータからCreatureテキスト形式を再構築
+            const textData = `N:${formData.serialNumber}:${formData.name}
+E:${formData.ename}
+G:${formData.symbol}:${formData.color}
+I:${formData.speed + 110}:${formData.hitPoints}:${formData.vision}:${formData.armor_class}:${formData.alertness}
+W:${formData.depth}:${formData.rarity}:${formData.exp}:${formData.nextExp}:${formData.nextMon}${formData.flags ? `
+F:${formData.flags}` : ''}${formData.description_ja ? `
+D:${formData.description_ja}` : ''}${formData.description_en ? `
+D:$${formData.description_en}` : ''}`;
+
+            const updatedCreature = new Creature(textData);
+            onSave(updatedCreature);
+        } catch (error) {
+            alert('モンスターデータの更新に失敗しました: ' + error.message);
+        }
+    };
+
+    return (
+        <div style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100vw',
+            height: '100vh',
+            background: 'rgba(0,0,0,0.8)',
+            zIndex: 9999,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '20px',
+            boxSizing: 'border-box'
+        }}>
+            <div style={{
+                background: '#2b3035',
+                borderRadius: '8px',
+                padding: '20px',
+                maxWidth: '800px',
+                width: '100%',
+                maxHeight: '90vh',
+                overflow: 'auto',
+                border: '1px solid #555'
+            }}>
+                <h3 style={{ marginTop: 0, color: '#e0e0e0' }}>
+                    モンスター編集 - ID: {formData.serialNumber}
+                </h3>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
+                    {/* 基本情報 */}
+                    <div>
+                        <h4 style={{ color: '#ccc' }}>基本情報</h4>
+                        <div style={{ marginBottom: '10px' }}>
+                            <label style={{ display: 'block', marginBottom: '5px', color: '#ccc' }}>
+                                日本語名:
+                            </label>
+                            <input
+                                type="text"
+                                value={formData.name}
+                                onChange={(e) => handleChange('name', e.target.value)}
+                                style={{
+                                    width: '100%',
+                                    padding: '5px',
+                                    background: '#1a1a1a',
+                                    border: '1px solid #555',
+                                    color: '#e0e0e0',
+                                    borderRadius: '3px'
+                                }}
+                            />
+                        </div>
+                        <div style={{ marginBottom: '10px' }}>
+                            <label style={{ display: 'block', marginBottom: '5px', color: '#ccc' }}>
+                                英語名:
+                            </label>
+                            <input
+                                type="text"
+                                value={formData.ename}
+                                onChange={(e) => handleChange('ename', e.target.value)}
+                                style={{
+                                    width: '100%',
+                                    padding: '5px',
+                                    background: '#1a1a1a',
+                                    border: '1px solid #555',
+                                    color: '#e0e0e0',
+                                    borderRadius: '3px'
+                                }}
+                            />
+                        </div>
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                            <div>
+                                <label style={{ display: 'block', marginBottom: '5px', color: '#ccc' }}>
+                                    シンボル:
+                                </label>
+                                <input
+                                    type="text"
+                                    maxLength="1"
+                                    value={formData.symbol}
+                                    onChange={(e) => handleChange('symbol', e.target.value)}
+                                    style={{
+                                        width: '100%',
+                                        padding: '5px',
+                                        background: '#1a1a1a',
+                                        border: '1px solid #555',
+                                        color: '#e0e0e0',
+                                        borderRadius: '3px'
+                                    }}
+                                />
+                            </div>
+                            <div>
+                                <label style={{ display: 'block', marginBottom: '5px', color: '#ccc' }}>
+                                    色:
+                                </label>
+                                <input
+                                    type="text"
+                                    value={formData.color}
+                                    onChange={(e) => handleChange('color', e.target.value)}
+                                    style={{
+                                        width: '100%',
+                                        padding: '5px',
+                                        background: '#1a1a1a',
+                                        border: '1px solid #555',
+                                        color: '#e0e0e0',
+                                        borderRadius: '3px'
+                                    }}
+                                />
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* 能力値 */}
+                    <div>
+                        <h4 style={{ color: '#ccc' }}>能力値</h4>
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                            <div>
+                                <label style={{ display: 'block', marginBottom: '5px', color: '#ccc' }}>
+                                    速度:
+                                </label>
+                                <input
+                                    type="number"
+                                    value={formData.speed}
+                                    onChange={(e) => handleChange('speed', parseInt(e.target.value) || 0)}
+                                    style={{
+                                        width: '100%',
+                                        padding: '5px',
+                                        background: '#1a1a1a',
+                                        border: '1px solid #555',
+                                        color: '#e0e0e0',
+                                        borderRadius: '3px'
+                                    }}
+                                />
+                            </div>
+                            <div>
+                                <label style={{ display: 'block', marginBottom: '5px', color: '#ccc' }}>
+                                    HP:
+                                </label>
+                                <input
+                                    type="text"
+                                    value={formData.hitPoints}
+                                    onChange={(e) => handleChange('hitPoints', e.target.value)}
+                                    style={{
+                                        width: '100%',
+                                        padding: '5px',
+                                        background: '#1a1a1a',
+                                        border: '1px solid #555',
+                                        color: '#e0e0e0',
+                                        borderRadius: '3px'
+                                    }}
+                                />
+                            </div>
+                            <div>
+                                <label style={{ display: 'block', marginBottom: '5px', color: '#ccc' }}>
+                                    視界:
+                                </label>
+                                <input
+                                    type="number"
+                                    value={formData.vision}
+                                    onChange={(e) => handleChange('vision', parseInt(e.target.value) || 0)}
+                                    style={{
+                                        width: '100%',
+                                        padding: '5px',
+                                        background: '#1a1a1a',
+                                        border: '1px solid #555',
+                                        color: '#e0e0e0',
+                                        borderRadius: '3px'
+                                    }}
+                                />
+                            </div>
+                            <div>
+                                <label style={{ display: 'block', marginBottom: '5px', color: '#ccc' }}>
+                                    AC:
+                                </label>
+                                <input
+                                    type="number"
+                                    value={formData.armor_class}
+                                    onChange={(e) => handleChange('armor_class', parseInt(e.target.value) || 0)}
+                                    style={{
+                                        width: '100%',
+                                        padding: '5px',
+                                        background: '#1a1a1a',
+                                        border: '1px solid #555',
+                                        color: '#e0e0e0',
+                                        borderRadius: '3px'
+                                    }}
+                                />
+                            </div>
+                            <div>
+                                <label style={{ display: 'block', marginBottom: '5px', color: '#ccc' }}>
+                                    警戒度:
+                                </label>
+                                <input
+                                    type="number"
+                                    value={formData.alertness}
+                                    onChange={(e) => handleChange('alertness', parseInt(e.target.value) || 0)}
+                                    style={{
+                                        width: '100%',
+                                        padding: '5px',
+                                        background: '#1a1a1a',
+                                        border: '1px solid #555',
+                                        color: '#e0e0e0',
+                                        borderRadius: '3px'
+                                    }}
+                                />
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* レベル・経験値 */}
+                    <div>
+                        <h4 style={{ color: '#ccc' }}>レベル・経験値</h4>
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                            <div>
+                                <label style={{ display: 'block', marginBottom: '5px', color: '#ccc' }}>
+                                    レベル:
+                                </label>
+                                <input
+                                    type="number"
+                                    value={formData.depth}
+                                    onChange={(e) => handleChange('depth', parseInt(e.target.value) || 0)}
+                                    style={{
+                                        width: '100%',
+                                        padding: '5px',
+                                        background: '#1a1a1a',
+                                        border: '1px solid #555',
+                                        color: '#e0e0e0',
+                                        borderRadius: '3px'
+                                    }}
+                                />
+                            </div>
+                            <div>
+                                <label style={{ display: 'block', marginBottom: '5px', color: '#ccc' }}>
+                                    希少度:
+                                </label>
+                                <input
+                                    type="number"
+                                    value={formData.rarity}
+                                    onChange={(e) => handleChange('rarity', parseInt(e.target.value) || 1)}
+                                    style={{
+                                        width: '100%',
+                                        padding: '5px',
+                                        background: '#1a1a1a',
+                                        border: '1px solid #555',
+                                        color: '#e0e0e0',
+                                        borderRadius: '3px'
+                                    }}
+                                />
+                            </div>
+                            <div>
+                                <label style={{ display: 'block', marginBottom: '5px', color: '#ccc' }}>
+                                    経験値:
+                                </label>
+                                <input
+                                    type="number"
+                                    value={formData.exp}
+                                    onChange={(e) => handleChange('exp', parseInt(e.target.value) || 0)}
+                                    style={{
+                                        width: '100%',
+                                        padding: '5px',
+                                        background: '#1a1a1a',
+                                        border: '1px solid #555',
+                                        color: '#e0e0e0',
+                                        borderRadius: '3px'
+                                    }}
+                                />
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* フラグ */}
+                    <div>
+                        <h4 style={{ color: '#ccc' }}>フラグ</h4>
+                        <textarea
+                            value={formData.flags}
+                            onChange={(e) => handleChange('flags', e.target.value)}
+                            rows="4"
+                            style={{
+                                width: '100%',
+                                padding: '5px',
+                                background: '#1a1a1a',
+                                border: '1px solid #555',
+                                color: '#e0e0e0',
+                                borderRadius: '3px',
+                                fontFamily: 'monospace',
+                                fontSize: '12px'
+                            }}
+                            placeholder="フラグを | で区切って入力"
+                        />
+                    </div>
+                </div>
+
+                {/* 説明文 */}
+                <div style={{ marginTop: '15px' }}>
+                    <h4 style={{ color: '#ccc' }}>説明文</h4>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
+                        <div>
+                            <label style={{ display: 'block', marginBottom: '5px', color: '#ccc' }}>
+                                日本語説明:
+                            </label>
+                            <textarea
+                                value={formData.description_ja}
+                                onChange={(e) => handleChange('description_ja', e.target.value)}
+                                rows="3"
+                                style={{
+                                    width: '100%',
+                                    padding: '5px',
+                                    background: '#1a1a1a',
+                                    border: '1px solid #555',
+                                    color: '#e0e0e0',
+                                    borderRadius: '3px'
+                                }}
+                            />
+                        </div>
+                        <div>
+                            <label style={{ display: 'block', marginBottom: '5px', color: '#ccc' }}>
+                                英語説明:
+                            </label>
+                            <textarea
+                                value={formData.description_en}
+                                onChange={(e) => handleChange('description_en', e.target.value)}
+                                rows="3"
+                                style={{
+                                    width: '100%',
+                                    padding: '5px',
+                                    background: '#1a1a1a',
+                                    border: '1px solid #555',
+                                    color: '#e0e0e0',
+                                    borderRadius: '3px'
+                                }}
+                            />
+                        </div>
+                    </div>
+                </div>
+
+                {/* ボタン */}
+                <div style={{ marginTop: '20px', textAlign: 'right' }}>
+                    <button
+                        onClick={onCancel}
+                        style={{
+                            background: '#666',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '4px',
+                            padding: '10px 20px',
+                            cursor: 'pointer',
+                            marginRight: '10px'
+                        }}
+                    >
+                        キャンセル
+                    </button>
+                    <button
+                        onClick={handleSave}
+                        style={{
+                            background: '#007bff',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '4px',
+                            padding: '10px 20px',
+                            cursor: 'pointer'
+                        }}
+                    >
+                        保存
+                    </button>
+                </div>
+            </div>
+        </div>
     );
 }
