@@ -206,6 +206,160 @@ function FileReaderComponent() {
         }
     };
 
+    const handleAddNewMonster = () => {
+        // 新しいモンスターIDを決定（既存の最大ID + 1）
+        const maxId = infoList.length > 0 ? Math.max(...infoList.map(c => c.serialNumber)) : 0;
+        const newId = maxId + 1;
+
+        // 新しいモンスターのデフォルトデータを作成
+        const newMonsterData = `N:${newId}:新しいモンスター
+E:NewMonster
+G:?:w
+I:110:1d1:10:10:0
+W:1:1:0:0:0
+F:BASH_DOOR`;
+
+        try {
+            const newCreature = new Creature(newMonsterData);
+            if (newCreature && newCreature.serialNumber != null && newCreature.name) {
+                const newList = [...infoList, newCreature];
+                setInfoList(newList);
+                
+                // 新しく追加されたモンスターにスクロール
+                setTimeout(() => {
+                    const anchor = document.getElementById(`creature-${newId}`);
+                    if (anchor) {
+                        anchor.scrollIntoView({ behavior: "smooth", block: "start" });
+                    }
+                }, 100);
+                
+                alert(`新しいモンスター（ID: ${newId}）が追加されました`);
+            } else {
+                alert('新しいモンスターの作成に失敗しました');
+            }
+        } catch (error) {
+            console.error('新しいモンスター作成エラー:', error);
+            alert('新しいモンスターの作成中にエラーが発生しました: ' + error.message);
+        }
+    };
+
+    const handleAddNewMonsterFromTemplate = (template) => {
+        // 新しいモンスターIDを決定（既存の最大ID + 1）
+        const maxId = infoList.length > 0 ? Math.max(...infoList.map(c => c.serialNumber)) : 0;
+        const newId = maxId + 1;
+
+        // テンプレートに基づいてデータを作成
+        let newMonsterData;
+        switch (template) {
+            case 'weak':
+                newMonsterData = `N:${newId}:弱いモンスター
+E:WeakMonster
+G:w:w
+I:110:1d4:10:5:10
+W:1:1:1:0:0
+F:BASH_DOOR`;
+                break;
+            case 'normal':
+                newMonsterData = `N:${newId}:普通のモンスター
+E:NormalMonster
+G:o:B
+I:110:3d8:12:15:20
+W:10:2:50:0:0
+F:BASH_DOOR | OPEN_DOOR`;
+                break;
+            case 'strong':
+                newMonsterData = `N:${newId}:強いモンスター
+E:StrongMonster
+G:O:r
+I:120:10d10:15:25:30
+W:30:1:1000:0:0
+F:BASH_DOOR | OPEN_DOOR | SMART`;
+                break;
+            case 'unique':
+                newMonsterData = `N:${newId}:ユニークモンスター
+E:UniqueMonster
+G:@:v
+I:115:20d20:20:30:50
+W:50:1:5000:0:0
+F:UNIQUE | MALE | SMART | BASH_DOOR | OPEN_DOOR`;
+                break;
+            default:
+                newMonsterData = `N:${newId}:新しいモンスター
+E:NewMonster
+G:?:w
+I:110:1d1:10:10:0
+W:1:1:0:0:0
+F:BASH_DOOR`;
+        }
+
+        try {
+            const newCreature = new Creature(newMonsterData);
+            if (newCreature && newCreature.serialNumber != null && newCreature.name) {
+                const newList = [...infoList, newCreature];
+                setInfoList(newList);
+                
+                // 新しく追加されたモンスターにスクロール
+                setTimeout(() => {
+                    const anchor = document.getElementById(`creature-${newId}`);
+                    if (anchor) {
+                        anchor.scrollIntoView({ behavior: "smooth", block: "start" });
+                    }
+                }, 100);
+                
+                alert(`新しいモンスター（ID: ${newId}）が追加されました`);
+            } else {
+                alert('新しいモンスターの作成に失敗しました');
+            }
+        } catch (error) {
+            console.error('新しいモンスター作成エラー:', error);
+            alert('新しいモンスターの作成中にエラーが発生しました: ' + error.message);
+        }
+    };
+
+    const handleDeleteMonster = (serialNumber) => {
+        if (confirm(`モンスター ID: ${serialNumber} を削除しますか？この操作は取り消せません。`)) {
+            const newList = infoList.filter(creature => creature.serialNumber !== serialNumber);
+            setInfoList(newList);
+            alert(`モンスター ID: ${serialNumber} が削除されました`);
+        }
+    };
+
+    const handleCopyMonster = (originalCreature) => {
+        // 新しいモンスターIDを決定（既存の最大ID + 1）
+        const maxId = infoList.length > 0 ? Math.max(...infoList.map(c => c.serialNumber)) : 0;
+        const newId = maxId + 1;
+
+        try {
+            // 元のモンスターのテキストデータをコピーして新しいIDに変更
+            const originalData = originalCreature.textDetails;
+            const newData = originalData.replace(
+                /^N:\d+:(.*)$/m, 
+                `N:${newId}:${originalCreature.name}のコピー`
+            );
+
+            const newCreature = new Creature(newData);
+            if (newCreature && newCreature.serialNumber != null && newCreature.name) {
+                const newList = [...infoList, newCreature];
+                setInfoList(newList);
+                
+                // 新しく追加されたモンスターにスクロール
+                setTimeout(() => {
+                    const anchor = document.getElementById(`creature-${newId}`);
+                    if (anchor) {
+                        anchor.scrollIntoView({ behavior: "smooth", block: "start" });
+                    }
+                }, 100);
+                
+                alert(`モンスター（ID: ${newId}）がコピーされました`);
+            } else {
+                alert('モンスターのコピーに失敗しました');
+            }
+        } catch (error) {
+            console.error('モンスターコピーエラー:', error);
+            alert('モンスターのコピー中にエラーが発生しました: ' + error.message);
+        }
+    };
+
     const filteredList = showUniqueOnly
         ? infoList.filter(c => c.flags && c.flags.includes("UNIQUE"))
         : infoList;
@@ -270,6 +424,94 @@ function FileReaderComponent() {
                         onChange={handleJsonImport}
                     />
                     <span style={{ margin: "0 0.5em", color: "#ccc" }}>(json/jsonc)</span>
+                </div>
+                <div style={{ marginTop: "0.5em" }}>
+                    <button
+                        onClick={handleAddNewMonster}
+                        style={{
+                            background: "#28a745",
+                            color: "white",
+                            border: "none",
+                            borderRadius: "4px",
+                            padding: "0.5em 1em",
+                            cursor: "pointer",
+                            marginRight: "0.5em"
+                        }}
+                        disabled={loading}
+                    >
+                        ➕ 新規モンスター追加
+                    </button>
+                    <div style={{ display: "inline-block", marginLeft: "0.5em" }}>
+                        <span style={{ marginRight: "0.5em", color: "#666" }}>テンプレート:</span>
+                        <button
+                            onClick={() => handleAddNewMonsterFromTemplate('weak')}
+                            style={{
+                                background: "#6c757d",
+                                color: "white",
+                                border: "none",
+                                borderRadius: "3px",
+                                padding: "0.3em 0.6em",
+                                cursor: "pointer",
+                                marginRight: "0.3em",
+                                fontSize: "0.9em"
+                            }}
+                            disabled={loading}
+                        >
+                            弱敵
+                        </button>
+                        <button
+                            onClick={() => handleAddNewMonsterFromTemplate('normal')}
+                            style={{
+                                background: "#17a2b8",
+                                color: "white",
+                                border: "none",
+                                borderRadius: "3px",
+                                padding: "0.3em 0.6em",
+                                cursor: "pointer",
+                                marginRight: "0.3em",
+                                fontSize: "0.9em"
+                            }}
+                            disabled={loading}
+                        >
+                            普通
+                        </button>
+                        <button
+                            onClick={() => handleAddNewMonsterFromTemplate('strong')}
+                            style={{
+                                background: "#dc3545",
+                                color: "white",
+                                border: "none",
+                                borderRadius: "3px",
+                                padding: "0.3em 0.6em",
+                                cursor: "pointer",
+                                marginRight: "0.3em",
+                                fontSize: "0.9em"
+                            }}
+                            disabled={loading}
+                        >
+                            強敵
+                        </button>
+                        <button
+                            onClick={() => handleAddNewMonsterFromTemplate('unique')}
+                            style={{
+                                background: "#ffd700",
+                                color: "#333",
+                                border: "none",
+                                borderRadius: "3px",
+                                padding: "0.3em 0.6em",
+                                cursor: "pointer",
+                                fontSize: "0.9em"
+                            }}
+                            disabled={loading}
+                        >
+                            ユニーク
+                        </button>
+                    </div>
+                    <div style={{ marginTop: "0.3em" }}>
+                        <span style={{ color: "#666", fontSize: "0.9em" }}>
+                            新しいモンスターをリストの最後に追加します
+                        </span>
+                    </div>
                 </div>
             </div>
 
@@ -405,12 +647,19 @@ function FileReaderComponent() {
                                 <th style={{ width: "200px" }}>英語名</th>
                                 <th style={{ width: "80px" }}>レベル</th>
                                 <th style={{ width: "100px", textAlign: "center" }}>シンボル</th>
-                                <th style={{ width: "100px", textAlign: "center" }}>編集</th>
+                                <th style={{ width: "180px", textAlign: "center" }}>操作</th>
                             </tr>
                         </thead>
                         <tbody>
                             {sortedList.map((creature, index) => (
-                                <MonsterTableRow key={index} creature={creature} index={index} infoList={infoList} />
+                                <MonsterTableRow 
+                                    key={index} 
+                                    creature={creature} 
+                                    index={index} 
+                                    infoList={infoList} 
+                                    onDelete={handleDeleteMonster}
+                                    onCopy={handleCopyMonster}
+                                />
                             ))}
                         </tbody>
                     </table>

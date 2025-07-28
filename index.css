@@ -245,4 +245,7 @@ input[type="file"] {
 .item-detail {
     color: black;
 }
-    
+
+.modal-content {
+    color:#404030;
+}

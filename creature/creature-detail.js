@@ -442,7 +442,7 @@ function MonsterDetail({ creature, index, infoList }) {
 }
 
 // テーブル行用のコンポーネント
-function MonsterTableRow({ creature, index, infoList }) {
+function MonsterTableRow({ creature, index, infoList, onDelete, onCopy }) {
     const [showModal, setShowModal] = React.useState(false);
     const [tab, setTab] = React.useState("detail");
 
@@ -662,9 +662,29 @@ function MonsterTableRow({ creature, index, infoList }) {
                             setTab("detail");
                             setShowModal(true);
                         }}
+                        style={{ marginRight: "0.3em" }}
                     >
                         編集
                     </button>
+                    {onCopy && (
+                        <button
+                            className="btn btn-outline-info btn-sm"
+                            onClick={() => onCopy(creature)}
+                            title="このモンスターをコピー"
+                            style={{ marginRight: "0.3em" }}
+                        >
+                            📋
+                        </button>
+                    )}
+                    {onDelete && (
+                        <button
+                            className="btn btn-outline-danger btn-sm"
+                            onClick={() => onDelete(creature.serialNumber)}
+                            title="このモンスターを削除"
+                        >
+                            🗑️
+                        </button>
+                    )}
                 </td>
             </tr>
 
