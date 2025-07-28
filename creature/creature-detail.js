@@ -913,6 +913,45 @@ function MonsterTableRow({ creature, index, infoList, onDelete, onCopy, onEdit }
 
 // モンスター編集フォームコンポーネント
 function MonsterEditForm({ creature, onSave, onCancel }) {
+    // 色の選択肢を定義
+    const colorOptions = [
+        { code: 'D', name: 'Black', color: '#000000' },
+        { code: 'w', name: 'White', color: '#ffffff' },
+        { code: 's', name: 'Gray', color: '#808080' },
+        { code: 'o', name: 'Orange', color: '#ff8000' },
+        { code: 'r', name: 'Red', color: '#ff0000' },
+        { code: 'g', name: 'Green', color: '#00ff00' },
+        { code: 'b', name: 'Blue', color: '#0000ff' },
+        { code: 'u', name: 'Brown', color: '#8b4513' },
+        { code: 'd', name: 'Dark Gray', color: '#404040' },
+        { code: 'W', name: 'Light Gray', color: '#c0c0c0' },
+        { code: 'v', name: 'Violet', color: '#8000ff' },
+        { code: 'y', name: 'Yellow', color: '#ffff00' },
+        { code: 'R', name: 'Light Red', color: '#ff8080' },
+        { code: 'G', name: 'Light Green', color: '#80ff80' },
+        { code: 'B', name: 'Light Blue', color: '#8080ff' },
+        { code: 'U', name: 'Light Brown', color: '#daa520' }
+    ];
+
+    // HPダイスを解析する関数
+    const parseHitPoints = (hitPoints) => {
+        const match = hitPoints.match(/^(\d+)d(\d+)$/);
+        if (match) {
+            return {
+                dice: parseInt(match[1]),
+                sides: parseInt(match[2])
+            };
+        }
+        return { dice: 1, sides: 1 };
+    };
+
+    // HPダイスから平均値を計算する関数
+    const calculateAverageHP = (dice, sides) => {
+        return Math.round(dice * (sides + 1) / 2 * 10) / 10;
+    };
+
+    const initialHp = parseHitPoints(creature.hitPoints || "1d1");
+
     const [formData, setFormData] = React.useState({
         serialNumber: creature.serialNumber,
         name: creature.name || "",
@@ -920,7 +959,8 @@ function MonsterEditForm({ creature, onSave, onCancel }) {
         symbol: creature.symbol || "",
         color: creature.color || "",
         speed: creature.speed,
-        hitPoints: creature.hitPoints || "1d1",
+        hpDice: initialHp.dice,
+        hpSides: initialHp.sides,
         vision: creature.vision,
         armor_class: creature.armor_class,
         alertness: creature.alertness,
@@ -943,11 +983,14 @@ function MonsterEditForm({ creature, onSave, onCancel }) {
 
     const handleSave = () => {
         try {
+            // HPダイスを文字列形式に変換
+            const hitPoints = `${formData.hpDice}d${formData.hpSides}`;
+            
             // フォームデータからCreatureテキスト形式を再構築
             const textData = `N:${formData.serialNumber}:${formData.name}
 E:${formData.ename}
 G:${formData.symbol}:${formData.color}
-I:${formData.speed + 110}:${formData.hitPoints}:${formData.vision}:${formData.armor_class}:${formData.alertness}
+I:${formData.speed + 110}:${hitPoints}:${formData.vision}:${formData.armor_class}:${formData.alertness}
 W:${formData.depth}:${formData.rarity}:${formData.exp}:${formData.nextExp}:${formData.nextMon}${formData.flags ? `
 F:${formData.flags}` : ''}${formData.description_ja ? `
 D:${formData.description_ja}` : ''}${formData.description_en ? `
@@ -1053,8 +1096,7 @@ D:$${formData.description_en}` : ''}`;
                                 <label style={{ display: 'block', marginBottom: '5px', color: '#ccc' }}>
                                     色:
                                 </label>
-                                <input
-                                    type="text"
+                                <select
                                     value={formData.color}
                                     onChange={(e) => handleChange('color', e.target.value)}
                                     style={{
@@ -1065,7 +1107,14 @@ D:$${formData.description_en}` : ''}`;
                                         color: '#e0e0e0',
                                         borderRadius: '3px'
                                     }}
-                                />
+                                >
+                                    <option value="">色を選択</option>
+                                    {colorOptions.map(option => (
+                                        <option key={option.code} value={option.code}>
+                                            {option.code} - {option.name}
+                                        </option>
+                                    ))}
+                                </select>
                             </div>
                         </div>
                     </div>
@@ -1080,8 +1129,14 @@ D:$${formData.description_en}` : ''}`;
                                 </label>
                                 <input
                                     type="number"
+                                    min="-99"
+                                    max="99"
                                     value={formData.speed}
-                                    onChange={(e) => handleChange('speed', parseInt(e.target.value) || 0)}
+                                    onChange={(e) => {
+                                        const value = parseInt(e.target.value) || 0;
+                                        const clampedValue = Math.max(-99, Math.min(99, value));
+                                        handleChange('speed', clampedValue);
+                                    }}
                                     style={{
                                         width: '100%',
                                         padding: '5px',
@@ -1092,23 +1147,56 @@ D:$${formData.description_en}` : ''}`;
                                     }}
                                 />
                             </div>
-                            <div>
+                            <div style={{ gridColumn: '1 / -1' }}>
                                 <label style={{ display: 'block', marginBottom: '5px', color: '#ccc' }}>
                                     HP:
                                 </label>
-                                <input
-                                    type="text"
-                                    value={formData.hitPoints}
-                                    onChange={(e) => handleChange('hitPoints', e.target.value)}
-                                    style={{
-                                        width: '100%',
-                                        padding: '5px',
-                                        background: '#1a1a1a',
-                                        border: '1px solid #555',
-                                        color: '#e0e0e0',
-                                        borderRadius: '3px'
-                                    }}
-                                />
+                                <div style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr auto', gap: '5px', alignItems: 'center' }}>
+                                    <input
+                                        type="number"
+                                        min="1"
+                                        value={formData.hpDice}
+                                        onChange={(e) => handleChange('hpDice', Math.max(1, parseInt(e.target.value) || 1))}
+                                        style={{
+                                            width: '100%',
+                                            padding: '5px',
+                                            background: '#1a1a1a',
+                                            border: '1px solid #555',
+                                            color: '#e0e0e0',
+                                            borderRadius: '3px'
+                                        }}
+                                        placeholder="ダイス数"
+                                    />
+                                    <span style={{ color: '#ccc', padding: '0 5px' }}>d</span>
+                                    <input
+                                        type="number"
+                                        min="1"
+                                        value={formData.hpSides}
+                                        onChange={(e) => handleChange('hpSides', Math.max(1, parseInt(e.target.value) || 1))}
+                                        style={{
+                                            width: '100%',
+                                            padding: '5px',
+                                            background: '#1a1a1a',
+                                            border: '1px solid #555',
+                                            color: '#e0e0e0',
+                                            borderRadius: '3px'
+                                        }}
+                                        placeholder="面数"
+                                    />
+                                    <div style={{ 
+                                        padding: '5px 10px',
+                                        background: '#333',
+                                        borderRadius: '3px',
+                                        color: '#ccc',
+                                        fontSize: '12px',
+                                        whiteSpace: 'nowrap'
+                                    }}>
+                                        平均: {calculateAverageHP(formData.hpDice, formData.hpSides)}
+                                    </div>
+                                </div>
+                                <div style={{ fontSize: '11px', color: '#888', marginTop: '3px' }}>
+                                    形式: {formData.hpDice}d{formData.hpSides}
+                                </div>
                             </div>
                             <div>
                                 <label style={{ display: 'block', marginBottom: '5px', color: '#ccc' }}>
