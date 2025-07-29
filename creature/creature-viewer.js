@@ -6,6 +6,7 @@ function FileReaderComponent() {
     const [sorting, setSorting] = React.useState(false);
     const [editingCreature, setEditingCreature] = React.useState(null);
     const [editingIndex, setEditingIndex] = React.useState(-1);
+    const [searchText, setSearchText] = React.useState("");
 
     const handleFileChange = (event) => {
         const file = event.target.files[0];
@@ -53,14 +54,8 @@ function FileReaderComponent() {
             }
             const text = await response.text();
 
-            // デバッグ: データの最初の部分を確認
-            console.log('取得したデータの最初の1000文字:', text.substring(0, 1000));
-
             // GitHubデータは改行コードが\nのみの可能性があるので、より柔軟な分割を行う
             const datas = text.split(/\r?\n(?=N:)/);
-            console.log('分割されたデータ数:', datas.length);
-            console.log('最初のエントリ:', datas[0]?.substring(0, 300));
-            console.log('2番目のエントリ:', datas[1]?.substring(0, 300));
 
             let list = [];
             const total = datas.length;
@@ -68,7 +63,7 @@ function FileReaderComponent() {
 
             // バッチ処理でタイムアウトを防ぐ
             function processChunk(startIndex) {
-                const batchSize = 50; // 一度に処理する件数を減らす
+                const batchSize = 100; // バッチサイズを増やして効率化
                 const endIndex = Math.min(startIndex + batchSize, datas.length);
 
                 for (let i = startIndex; i < endIndex; i++) {
@@ -79,7 +74,6 @@ function FileReaderComponent() {
 
                     // N:で始まっていない場合はスキップ
                     if (!data.trim().startsWith('N:')) {
-                        console.log(`エントリ ${i} はN:で始まっていません:`, data.substring(0, 50));
                         continue;
                     }
 
@@ -87,20 +81,11 @@ function FileReaderComponent() {
                     data = data.replace(/\r?\n/g, '\r\n');
 
                     try {
-                        console.log(`処理中のモンスター ${i}:`, data.substring(0, 100));
                         let creature = new Creature(data);
                         if (creature && creature.serialNumber != null && creature.name) {
                             list.push(creature);
-                            console.log(`成功: モンスター ${i} - ID:${creature.serialNumber} - ${creature.name}`);
-                        } else {
-                            console.warn(`モンスター ${i} データが不完全:`, {
-                                serialNumber: creature?.serialNumber,
-                                name: creature?.name
-                            });
                         }
                     } catch (creatureError) {
-                        console.warn(`モンスター ${i} の解析に失敗:`, creatureError.message);
-                        console.warn('失敗したデータの先頭部分:', data.substring(0, 300));
                         // エラーのあるエントリはスキップして続行
                     }
                     processedCount++;
@@ -111,9 +96,8 @@ function FileReaderComponent() {
 
                 if (endIndex < datas.length) {
                     // 次のバッチを非同期で処理
-                    setTimeout(() => processChunk(endIndex), 10); // より短いタイムアウト
+                    setTimeout(() => processChunk(endIndex), 1); // タイムアウトを短縮
                 } else {
-                    console.log('読み込み完了。総数:', list.length);
                     setInfoList(list);
                     setProgress(100);
                     setLoading(false);
@@ -387,12 +371,31 @@ F:BASH_DOOR`;
         setEditingIndex(-1);
     };
 
-    const filteredList = infoList;
+    const filteredList = React.useMemo(() => {
+        return infoList.filter(creature => {
+            if (!searchText.trim()) return true;
+            const searchLower = searchText.toLowerCase();
+            return (
+                (creature.name && creature.name.toLowerCase().includes(searchLower)) ||
+                (creature.english_name && creature.english_name.toLowerCase().includes(searchLower))
+            );
+        });
+    }, [infoList, searchText]);
 
     const [sortedList, setSortedList] = React.useState([]);
+
     React.useEffect(() => {
+        // データが空の場合はソート処理をスキップ
+        if (filteredList.length === 0) {
+            setSortedList([]);
+            setSorting(false);
+            return;
+        }
+
         setSorting(true);
-        setTimeout(() => {
+
+        // より短いタイムアウトでソート処理を実行
+        const timeoutId = setTimeout(() => {
             const sorted = [...filteredList].sort((a, b) => {
                 switch (sortType) {
                     case "id-asc": return a.serialNumber - b.serialNumber;
@@ -416,7 +419,10 @@ F:BASH_DOOR`;
             });
             setSortedList(sorted);
             setSorting(false);
-        }, 0);
+        }, 10);
+
+        // クリーンアップ関数でタイムアウトをクリア
+        return () => clearTimeout(timeoutId);
     }, [filteredList, sortType]);
 
     return (
@@ -540,6 +546,47 @@ F:BASH_DOOR`;
                 </div>
             </div>
 
+            <div style={{ marginBottom: "1em" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "0.5em" }}>
+                    <label htmlFor="monster-search" style={{ color: "#666", fontSize: "0.9em" }}>
+                        モンスター検索:
+                    </label>
+                    <input
+                        id="monster-search"
+                        type="text"
+                        placeholder="日本語名または英語名で検索..."
+                        value={searchText}
+                        onChange={(e) => setSearchText(e.target.value)}
+                        style={{
+                            padding: "0.5em",
+                            border: "1px solid #ccc",
+                            borderRadius: "4px",
+                            fontSize: "0.9em",
+                            width: "300px"
+                        }}
+                    />
+                    {searchText && (
+                        <button
+                            onClick={() => setSearchText("")}
+                            style={{
+                                background: "#6c757d",
+                                color: "white",
+                                border: "none",
+                                borderRadius: "3px",
+                                padding: "0.3em 0.6em",
+                                cursor: "pointer",
+                                fontSize: "0.8em"
+                            }}
+                        >
+                            クリア
+                        </button>
+                    )}
+                    <span style={{ color: "#666", fontSize: "0.8em", marginLeft: "0.5em" }}>
+                        {filteredList.length} / {infoList.length} 件
+                    </span>
+                </div>
+            </div>
+
             {loading && (
                 <div style={{ margin: "1em 0" }}>
                     <div style={{
@@ -643,7 +690,7 @@ F:BASH_DOOR`;
                     </table>
                 </div>
             </div>
-            {sorting && (
+            {sorting && filteredList.length > 0 && (
                 <div
                     style={{
                         position: "fixed",
