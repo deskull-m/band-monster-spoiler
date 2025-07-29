@@ -2,7 +2,6 @@ function FileReaderComponent() {
     const [infoList, setInfoList] = React.useState([]);
     const [progress, setProgress] = React.useState(0);
     const [loading, setLoading] = React.useState(false);
-    const [showUniqueOnly, setShowUniqueOnly] = React.useState(false);
     const [sortType, setSortType] = React.useState("id-asc");
     const [sorting, setSorting] = React.useState(false);
     const [editingCreature, setEditingCreature] = React.useState(null);
@@ -381,9 +380,7 @@ F:BASH_DOOR`;
         setEditingIndex(-1);
     };
 
-    const filteredList = showUniqueOnly
-        ? infoList.filter(c => c.flags && c.flags.includes("UNIQUE"))
-        : infoList;
+    const filteredList = infoList;
 
     const [sortedList, setSortedList] = React.useState([]);
     React.useEffect(() => {
@@ -586,10 +583,6 @@ F:BASH_DOOR`;
 
             <div id="editor">
                 <div id="pagenation">
-                    <div id="search">
-                        <input type="text" id="searchText" placeholder="検索" />
-                        <button id="searchButton">検索</button>
-                    </div>
                     <div id="sort" style={{ display: "flex", alignItems: "center", flexWrap: "wrap" }}>
                         <span style={{ marginRight: "1em" }}>ソート:</span>
                         <label style={{ marginRight: "0.5em" }}>
@@ -613,21 +606,6 @@ F:BASH_DOOR`;
                             ID降順
                         </label>
                         {/* 他のソートオプションも同様に... */}
-                        <button
-                            id="uniqueFilterButton"
-                            style={{
-                                marginLeft: "1em",
-                                background: showUniqueOnly ? "#ffd700" : "#f5f5f5",
-                                color: "#333",
-                                border: "1px solid #888",
-                                borderRadius: "4px",
-                                padding: "0.3em 1em",
-                                cursor: "pointer"
-                            }}
-                            onClick={() => setShowUniqueOnly(v => !v)}
-                        >
-                            {showUniqueOnly ? "UNIQUEのみ表示中（解除）" : "UNIQUEのみ表示"}
-                        </button>
                     </div>
                 </div>
                 <div id="detail-lists">
