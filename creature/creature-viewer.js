@@ -48,7 +48,7 @@ function FileReaderComponent() {
         setLoading(true);
         setProgress(0);
         try {
-            const response = await fetch('https://raw.githubusercontent.com/deskull-m/bakabakaband/refs/heads/master/lib/edit/MonsterRaceDefinitions.txt');
+            const response = await fetch('https://raw.githubusercontent.com/deskull-m/bakabakaband/refs/heads/develop/lib/edit/MonsterRaceDefinitions.txt');
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
@@ -628,35 +628,6 @@ F:BASH_DOOR`;
                         >
                             {showUniqueOnly ? "UNIQUEのみ表示中（解除）" : "UNIQUEのみ表示"}
                         </button>
-                        <div id="jump">
-                            <select
-                                id="jumpSelect"
-                                onChange={e => {
-                                    const anchorId = e.target.value;
-                                    if (anchorId) {
-                                        const anchor = document.getElementById(anchorId);
-                                        if (anchor) {
-                                            anchor.scrollIntoView({ behavior: "smooth", block: "start" });
-                                        }
-                                    }
-                                }}
-                                defaultValue=""
-                            >
-                                <option value="" disabled>モンスターへジャンプ</option>
-                                {filteredList.map((creature) => {
-                                    const label = `${creature.serialNumber} : ${creature.name}`;
-                                    const truncated = label.length > 50 ? label.slice(0, 47) + "..." : label;
-                                    return (
-                                        <option
-                                            key={creature.serialNumber}
-                                            value={`creature-${creature.serialNumber}`}
-                                        >
-                                            {truncated}
-                                        </option>
-                                    );
-                                })}
-                            </select>
-                        </div>
                     </div>
                 </div>
                 <div id="detail-lists">
