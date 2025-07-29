@@ -225,7 +225,7 @@ F:BASH_DOOR`;
             if (newCreature && newCreature.serialNumber != null && newCreature.name) {
                 const newList = [...infoList, newCreature];
                 setInfoList(newList);
-                
+
                 // 新しく追加されたモンスターにスクロール
                 setTimeout(() => {
                     const anchor = document.getElementById(`creature-${newId}`);
@@ -233,7 +233,7 @@ F:BASH_DOOR`;
                         anchor.scrollIntoView({ behavior: "smooth", block: "start" });
                     }
                 }, 100);
-                
+
                 alert(`新しいモンスター（ID: ${newId}）が追加されました`);
             } else {
                 alert('新しいモンスターの作成に失敗しました');
@@ -298,7 +298,7 @@ F:BASH_DOOR`;
             if (newCreature && newCreature.serialNumber != null && newCreature.name) {
                 const newList = [...infoList, newCreature];
                 setInfoList(newList);
-                
+
                 // 新しく追加されたモンスターにスクロール
                 setTimeout(() => {
                     const anchor = document.getElementById(`creature-${newId}`);
@@ -306,7 +306,7 @@ F:BASH_DOOR`;
                         anchor.scrollIntoView({ behavior: "smooth", block: "start" });
                     }
                 }, 100);
-                
+
                 alert(`新しいモンスター（ID: ${newId}）が追加されました`);
             } else {
                 alert('新しいモンスターの作成に失敗しました');
@@ -334,7 +334,7 @@ F:BASH_DOOR`;
             // 元のモンスターのテキストデータをコピーして新しいIDに変更
             const originalData = originalCreature.textDetails;
             const newData = originalData.replace(
-                /^N:\d+:(.*)$/m, 
+                /^N:\d+:(.*)$/m,
                 `N:${newId}:${originalCreature.name}のコピー`
             );
 
@@ -342,7 +342,7 @@ F:BASH_DOOR`;
             if (newCreature && newCreature.serialNumber != null && newCreature.name) {
                 const newList = [...infoList, newCreature];
                 setInfoList(newList);
-                
+
                 // 新しく追加されたモンスターにスクロール
                 setTimeout(() => {
                     const anchor = document.getElementById(`creature-${newId}`);
@@ -350,7 +350,7 @@ F:BASH_DOOR`;
                         anchor.scrollIntoView({ behavior: "smooth", block: "start" });
                     }
                 }, 100);
-                
+
                 alert(`モンスター「${originalCreature.name}」がコピーされました（新ID: ${newId}）`);
             } else {
                 alert('モンスターのコピーに失敗しました');
@@ -362,11 +362,18 @@ F:BASH_DOOR`;
     };
 
     const handleEditMonster = (creature, index) => {
+        // sortedListのindexではなく、infoList内での実際のindexを取得
+        const actualIndex = infoList.findIndex(c => c.serialNumber === creature.serialNumber);
         setEditingCreature(creature);
-        setEditingIndex(index);
+        setEditingIndex(actualIndex);
     };
 
     const handleSaveEdit = (updatedCreature) => {
+        if (editingIndex === -1) {
+            alert('編集対象のモンスターが見つかりません');
+            return;
+        }
+
         const newList = [...infoList];
         newList[editingIndex] = updatedCreature;
         setInfoList(newList);
@@ -622,11 +629,11 @@ F:BASH_DOOR`;
                         </thead>
                         <tbody>
                             {sortedList.map((creature, index) => (
-                                <MonsterTableRow 
-                                    key={index} 
-                                    creature={creature} 
-                                    index={index} 
-                                    infoList={infoList} 
+                                <MonsterTableRow
+                                    key={index}
+                                    creature={creature}
+                                    index={index}
+                                    infoList={infoList}
                                     onDelete={handleDeleteMonster}
                                     onCopy={handleCopyMonster}
                                     onEdit={handleEditMonster}
@@ -669,7 +676,7 @@ F:BASH_DOOR`;
                     `}</style>
                 </div>
             )}
-            
+
             {/* 編集フォーム */}
             {editingCreature && (
                 <MonsterEditForm
