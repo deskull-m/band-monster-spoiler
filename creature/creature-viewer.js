@@ -2,11 +2,11 @@ function FileReaderComponent() {
     const [infoList, setInfoList] = React.useState([]);
     const [progress, setProgress] = React.useState(0);
     const [loading, setLoading] = React.useState(false);
-    const [showUniqueOnly, setShowUniqueOnly] = React.useState(false);
     const [sortType, setSortType] = React.useState("id-asc");
     const [sorting, setSorting] = React.useState(false);
     const [editingCreature, setEditingCreature] = React.useState(null);
     const [editingIndex, setEditingIndex] = React.useState(-1);
+    const [searchText, setSearchText] = React.useState("");
 
     const handleFileChange = (event) => {
         const file = event.target.files[0];
@@ -48,20 +48,14 @@ function FileReaderComponent() {
         setLoading(true);
         setProgress(0);
         try {
-            const response = await fetch('https://raw.githubusercontent.com/deskull-m/bakabakaband/refs/heads/master/lib/edit/MonsterRaceDefinitions.txt');
+            const response = await fetch('https://raw.githubusercontent.com/deskull-m/bakabakaband/refs/heads/develop/lib/edit/MonsterRaceDefinitions.txt');
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
             const text = await response.text();
 
-            // デバッグ: データの最初の部分を確認
-            console.log('取得したデータの最初の1000文字:', text.substring(0, 1000));
-
             // GitHubデータは改行コードが\nのみの可能性があるので、より柔軟な分割を行う
             const datas = text.split(/\r?\n(?=N:)/);
-            console.log('分割されたデータ数:', datas.length);
-            console.log('最初のエントリ:', datas[0]?.substring(0, 300));
-            console.log('2番目のエントリ:', datas[1]?.substring(0, 300));
 
             let list = [];
             const total = datas.length;
@@ -69,7 +63,7 @@ function FileReaderComponent() {
 
             // バッチ処理でタイムアウトを防ぐ
             function processChunk(startIndex) {
-                const batchSize = 50; // 一度に処理する件数を減らす
+                const batchSize = 100; // バッチサイズを増やして効率化
                 const endIndex = Math.min(startIndex + batchSize, datas.length);
 
                 for (let i = startIndex; i < endIndex; i++) {
@@ -80,7 +74,6 @@ function FileReaderComponent() {
 
                     // N:で始まっていない場合はスキップ
                     if (!data.trim().startsWith('N:')) {
-                        console.log(`エントリ ${i} はN:で始まっていません:`, data.substring(0, 50));
                         continue;
                     }
 
@@ -88,20 +81,11 @@ function FileReaderComponent() {
                     data = data.replace(/\r?\n/g, '\r\n');
 
                     try {
-                        console.log(`処理中のモンスター ${i}:`, data.substring(0, 100));
                         let creature = new Creature(data);
                         if (creature && creature.serialNumber != null && creature.name) {
                             list.push(creature);
-                            console.log(`成功: モンスター ${i} - ID:${creature.serialNumber} - ${creature.name}`);
-                        } else {
-                            console.warn(`モンスター ${i} データが不完全:`, {
-                                serialNumber: creature?.serialNumber,
-                                name: creature?.name
-                            });
                         }
                     } catch (creatureError) {
-                        console.warn(`モンスター ${i} の解析に失敗:`, creatureError.message);
-                        console.warn('失敗したデータの先頭部分:', data.substring(0, 300));
                         // エラーのあるエントリはスキップして続行
                     }
                     processedCount++;
@@ -112,9 +96,8 @@ function FileReaderComponent() {
 
                 if (endIndex < datas.length) {
                     // 次のバッチを非同期で処理
-                    setTimeout(() => processChunk(endIndex), 10); // より短いタイムアウト
+                    setTimeout(() => processChunk(endIndex), 1); // タイムアウトを短縮
                 } else {
-                    console.log('読み込み完了。総数:', list.length);
                     setInfoList(list);
                     setProgress(100);
                     setLoading(false);
@@ -226,7 +209,7 @@ F:BASH_DOOR`;
             if (newCreature && newCreature.serialNumber != null && newCreature.name) {
                 const newList = [...infoList, newCreature];
                 setInfoList(newList);
-                
+
                 // 新しく追加されたモンスターにスクロール
                 setTimeout(() => {
                     const anchor = document.getElementById(`creature-${newId}`);
@@ -234,7 +217,7 @@ F:BASH_DOOR`;
                         anchor.scrollIntoView({ behavior: "smooth", block: "start" });
                     }
                 }, 100);
-                
+
                 alert(`新しいモンスター（ID: ${newId}）が追加されました`);
             } else {
                 alert('新しいモンスターの作成に失敗しました');
@@ -299,7 +282,7 @@ F:BASH_DOOR`;
             if (newCreature && newCreature.serialNumber != null && newCreature.name) {
                 const newList = [...infoList, newCreature];
                 setInfoList(newList);
-                
+
                 // 新しく追加されたモンスターにスクロール
                 setTimeout(() => {
                     const anchor = document.getElementById(`creature-${newId}`);
@@ -307,7 +290,7 @@ F:BASH_DOOR`;
                         anchor.scrollIntoView({ behavior: "smooth", block: "start" });
                     }
                 }, 100);
-                
+
                 alert(`新しいモンスター（ID: ${newId}）が追加されました`);
             } else {
                 alert('新しいモンスターの作成に失敗しました');
@@ -335,7 +318,7 @@ F:BASH_DOOR`;
             // 元のモンスターのテキストデータをコピーして新しいIDに変更
             const originalData = originalCreature.textDetails;
             const newData = originalData.replace(
-                /^N:\d+:(.*)$/m, 
+                /^N:\d+:(.*)$/m,
                 `N:${newId}:${originalCreature.name}のコピー`
             );
 
@@ -343,7 +326,7 @@ F:BASH_DOOR`;
             if (newCreature && newCreature.serialNumber != null && newCreature.name) {
                 const newList = [...infoList, newCreature];
                 setInfoList(newList);
-                
+
                 // 新しく追加されたモンスターにスクロール
                 setTimeout(() => {
                     const anchor = document.getElementById(`creature-${newId}`);
@@ -351,7 +334,7 @@ F:BASH_DOOR`;
                         anchor.scrollIntoView({ behavior: "smooth", block: "start" });
                     }
                 }, 100);
-                
+
                 alert(`モンスター「${originalCreature.name}」がコピーされました（新ID: ${newId}）`);
             } else {
                 alert('モンスターのコピーに失敗しました');
@@ -363,11 +346,18 @@ F:BASH_DOOR`;
     };
 
     const handleEditMonster = (creature, index) => {
+        // sortedListのindexではなく、infoList内での実際のindexを取得
+        const actualIndex = infoList.findIndex(c => c.serialNumber === creature.serialNumber);
         setEditingCreature(creature);
-        setEditingIndex(index);
+        setEditingIndex(actualIndex);
     };
 
     const handleSaveEdit = (updatedCreature) => {
+        if (editingIndex === -1) {
+            alert('編集対象のモンスターが見つかりません');
+            return;
+        }
+
         const newList = [...infoList];
         newList[editingIndex] = updatedCreature;
         setInfoList(newList);
@@ -381,14 +371,31 @@ F:BASH_DOOR`;
         setEditingIndex(-1);
     };
 
-    const filteredList = showUniqueOnly
-        ? infoList.filter(c => c.flags && c.flags.includes("UNIQUE"))
-        : infoList;
+    const filteredList = React.useMemo(() => {
+        return infoList.filter(creature => {
+            if (!searchText.trim()) return true;
+            const searchLower = searchText.toLowerCase();
+            return (
+                (creature.name && creature.name.toLowerCase().includes(searchLower)) ||
+                (creature.english_name && creature.english_name.toLowerCase().includes(searchLower))
+            );
+        });
+    }, [infoList, searchText]);
 
     const [sortedList, setSortedList] = React.useState([]);
+
     React.useEffect(() => {
+        // データが空の場合はソート処理をスキップ
+        if (filteredList.length === 0) {
+            setSortedList([]);
+            setSorting(false);
+            return;
+        }
+
         setSorting(true);
-        setTimeout(() => {
+
+        // より短いタイムアウトでソート処理を実行
+        const timeoutId = setTimeout(() => {
             const sorted = [...filteredList].sort((a, b) => {
                 switch (sortType) {
                     case "id-asc": return a.serialNumber - b.serialNumber;
@@ -412,7 +419,10 @@ F:BASH_DOOR`;
             });
             setSortedList(sorted);
             setSorting(false);
-        }, 0);
+        }, 10);
+
+        // クリーンアップ関数でタイムアウトをクリア
+        return () => clearTimeout(timeoutId);
     }, [filteredList, sortType]);
 
     return (
@@ -536,6 +546,47 @@ F:BASH_DOOR`;
                 </div>
             </div>
 
+            <div style={{ marginBottom: "1em" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "0.5em" }}>
+                    <label htmlFor="monster-search" style={{ color: "#666", fontSize: "0.9em" }}>
+                        モンスター検索:
+                    </label>
+                    <input
+                        id="monster-search"
+                        type="text"
+                        placeholder="日本語名または英語名で検索..."
+                        value={searchText}
+                        onChange={(e) => setSearchText(e.target.value)}
+                        style={{
+                            padding: "0.5em",
+                            border: "1px solid #ccc",
+                            borderRadius: "4px",
+                            fontSize: "0.9em",
+                            width: "300px"
+                        }}
+                    />
+                    {searchText && (
+                        <button
+                            onClick={() => setSearchText("")}
+                            style={{
+                                background: "#6c757d",
+                                color: "white",
+                                border: "none",
+                                borderRadius: "3px",
+                                padding: "0.3em 0.6em",
+                                cursor: "pointer",
+                                fontSize: "0.8em"
+                            }}
+                        >
+                            クリア
+                        </button>
+                    )}
+                    <span style={{ color: "#666", fontSize: "0.8em", marginLeft: "0.5em" }}>
+                        {filteredList.length} / {infoList.length} 件
+                    </span>
+                </div>
+            </div>
+
             {loading && (
                 <div style={{ margin: "1em 0" }}>
                     <div style={{
@@ -586,10 +637,6 @@ F:BASH_DOOR`;
 
             <div id="editor">
                 <div id="pagenation">
-                    <div id="search">
-                        <input type="text" id="searchText" placeholder="検索" />
-                        <button id="searchButton">検索</button>
-                    </div>
                     <div id="sort" style={{ display: "flex", alignItems: "center", flexWrap: "wrap" }}>
                         <span style={{ marginRight: "1em" }}>ソート:</span>
                         <label style={{ marginRight: "0.5em" }}>
@@ -613,50 +660,6 @@ F:BASH_DOOR`;
                             ID降順
                         </label>
                         {/* 他のソートオプションも同様に... */}
-                        <button
-                            id="uniqueFilterButton"
-                            style={{
-                                marginLeft: "1em",
-                                background: showUniqueOnly ? "#ffd700" : "#f5f5f5",
-                                color: "#333",
-                                border: "1px solid #888",
-                                borderRadius: "4px",
-                                padding: "0.3em 1em",
-                                cursor: "pointer"
-                            }}
-                            onClick={() => setShowUniqueOnly(v => !v)}
-                        >
-                            {showUniqueOnly ? "UNIQUEのみ表示中（解除）" : "UNIQUEのみ表示"}
-                        </button>
-                        <div id="jump">
-                            <select
-                                id="jumpSelect"
-                                onChange={e => {
-                                    const anchorId = e.target.value;
-                                    if (anchorId) {
-                                        const anchor = document.getElementById(anchorId);
-                                        if (anchor) {
-                                            anchor.scrollIntoView({ behavior: "smooth", block: "start" });
-                                        }
-                                    }
-                                }}
-                                defaultValue=""
-                            >
-                                <option value="" disabled>モンスターへジャンプ</option>
-                                {filteredList.map((creature) => {
-                                    const label = `${creature.serialNumber} : ${creature.name}`;
-                                    const truncated = label.length > 50 ? label.slice(0, 47) + "..." : label;
-                                    return (
-                                        <option
-                                            key={creature.serialNumber}
-                                            value={`creature-${creature.serialNumber}`}
-                                        >
-                                            {truncated}
-                                        </option>
-                                    );
-                                })}
-                            </select>
-                        </div>
                     </div>
                 </div>
                 <div id="detail-lists">
@@ -673,11 +676,11 @@ F:BASH_DOOR`;
                         </thead>
                         <tbody>
                             {sortedList.map((creature, index) => (
-                                <MonsterTableRow 
-                                    key={index} 
-                                    creature={creature} 
-                                    index={index} 
-                                    infoList={infoList} 
+                                <MonsterTableRow
+                                    key={index}
+                                    creature={creature}
+                                    index={index}
+                                    infoList={infoList}
                                     onDelete={handleDeleteMonster}
                                     onCopy={handleCopyMonster}
                                     onEdit={handleEditMonster}
@@ -687,7 +690,7 @@ F:BASH_DOOR`;
                     </table>
                 </div>
             </div>
-            {sorting && (
+            {sorting && filteredList.length > 0 && (
                 <div
                     style={{
                         position: "fixed",
@@ -720,7 +723,7 @@ F:BASH_DOOR`;
                     `}</style>
                 </div>
             )}
-            
+
             {/* 編集フォーム */}
             {editingCreature && (
                 <MonsterEditForm
