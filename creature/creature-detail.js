@@ -1346,7 +1346,7 @@ D:$${formData.description_en}` : ''}`;
                     {/* レベル・経験値 */}
                     <div>
                         <h4 style={{ color: '#ccc' }}>レベル・経験値</h4>
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '10px' }}>
                             <div>
                                 <label style={{ display: 'block', marginBottom: '5px', color: '#ccc' }}>
                                     レベル:
