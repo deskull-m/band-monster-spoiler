@@ -368,7 +368,7 @@ function MonsterDetail({ creature, index, infoList }) {
                                             {creature.rarity}
                                         </div>
                                         <div>
-                                            <strong>HP期待値</strong><br />
+                                            <strong>{creature.flags && creature.flags.includes('FORCE_MAXHP') ? 'HP最大値' : 'HP期待値'}</strong><br />
                                             {creature.hp_expected}({creature.hitPoints})
                                         </div>
                                         <div>
@@ -992,9 +992,13 @@ function MonsterEditForm({ creature, onSave, onCancel }) {
         return { dice: 1, sides: 1 };
     };
 
-    // HPダイスから平均値を計算する関数
-    const calculateAverageHP = (dice, sides) => {
-        return Math.round(dice * (sides + 1) / 2 * 10) / 10;
+    // HPダイスから期待値を計算する関数（FORCE_MAXHPフラグを考慮）
+    const calculateExpectedHP = (dice, sides, hasForceMaxHP) => {
+        if (hasForceMaxHP) {
+            return dice * sides; // 最大値
+        } else {
+            return Math.round(dice * (sides + 1) / 2 * 10) / 10; // 平均値
+        }
     };
 
     const initialHp = parseHitPoints(creature.hitPoints || "1d1");
@@ -1275,7 +1279,7 @@ D:$${formData.description_en}` : ''}`;
                                         fontSize: '12px',
                                         whiteSpace: 'nowrap'
                                     }}>
-                                        平均: {calculateAverageHP(formData.hpDice, formData.hpSides)}
+                                        {formData.flags.FORCE_MAXHP ? '最大' : '平均'}: {calculateExpectedHP(formData.hpDice, formData.hpSides, formData.flags.FORCE_MAXHP)}
                                     </div>
                                 </div>
                                 <div style={{ fontSize: '11px', color: '#888', marginTop: '3px' }}>
