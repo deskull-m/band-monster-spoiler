@@ -8,6 +8,7 @@ function FileReaderComponent() {
     const [editingIndex, setEditingIndex] = React.useState(-1);
     const [searchText, setSearchText] = React.useState("");
     const [selectedFlags, setSelectedFlags] = React.useState([]);
+    const [excludedFlags, setExcludedFlags] = React.useState([]);
     const [showFlagFilter, setShowFlagFilter] = React.useState(false);
 
     // フラグ翻訳マップ（creature-detail.jsから参照）
@@ -175,8 +176,22 @@ function FileReaderComponent() {
         });
     };
 
+    const handleExcludeFlagToggle = (flag) => {
+        setExcludedFlags(prev => {
+            if (prev.includes(flag)) {
+                return prev.filter(f => f !== flag);
+            } else {
+                return [...prev, flag];
+            }
+        });
+    };
+
     const clearAllFlags = () => {
         setSelectedFlags([]);
+    };
+
+    const clearAllExcludedFlags = () => {
+        setExcludedFlags([]);
     };
 
     const handleFileChange = (event) => {
@@ -548,21 +563,27 @@ F:BASH_DOOR`;
             if (searchText.trim()) {
                 const searchLower = searchText.toLowerCase();
                 const nameMatch = (creature.name && creature.name.toLowerCase().includes(searchLower)) ||
-                                  (creature.english_name && creature.english_name.toLowerCase().includes(searchLower));
+                    (creature.english_name && creature.english_name.toLowerCase().includes(searchLower));
                 if (!nameMatch) return false;
             }
 
-            // フラグフィルタ（AND判定）
+            const creatureFlags = creature.flags || [];
+
+            // フラグフィルタ（AND判定）- 選択されたすべてのフラグを持つ必要がある
             if (selectedFlags.length > 0) {
-                // すべての選択されたフラグがそのモンスターに存在する必要がある
-                const creatureFlags = creature.flags || [];
                 const hasAllFlags = selectedFlags.every(flag => creatureFlags.includes(flag));
                 if (!hasAllFlags) return false;
             }
 
+            // 除外フラグフィルタ - 除外フラグのいずれかを持つ場合は除外
+            if (excludedFlags.length > 0) {
+                const hasExcludedFlag = excludedFlags.some(flag => creatureFlags.includes(flag));
+                if (hasExcludedFlag) return false;
+            }
+
             return true;
         });
-    }, [infoList, searchText, selectedFlags]);
+    }, [infoList, searchText, selectedFlags, excludedFlags]);
 
     const [sortedList, setSortedList] = React.useState([]);
 
@@ -788,7 +809,7 @@ F:BASH_DOOR`;
                         {selectedFlags.length > 0 && (
                             <>
                                 <span style={{ color: "#666", fontSize: "0.8em" }}>
-                                    選択中: {selectedFlags.length}個
+                                    必須: {selectedFlags.length}個
                                 </span>
                                 <button
                                     onClick={clearAllFlags}
@@ -802,7 +823,28 @@ F:BASH_DOOR`;
                                         fontSize: "0.8em"
                                     }}
                                 >
-                                    全クリア
+                                    必須クリア
+                                </button>
+                            </>
+                        )}
+                        {excludedFlags.length > 0 && (
+                            <>
+                                <span style={{ color: "#dc3545", fontSize: "0.8em" }}>
+                                    除外: {excludedFlags.length}個
+                                </span>
+                                <button
+                                    onClick={clearAllExcludedFlags}
+                                    style={{
+                                        background: "#dc3545",
+                                        color: "white",
+                                        border: "none",
+                                        borderRadius: "3px",
+                                        padding: "0.2em 0.5em",
+                                        cursor: "pointer",
+                                        fontSize: "0.8em"
+                                    }}
+                                >
+                                    除外クリア
                                 </button>
                             </>
                         )}
@@ -814,50 +856,92 @@ F:BASH_DOOR`;
                             borderRadius: "4px",
                             padding: "1em",
                             background: "#f8f9fa",
-                            maxHeight: "300px",
+                            maxHeight: "400px",
                             overflow: "auto"
                         }}>
+                            <div style={{ marginBottom: "1em", fontSize: "0.9em", color: "#495057" }}>
+                                <strong>使い方:</strong>
+                                <span style={{ color: "#007bff", marginLeft: "0.5em" }}>✓必須</span> = そのフラグを持つモンスターのみ表示、
+                                <span style={{ color: "#dc3545", marginLeft: "0.5em" }}>✗除外</span> = そのフラグを持つモンスターを除外
+                            </div>
+
                             <div style={{
                                 display: "grid",
-                                gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))",
-                                gap: "0.5em"
+                                gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))",
+                                gap: "0.3em"
                             }}>
                                 {Object.entries(FLAG_TRANSLATION).map(([flag, description]) => (
-                                    <label
+                                    <div
                                         key={flag}
                                         style={{
                                             display: "flex",
                                             alignItems: "center",
-                                            cursor: "pointer",
                                             fontSize: "0.85em",
-                                            padding: "0.2em"
+                                            padding: "0.2em",
+                                            borderRadius: "3px",
+                                            background: selectedFlags.includes(flag) ? "#e3f2fd" :
+                                                excludedFlags.includes(flag) ? "#ffebee" : "transparent"
                                         }}
                                     >
-                                        <input
-                                            type="checkbox"
-                                            checked={selectedFlags.includes(flag)}
-                                            onChange={() => handleFlagToggle(flag)}
-                                            style={{ marginRight: "0.5em" }}
-                                        />
-                                        <span style={{
-                                            fontFamily: "monospace",
-                                            fontWeight: selectedFlags.includes(flag) ? "bold" : "normal",
-                                            color: selectedFlags.includes(flag) ? "#007bff" : "#333"
+                                        <label style={{
+                                            display: "flex",
+                                            alignItems: "center",
+                                            cursor: "pointer",
+                                            flex: "0 1 auto"
                                         }}>
-                                            {flag}
-                                        </span>
-                                        <span style={{
-                                            marginLeft: "0.5em",
-                                            color: "#666",
-                                            fontSize: "0.9em"
+                                            <input
+                                                type="checkbox"
+                                                checked={selectedFlags.includes(flag)}
+                                                onChange={() => handleFlagToggle(flag)}
+                                                style={{
+                                                    marginRight: "0.3em",
+                                                    accentColor: "#007bff"
+                                                }}
+                                            />
+                                            <span style={{ color: "#007bff", fontSize: "0.8em", marginRight: "0.3em" }}>✓</span>
+                                        </label>
+
+                                        <label style={{
+                                            display: "flex",
+                                            alignItems: "center",
+                                            cursor: "pointer",
+                                            marginRight: "0.5em"
                                         }}>
-                                            {description}
-                                        </span>
-                                    </label>
+                                            <input
+                                                type="checkbox"
+                                                checked={excludedFlags.includes(flag)}
+                                                onChange={() => handleExcludeFlagToggle(flag)}
+                                                style={{
+                                                    marginRight: "0.3em",
+                                                    accentColor: "#dc3545"
+                                                }}
+                                            />
+                                            <span style={{ color: "#dc3545", fontSize: "0.8em", marginRight: "0.3em" }}>✗</span>
+                                        </label>
+
+                                        <div style={{ flex: 1 }}>
+                                            <span style={{
+                                                fontFamily: "monospace",
+                                                fontWeight: (selectedFlags.includes(flag) || excludedFlags.includes(flag)) ? "bold" : "normal",
+                                                color: selectedFlags.includes(flag) ? "#007bff" :
+                                                    excludedFlags.includes(flag) ? "#dc3545" : "#333",
+                                                fontSize: "0.85em"
+                                            }}>
+                                                {flag}
+                                            </span>
+                                            <span style={{
+                                                marginLeft: "0.5em",
+                                                color: "#666",
+                                                fontSize: "0.8em"
+                                            }}>
+                                                {description}
+                                            </span>
+                                        </div>
+                                    </div>
                                 ))}
                             </div>
-                            
-                            {selectedFlags.length > 0 && (
+
+                            {(selectedFlags.length > 0 || excludedFlags.length > 0) && (
                                 <div style={{
                                     marginTop: "1em",
                                     padding: "0.5em",
@@ -865,10 +949,22 @@ F:BASH_DOOR`;
                                     borderRadius: "3px",
                                     fontSize: "0.8em"
                                 }}>
-                                    <strong>選択済みフラグ (AND条件):</strong>
-                                    <div style={{ marginTop: "0.3em", color: "#495057" }}>
-                                        {selectedFlags.map(flag => FLAG_TRANSLATION[flag] || flag).join(" ∧ ")}
-                                    </div>
+                                    {selectedFlags.length > 0 && (
+                                        <div style={{ marginBottom: "0.5em" }}>
+                                            <strong style={{ color: "#007bff" }}>必須フラグ (AND条件):</strong>
+                                            <div style={{ marginTop: "0.3em", color: "#495057" }}>
+                                                {selectedFlags.map(flag => FLAG_TRANSLATION[flag] || flag).join(" ∧ ")}
+                                            </div>
+                                        </div>
+                                    )}
+                                    {excludedFlags.length > 0 && (
+                                        <div>
+                                            <strong style={{ color: "#dc3545" }}>除外フラグ (OR条件):</strong>
+                                            <div style={{ marginTop: "0.3em", color: "#495057" }}>
+                                                {excludedFlags.map(flag => FLAG_TRANSLATION[flag] || flag).join(" ∨ ")}
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
                             )}
                         </div>
