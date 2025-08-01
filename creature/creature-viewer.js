@@ -750,8 +750,8 @@ F:BASH_DOOR`;
             </div>
 
             <div style={{ marginBottom: "1em" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: "0.5em" }}>
-                    <label htmlFor="monster-search" style={{ color: "#666", fontSize: "0.9em" }}>
+                <div className="search-container">
+                    <label htmlFor="monster-search" className="search-label">
                         モンスター検索:
                     </label>
                     <input
@@ -760,31 +760,17 @@ F:BASH_DOOR`;
                         placeholder="日本語名または英語名で検索..."
                         value={searchText}
                         onChange={(e) => setSearchText(e.target.value)}
-                        style={{
-                            padding: "0.5em",
-                            border: "1px solid #ccc",
-                            borderRadius: "4px",
-                            fontSize: "0.9em",
-                            width: "300px"
-                        }}
+                        className="search-input"
                     />
                     {searchText && (
                         <button
                             onClick={() => setSearchText("")}
-                            style={{
-                                background: "#6c757d",
-                                color: "white",
-                                border: "none",
-                                borderRadius: "3px",
-                                padding: "0.3em 0.6em",
-                                cursor: "pointer",
-                                fontSize: "0.8em"
-                            }}
+                            className="search-clear-btn"
                         >
                             クリア
                         </button>
                     )}
-                    <span style={{ color: "#666", fontSize: "0.8em", marginLeft: "0.5em" }}>
+                    <span className="search-result-count">
                         {filteredList.length} / {infoList.length} 件
                     </span>
                 </div>
@@ -1113,6 +1099,7 @@ F:BASH_DOOR`;
             {editingCreature && (
                 <MonsterEditForm
                     creature={editingCreature}
+                    allMonsters={infoList}
                     onSave={handleSaveEdit}
                     onCancel={handleCancelEdit}
                 />
