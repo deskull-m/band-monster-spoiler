@@ -1093,6 +1093,17 @@ D:$${formData.description_en}` : ''}`;
                                     className="monster-edit-input"
                                 />
                             </div>
+                            <div>
+                                <label className="monster-edit-label">
+                                    AC:
+                                </label>
+                                <input
+                                    type="number"
+                                    value={formData.armor_class}
+                                    onChange={(e) => handleChange('armor_class', parseInt(e.target.value) || 0)}
+                                    className="monster-edit-input"
+                                />
+                            </div>
                             <div style={{ gridColumn: '1 / -1' }}>
                                 <label className="monster-edit-label">
                                     HP:
@@ -1131,17 +1142,6 @@ D:$${formData.description_en}` : ''}`;
                                     type="number"
                                     value={formData.vision}
                                     onChange={(e) => handleChange('vision', parseInt(e.target.value) || 0)}
-                                    className="monster-edit-input"
-                                />
-                            </div>
-                            <div>
-                                <label className="monster-edit-label">
-                                    AC:
-                                </label>
-                                <input
-                                    type="number"
-                                    value={formData.armor_class}
-                                    onChange={(e) => handleChange('armor_class', parseInt(e.target.value) || 0)}
                                     className="monster-edit-input"
                                 />
                             </div>
