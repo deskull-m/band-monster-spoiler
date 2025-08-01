@@ -534,7 +534,7 @@ function MonsterTableRow({ creature, index, infoList, onDelete, onCopy, onEdit }
 }
 
 // モンスター編集フォームコンポーネント
-function MonsterEditForm({ creature, onSave, onCancel }) {
+function MonsterEditForm({ creature, allMonsters, onSave, onCancel }) {
     // アライアンス選択肢を定義
     const allianceOptions = [
         { value: 0, name: "無所属" },
@@ -1006,6 +1006,8 @@ D:$${formData.description_en}` : ''}`;
         }
     };
 
+    const [showEvolutionDialog, setShowEvolutionDialog] = React.useState(false);
+
     return (
         <div className="monster-edit-overlay">
             <div className="monster-edit-form">
@@ -1314,6 +1316,13 @@ D:$${formData.description_en}` : ''}`;
                 {/* ボタン */}
                 <div className="monster-edit-buttons">
                     <button
+                        onClick={() => setShowEvolutionDialog(true)}
+                        className="monster-btn-save"
+                        style={{ marginRight: "auto", background: "#17a2b8" }}
+                    >
+                        🧬 進化設定
+                    </button>
+                    <button
                         onClick={onCancel}
                         className="monster-btn-cancel"
                     >
@@ -1322,6 +1331,225 @@ D:$${formData.description_en}` : ''}`;
                     <button
                         onClick={handleSave}
                         className="monster-btn-save"
+                    >
+                        保存
+                    </button>
+                </div>
+            </div>
+
+            {/* 進化設定ダイアログ */}
+            {showEvolutionDialog && (
+                <EvolutionDialog
+                    creature={creature}
+                    allMonsters={allMonsters}
+                    currentEvolution={{
+                        nextExp: formData.nextExp,
+                        nextMon: formData.nextMon
+                    }}
+                    onSave={(evolution) => {
+                        handleChange('nextExp', evolution.nextExp);
+                        handleChange('nextMon', evolution.nextMon);
+                        setShowEvolutionDialog(false);
+                    }}
+                    onCancel={() => setShowEvolutionDialog(false)}
+                />
+            )}
+        </div>
+    );
+}
+
+// 進化設定ダイアログコンポーネント
+function EvolutionDialog({ creature, allMonsters, currentEvolution, onSave, onCancel }) {
+    const [evolutionData, setEvolutionData] = React.useState({
+        nextExp: currentEvolution.nextExp || 0,
+        nextMon: currentEvolution.nextMon || 0
+    });
+
+    const [searchText, setSearchText] = React.useState("");
+    const [showDropdown, setShowDropdown] = React.useState(false);
+    const [selectedMonster, setSelectedMonster] = React.useState(null);
+
+    // 進化先モンスターが設定されている場合、初期選択状態を設定
+    React.useEffect(() => {
+        if (currentEvolution.nextMon && allMonsters) {
+            const monster = allMonsters.find(m => m.serialNumber === currentEvolution.nextMon);
+            if (monster) {
+                setSelectedMonster(monster);
+                setSearchText(`${monster.name} / ${monster.ename}`);
+            }
+        }
+    }, [currentEvolution.nextMon, allMonsters]);
+
+    // 検索フィルター
+    const filteredMonsters = React.useMemo(() => {
+        if (!allMonsters || !searchText.trim()) return [];
+        
+        const search = searchText.toLowerCase();
+        return allMonsters
+            .filter(monster => 
+                monster.serialNumber !== creature.serialNumber && // 自分自身を除外
+                (monster.name.toLowerCase().includes(search) || 
+                 monster.ename.toLowerCase().includes(search) ||
+                 monster.serialNumber.toString().includes(search))
+            )
+            .slice(0, 10); // 最大10件まで表示
+    }, [allMonsters, searchText, creature.serialNumber]);
+
+    const handleMonsterSelect = (monster) => {
+        setSelectedMonster(monster);
+        setSearchText(`${monster.name} / ${monster.ename}`);
+        setEvolutionData(prev => ({
+            ...prev,
+            nextMon: monster.serialNumber
+        }));
+        setShowDropdown(false);
+    };
+
+    const handleClearMonster = () => {
+        setSelectedMonster(null);
+        setSearchText("");
+        setEvolutionData(prev => ({
+            ...prev,
+            nextMon: 0
+        }));
+    };
+
+    const handleSave = () => {
+        onSave(evolutionData);
+    };
+
+    const handleRemoveEvolution = () => {
+        if (confirm("進化設定を削除しますか？")) {
+            onSave({ nextExp: 0, nextMon: 0 });
+        }
+    };
+
+    return (
+        <div className="evolution-dialog-overlay">
+            <div className="evolution-dialog">
+                <h4>🧬 進化設定 - {creature.name}</h4>
+                
+                {/* 現在の進化設定表示 */}
+                <div className="evolution-current-info">
+                    <h5>現在の設定</h5>
+                    {currentEvolution.nextMon > 0 ? (
+                        <div className="current-evolution">
+                            <div>進化先: {selectedMonster ? `${selectedMonster.name} (ID: ${selectedMonster.serialNumber})` : `ID: ${currentEvolution.nextMon}`}</div>
+                            <div>必要経験値: {currentEvolution.nextExp}</div>
+                        </div>
+                    ) : (
+                        <div className="no-evolution">進化設定なし</div>
+                    )}
+                </div>
+
+                {/* 必要経験値入力 */}
+                <div className="evolution-form-group">
+                    <label className="evolution-form-label">
+                        進化に必要な経験値:
+                    </label>
+                    <input
+                        type="number"
+                        min="0"
+                        value={evolutionData.nextExp}
+                        onChange={(e) => setEvolutionData(prev => ({
+                            ...prev,
+                            nextExp: parseInt(e.target.value) || 0
+                        }))}
+                        className="evolution-form-input"
+                        placeholder="経験値を入力 (0で進化なし)"
+                    />
+                    <div className="evolution-help-text">
+                        0を設定すると進化しません。通常は倒した時に得られる経験値の2-5倍程度が目安です。
+                    </div>
+                </div>
+
+                {/* 進化先モンスター選択 */}
+                <div className="evolution-form-group">
+                    <label className="evolution-form-label">
+                        進化先モンスター:
+                    </label>
+                    
+                    <div className="evolution-monster-search">
+                        <input
+                            type="text"
+                            value={searchText}
+                            onChange={(e) => {
+                                setSearchText(e.target.value);
+                                setShowDropdown(true);
+                            }}
+                            onFocus={() => setShowDropdown(true)}
+                            placeholder="モンスター名またはIDで検索..."
+                            className="evolution-search-input"
+                        />
+                        
+                        {showDropdown && filteredMonsters.length > 0 && (
+                            <div className="evolution-dropdown">
+                                {filteredMonsters.map(monster => (
+                                    <div
+                                        key={monster.serialNumber}
+                                        className="evolution-dropdown-item"
+                                        onClick={() => handleMonsterSelect(monster)}
+                                    >
+                                        <div className="evolution-monster-name">
+                                            {monster.name} / {monster.ename}
+                                        </div>
+                                        <div className="evolution-monster-id">
+                                            ID: {monster.serialNumber}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+
+                    {/* 選択されたモンスター表示 */}
+                    {selectedMonster && (
+                        <div className="evolution-selected-monster">
+                            <div className="monster-info">
+                                <div>
+                                    <strong>{selectedMonster.name} / {selectedMonster.ename}</strong>
+                                    <div className="monster-details">
+                                        ID: {selectedMonster.serialNumber} | 
+                                        レベル: {selectedMonster.depth} | 
+                                        HP: {selectedMonster.hp_expected} | 
+                                        速度: {selectedMonster.speed}
+                                    </div>
+                                </div>
+                                <button
+                                    onClick={handleClearMonster}
+                                    className="evolution-clear-btn"
+                                >
+                                    クリア
+                                </button>
+                            </div>
+                        </div>
+                    )}
+
+                    <div className="evolution-help-text">
+                        進化先として適切なモンスターを選択してください。通常は現在のモンスターより強力なモンスターを選びます。
+                    </div>
+                </div>
+
+                {/* ボタン */}
+                <div className="evolution-dialog-buttons">
+                    {(currentEvolution.nextMon > 0 || currentEvolution.nextExp > 0) && (
+                        <button
+                            onClick={handleRemoveEvolution}
+                            className="evolution-btn-remove"
+                        >
+                            進化設定を削除
+                        </button>
+                    )}
+                    <button
+                        onClick={onCancel}
+                        className="evolution-btn-cancel"
+                    >
+                        キャンセル
+                    </button>
+                    <button
+                        onClick={handleSave}
+                        className="evolution-btn-save"
+                        disabled={evolutionData.nextExp <= 0 || evolutionData.nextMon <= 0}
                     >
                         保存
                     </button>

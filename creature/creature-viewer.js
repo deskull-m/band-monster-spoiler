@@ -1099,6 +1099,7 @@ F:BASH_DOOR`;
             {editingCreature && (
                 <MonsterEditForm
                     creature={editingCreature}
+                    allMonsters={infoList}
                     onSave={handleSaveEdit}
                     onCancel={handleCancelEdit}
                 />

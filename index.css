@@ -668,3 +668,212 @@ input[type="file"] {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
 }
+
+/* 進化設定ダイアログ */
+.evolution-dialog-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0,0,0,0.7);
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.evolution-dialog {
+    background: #2b3035;
+    border-radius: 8px;
+    padding: 20px;
+    max-width: 600px;
+    width: 90%;
+    max-height: 80vh;
+    overflow: auto;
+    border: 1px solid #555;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+.evolution-dialog h4 {
+    margin-top: 0;
+    color: #e0e0e0;
+    border-bottom: 1px solid #555;
+    padding-bottom: 10px;
+}
+
+.evolution-form-group {
+    margin-bottom: 15px;
+}
+
+.evolution-form-label {
+    display: block;
+    margin-bottom: 5px;
+    color: #ccc;
+    font-weight: bold;
+}
+
+.evolution-form-input {
+    width: 100%;
+    padding: 8px;
+    background: #1a1a1a;
+    border: 1px solid #555;
+    color: #e0e0e0;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.evolution-monster-search {
+    position: relative;
+    width: 100%;
+}
+
+.evolution-search-input {
+    width: 100%;
+    padding: 8px;
+    background: #1a1a1a;
+    border: 1px solid #555;
+    color: #e0e0e0;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.evolution-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: #1a1a1a;
+    border: 1px solid #555;
+    border-top: none;
+    border-radius: 0 0 4px 4px;
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 1000;
+}
+
+.evolution-dropdown-item {
+    padding: 8px;
+    cursor: pointer;
+    border-bottom: 1px solid #333;
+    color: #e0e0e0;
+    display: flex;
+    justify-content: space-between;
+}
+
+.evolution-dropdown-item:hover {
+    background: #333;
+}
+
+.evolution-dropdown-item:last-child {
+    border-bottom: none;
+}
+
+.evolution-monster-id {
+    color: #90caf9;
+    font-size: 12px;
+    font-family: monospace;
+}
+
+.evolution-monster-name {
+    color: #e0e0e0;
+}
+
+.evolution-selected-monster {
+    padding: 10px;
+    background: #333;
+    border-radius: 4px;
+    margin-top: 5px;
+    color: #e0e0e0;
+}
+
+.evolution-selected-monster .monster-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.evolution-selected-monster .monster-details {
+    font-size: 12px;
+    color: #aaa;
+    margin-top: 5px;
+}
+
+.evolution-clear-btn {
+    background: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    padding: 4px 8px;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.evolution-dialog-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid #555;
+}
+
+.evolution-btn-cancel {
+    background: #666;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 10px 20px;
+    cursor: pointer;
+}
+
+.evolution-btn-save {
+    background: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 10px 20px;
+    cursor: pointer;
+}
+
+.evolution-btn-remove {
+    background: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 10px 20px;
+    cursor: pointer;
+    margin-right: auto;
+}
+
+.evolution-help-text {
+    font-size: 12px;
+    color: #888;
+    margin-top: 5px;
+    line-height: 1.4;
+}
+
+.evolution-current-info {
+    background: #333;
+    padding: 10px;
+    border-radius: 4px;
+    margin-bottom: 15px;
+    border-left: 4px solid #007bff;
+}
+
+.evolution-current-info h5 {
+    margin: 0 0 5px 0;
+    color: #90caf9;
+}
+
+.evolution-current-info .current-evolution {
+    color: #e0e0e0;
+    margin: 5px 0;
+}
+
+.evolution-current-info .no-evolution {
+    color: #888;
+    font-style: italic;
+}
