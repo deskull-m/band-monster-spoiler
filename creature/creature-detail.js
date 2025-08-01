@@ -1,4 +1,3 @@
-
 function MonsterDetail({ creature, index, infoList }) {
     const [showModal, setShowModal] = React.useState(false);
     const [tab, setTab] = React.useState("detail");
@@ -583,6 +582,52 @@ function MonsterEditForm({ creature, onSave, onCancel }) {
         { value: 42, name: "覇府" }
     ];
 
+    // アライアンスフラグとアライアンス値のマッピング
+    const allianceFlagMapping = {
+        "ALLIANCE_AMBER": 1,
+        "ALLIANCE_COCHAOS": 2,
+        "ALLIANCE_VALINOR": 3,
+        "ALLIANCE_UTUMNO": 4,
+        "ALLIANCE_JURAL": 5,
+        "ALLIANCE_CHINCHINTEI": 6,
+        "ALLIANCE_ODIO": 7,
+        "ALLIANCE_KENOHGUN": 8,
+        "ALLIANCE_FANG_FAMILY": 9,
+        "ALLIANCE_KOGAN_RYU": 10,
+        "ALLIANCE_ELDRAZI": 11,
+        "ALLIANCE_UNGOLIANT": 12,
+        "ALLIANCE_SHITTO_DAN": 13,
+        "ALLIANCE_GE_ORLIC": 14,
+        "ALLIANCE_TURBAN_KIDS": 15,
+        "ALLIANCE_NAKED_KNIGHTS": 16,
+        "ALLIANCE_NUMENOR": 17,
+        "ALLIANCE_GO": 18,
+        "ALLIANCE_THE_SHIRE": 19,
+        "ALLIANCE_HAKUSIN_KARATE": 20,
+        "ALLIANCE_DOKACHANS": 21,
+        "ALLIANCE_KETHOLDETH": 22,
+        "ALLIANCE_MELDOR": 23,
+        "ALLIANCE_ANGARTHA": 24,
+        "ALLIANCE_GETTER": 25,
+        "ALLIANCE_PURE_MIRRODIN": 26,
+        "ALLIANCE_KING": 27,
+        "ALLIANCE_PHYREXIA": 28,
+        "ALLIANCE_AVARIN_LORDS": 29,
+        "ALLIANCE_GOLAN": 30,
+        "ALLIANCE_BINJO_BUDDHISM": 31,
+        "ALLIANCE_ASHINA_CLAN": 32,
+        "ALLIANCE_SUREN": 33,
+        "ALLIANCE_FEANOR_NOLDOR": 34,
+        "ALLIANCE_GAICHI": 35,
+        "ALLIANCE_LEGEND_OF_SAVIOR": 36,
+        "ALLIANCE_TOPHAMHATT": 37,
+        "ALLIANCE_TRIOTHEPANCH": 38,
+        "ALLIANCE_MEGADETH": 39,
+        "ALLIANCE_KHORNE": 40,
+        "ALLIANCE_SLAANESH": 41,
+        "ALLIANCE_HAFU": 42
+    };
+
     // フラグの定義（カテゴリ別に整理）
     const flagCategories = {
         "基本属性": {
@@ -745,6 +790,50 @@ function MonsterEditForm({ creature, onSave, onCancel }) {
             "HURT_ABYSS": "深淵弱点",
             "HURT_VOID": "虚無魔法弱点",
             "HURT_METEOR": "隕石弱点"
+        },
+        "アライアンス": {
+            "ALLIANCE_AMBER": "アンバー所属",
+            "ALLIANCE_COCHAOS": "混沌の宮廷所属",
+            "ALLIANCE_VALINOR": "ヴァリノール所属",
+            "ALLIANCE_UTUMNO": "ウトゥムノ所属",
+            "ALLIANCE_JURAL": "ジュラル星人所属",
+            "ALLIANCE_CHINCHINTEI": "ちんちん亭所属",
+            "ALLIANCE_ODIO": "オディオ所属",
+            "ALLIANCE_KENOHGUN": "拳王軍所属",
+            "ALLIANCE_FANG_FAMILY": "牙一族所属",
+            "ALLIANCE_KOGAN_RYU": "虎眼流所属",
+            "ALLIANCE_ELDRAZI": "エルドラージ所属",
+            "ALLIANCE_UNGOLIANT": "ウンゴリアント一族所属",
+            "ALLIANCE_SHITTO_DAN": "しっと団所属",
+            "ALLIANCE_GE_ORLIC": "オーリック朝銀河帝国所属",
+            "ALLIANCE_TURBAN_KIDS": "ターバンのガキ共所属",
+            "ALLIANCE_NAKED_KNIGHTS": "全裸騎士団所属",
+            "ALLIANCE_NUMENOR": "ヌメノール王国所属",
+            "ALLIANCE_GO": "GO教所属",
+            "ALLIANCE_THE_SHIRE": "ホビット庄所属",
+            "ALLIANCE_HAKUSIN_KARATE": "迫真空手部所属",
+            "ALLIANCE_DOKACHANS": "岡山中高年男児糞尿愛好会所属",
+            "ALLIANCE_KETHOLDETH": "ケツホルデス所属",
+            "ALLIANCE_MELDOR": "メルドール所属",
+            "ALLIANCE_ANGARTHA": "アンガルタ所属",
+            "ALLIANCE_GETTER": "ゲッター所属",
+            "ALLIANCE_PURE_MIRRODIN": "清純なるミラディン所属",
+            "ALLIANCE_KING": "KING所属",
+            "ALLIANCE_PHYREXIA": "ファイレクシア所属",
+            "ALLIANCE_AVARIN_LORDS": "アヴァリ諸侯所属",
+            "ALLIANCE_GOLAN": "GOLAN所属",
+            "ALLIANCE_BINJO_BUDDHISM": "便乗仏教所属",
+            "ALLIANCE_ASHINA_CLAN": "葦名一門所属",
+            "ALLIANCE_SUREN": "スレン王国所属",
+            "ALLIANCE_FEANOR_NOLDOR": "フェアノール統ノルドール所属",
+            "ALLIANCE_GAICHI": "ガイチ帝国所属",
+            "ALLIANCE_LEGEND_OF_SAVIOR": "世紀末救世主伝説所属",
+            "ALLIANCE_TOPHAMHATT": "トップハムハット一族所属",
+            "ALLIANCE_TRIOTHEPANCH": "トリオ・ザ・パンチ所属",
+            "ALLIANCE_MEGADETH": "秘密結社メガデス所属",
+            "ALLIANCE_KHORNE": "血の神コーン所属",
+            "ALLIANCE_SLAANESH": "快楽神スラーネッシュ所属",
+            "ALLIANCE_HAFU": "覇府所属"
         }
     };
 
@@ -799,6 +888,18 @@ function MonsterEditForm({ creature, onSave, onCancel }) {
         });
     });
 
+    // 初期アライアンス値を取得（アライアンスフラグから推定）
+    const getInitialAlliance = () => {
+        if (!creature.flags) return 0;
+        
+        for (const flag of creature.flags) {
+            if (allianceFlagMapping[flag]) {
+                return allianceFlagMapping[flag];
+            }
+        }
+        return 0;
+    };
+
     const [formData, setFormData] = React.useState({
         serialNumber: creature.serialNumber,
         name: creature.name || "",
@@ -816,6 +917,7 @@ function MonsterEditForm({ creature, onSave, onCancel }) {
         exp: creature.exp,
         nextExp: creature.nextExp,
         nextMon: creature.nextMon,
+        alliance: getInitialAlliance(),
         flags: initialFlags,
         description_ja: creature.description_ja || "",
         description_en: creature.description_en || ""
@@ -829,13 +931,38 @@ function MonsterEditForm({ creature, onSave, onCancel }) {
     };
 
     const handleFlagChange = (flag, checked) => {
-        setFormData(prev => ({
-            ...prev,
-            flags: {
+        setFormData(prev => {
+            const newFlags = {
                 ...prev.flags,
                 [flag]: checked
+            };
+            
+            let newAlliance = prev.alliance;
+            
+            // アライアンスフラグの場合、対応するアライアンス値を設定
+            if (flag.startsWith('ALLIANCE_')) {
+                if (checked) {
+                    // アライアンスフラグが選択された場合、対応するアライアンス値を設定
+                    newAlliance = allianceFlagMapping[flag] || 0;
+                    
+                    // 他のアライアンスフラグを無効化（1つのモンスターは1つのアライアンスのみ）
+                    Object.keys(allianceFlagMapping).forEach(allianceFlag => {
+                        if (allianceFlag !== flag) {
+                            newFlags[allianceFlag] = false;
+                        }
+                    });
+                } else {
+                    // アライアンスフラグが解除された場合、無所属に設定
+                    newAlliance = 0;
+                }
             }
-        }));
+            
+            return {
+                ...prev,
+                flags: newFlags,
+                alliance: newAlliance
+            };
+        });
     };
 
     const handleCategoryToggle = (categoryFlags, allChecked) => {
