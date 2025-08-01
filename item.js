@@ -146,22 +146,14 @@ function ItemViewer() {
             <p>アイテム定義ファイルを読み込んで下さい</p>
             <input type="file" accept=".txt" onChange={handleFileChange} />
             {loading && (
-                <div style={{ margin: "1em 0" }}>
-                    <div style={{
-                        width: "100%",
-                        background: "#eee",
-                        borderRadius: "4px",
-                        overflow: "hidden",
-                        height: "1.2em"
-                    }}>
-                        <div style={{
-                            width: `${progress}%`,
-                            background: "#4caf50",
-                            height: "100%",
-                            transition: "width 0.2s"
-                        }} />
+                <div className="progress-container">
+                    <div className="progress-bar">
+                        <div 
+                            className="progress-fill"
+                            style={{ width: `${progress}%` }}
+                        />
                     </div>
-                    <div style={{ textAlign: "right", fontSize: "0.9em" }}>{progress}%</div>
+                    <div className="progress-text">{progress}%</div>
                 </div>
             )}
             <div>

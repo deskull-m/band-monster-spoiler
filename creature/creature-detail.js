@@ -1007,77 +1007,41 @@ D:$${formData.description_en}` : ''}`;
     };
 
     return (
-        <div style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            width: '100vw',
-            height: '100vh',
-            background: 'rgba(0,0,0,0.8)',
-            zIndex: 9999,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: '20px',
-            boxSizing: 'border-box'
-        }}>
-            <div style={{
-                background: '#2b3035',
-                borderRadius: '8px',
-                padding: '20px',
-                maxWidth: '1000px',
-                width: '95%',
-                maxHeight: '95vh',
-                overflow: 'auto',
-                border: '1px solid #555'
-            }}>
-                <h3 style={{ marginTop: 0, color: '#e0e0e0' }}>
+        <div className="monster-edit-overlay">
+            <div className="monster-edit-form">
+                <h3>
                     モンスター編集 - ID: {formData.serialNumber}
                 </h3>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
+                <div className="monster-edit-grid">
                     {/* 基本情報 */}
                     <div>
-                        <h4 style={{ color: '#ccc' }}>基本情報</h4>
+                        <h4>基本情報</h4>
                         <div style={{ marginBottom: '10px' }}>
-                            <label style={{ display: 'block', marginBottom: '5px', color: '#ccc' }}>
+                            <label className="monster-edit-label">
                                 日本語名:
                             </label>
                             <input
                                 type="text"
                                 value={formData.name}
                                 onChange={(e) => handleChange('name', e.target.value)}
-                                style={{
-                                    width: '100%',
-                                    padding: '5px',
-                                    background: '#1a1a1a',
-                                    border: '1px solid #555',
-                                    color: '#e0e0e0',
-                                    borderRadius: '3px'
-                                }}
+                                className="monster-edit-input"
                             />
                         </div>
                         <div style={{ marginBottom: '10px' }}>
-                            <label style={{ display: 'block', marginBottom: '5px', color: '#ccc' }}>
+                            <label className="monster-edit-label">
                                 英語名:
                             </label>
                             <input
                                 type="text"
                                 value={formData.ename}
                                 onChange={(e) => handleChange('ename', e.target.value)}
-                                style={{
-                                    width: '100%',
-                                    padding: '5px',
-                                    background: '#1a1a1a',
-                                    border: '1px solid #555',
-                                    color: '#e0e0e0',
-                                    borderRadius: '3px'
-                                }}
+                                className="monster-edit-input"
                             />
                         </div>
                         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
                             <div>
-                                <label style={{ display: 'block', marginBottom: '5px', color: '#ccc' }}>
+                                <label className="monster-edit-label">
                                     シンボル:
                                 </label>
                                 <input
@@ -1085,31 +1049,17 @@ D:$${formData.description_en}` : ''}`;
                                     maxLength="1"
                                     value={formData.symbol}
                                     onChange={(e) => handleChange('symbol', e.target.value)}
-                                    style={{
-                                        width: '100%',
-                                        padding: '5px',
-                                        background: '#1a1a1a',
-                                        border: '1px solid #555',
-                                        color: '#e0e0e0',
-                                        borderRadius: '3px'
-                                    }}
+                                    className="monster-edit-input"
                                 />
                             </div>
                             <div>
-                                <label style={{ display: 'block', marginBottom: '5px', color: '#ccc' }}>
+                                <label className="monster-edit-label">
                                     色:
                                 </label>
                                 <select
                                     value={formData.color}
                                     onChange={(e) => handleChange('color', e.target.value)}
-                                    style={{
-                                        width: '100%',
-                                        padding: '5px',
-                                        background: '#1a1a1a',
-                                        border: '1px solid #555',
-                                        color: '#e0e0e0',
-                                        borderRadius: '3px'
-                                    }}
+                                    className="monster-edit-select"
                                 >
                                     <option value="">色を選択</option>
                                     {colorOptions.map(option => (
@@ -1124,10 +1074,10 @@ D:$${formData.description_en}` : ''}`;
 
                     {/* 能力値 */}
                     <div>
-                        <h4 style={{ color: '#ccc' }}>能力値</h4>
+                        <h4>能力値</h4>
                         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
                             <div>
-                                <label style={{ display: 'block', marginBottom: '5px', color: '#ccc' }}>
+                                <label className="monster-edit-label">
                                     速度:
                                 </label>
                                 <input
@@ -1140,60 +1090,32 @@ D:$${formData.description_en}` : ''}`;
                                         const clampedValue = Math.max(-99, Math.min(99, value));
                                         handleChange('speed', clampedValue);
                                     }}
-                                    style={{
-                                        width: '100%',
-                                        padding: '5px',
-                                        background: '#1a1a1a',
-                                        border: '1px solid #555',
-                                        color: '#e0e0e0',
-                                        borderRadius: '3px'
-                                    }}
+                                    className="monster-edit-input"
                                 />
                             </div>
                             <div style={{ gridColumn: '1 / -1' }}>
-                                <label style={{ display: 'block', marginBottom: '5px', color: '#ccc' }}>
+                                <label className="monster-edit-label">
                                     HP:
                                 </label>
-                                <div style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr auto', gap: '5px', alignItems: 'center' }}>
+                                <div className="monster-hp-grid">
                                     <input
                                         type="number"
                                         min="1"
                                         value={formData.hpDice}
                                         onChange={(e) => handleChange('hpDice', Math.max(1, parseInt(e.target.value) || 1))}
-                                        style={{
-                                            width: '100%',
-                                            padding: '5px',
-                                            background: '#1a1a1a',
-                                            border: '1px solid #555',
-                                            color: '#e0e0e0',
-                                            borderRadius: '3px'
-                                        }}
+                                        className="monster-edit-input"
                                         placeholder="ダイス数"
                                     />
-                                    <span style={{ color: '#ccc', padding: '0 5px' }}>d</span>
+                                    <span className="monster-hp-separator">d</span>
                                     <input
                                         type="number"
                                         min="1"
                                         value={formData.hpSides}
                                         onChange={(e) => handleChange('hpSides', Math.max(1, parseInt(e.target.value) || 1))}
-                                        style={{
-                                            width: '100%',
-                                            padding: '5px',
-                                            background: '#1a1a1a',
-                                            border: '1px solid #555',
-                                            color: '#e0e0e0',
-                                            borderRadius: '3px'
-                                        }}
+                                        className="monster-edit-input"
                                         placeholder="面数"
                                     />
-                                    <div style={{ 
-                                        padding: '5px 10px',
-                                        background: '#333',
-                                        borderRadius: '3px',
-                                        color: '#ccc',
-                                        fontSize: '12px',
-                                        whiteSpace: 'nowrap'
-                                    }}>
+                                    <div className="monster-hp-expected">
                                         {formData.flags.FORCE_MAXHP ? '最大' : '平均'}: {calculateExpectedHP(formData.hpDice, formData.hpSides, formData.flags.FORCE_MAXHP)}
                                     </div>
                                 </div>
@@ -1202,57 +1124,36 @@ D:$${formData.description_en}` : ''}`;
                                 </div>
                             </div>
                             <div>
-                                <label style={{ display: 'block', marginBottom: '5px', color: '#ccc' }}>
+                                <label className="monster-edit-label">
                                     視界:
                                 </label>
                                 <input
                                     type="number"
                                     value={formData.vision}
                                     onChange={(e) => handleChange('vision', parseInt(e.target.value) || 0)}
-                                    style={{
-                                        width: '100%',
-                                        padding: '5px',
-                                        background: '#1a1a1a',
-                                        border: '1px solid #555',
-                                        color: '#e0e0e0',
-                                        borderRadius: '3px'
-                                    }}
+                                    className="monster-edit-input"
                                 />
                             </div>
                             <div>
-                                <label style={{ display: 'block', marginBottom: '5px', color: '#ccc' }}>
+                                <label className="monster-edit-label">
                                     AC:
                                 </label>
                                 <input
                                     type="number"
                                     value={formData.armor_class}
                                     onChange={(e) => handleChange('armor_class', parseInt(e.target.value) || 0)}
-                                    style={{
-                                        width: '100%',
-                                        padding: '5px',
-                                        background: '#1a1a1a',
-                                        border: '1px solid #555',
-                                        color: '#e0e0e0',
-                                        borderRadius: '3px'
-                                    }}
+                                    className="monster-edit-input"
                                 />
                             </div>
                             <div>
-                                <label style={{ display: 'block', marginBottom: '5px', color: '#ccc' }}>
+                                <label className="monster-edit-label">
                                     警戒度:
                                 </label>
                                 <input
                                     type="number"
                                     value={formData.alertness}
                                     onChange={(e) => handleChange('alertness', parseInt(e.target.value) || 0)}
-                                    style={{
-                                        width: '100%',
-                                        padding: '5px',
-                                        background: '#1a1a1a',
-                                        border: '1px solid #555',
-                                        color: '#e0e0e0',
-                                        borderRadius: '3px'
-                                    }}
+                                    className="monster-edit-input"
                                 />
                             </div>
                         </div>
@@ -1260,78 +1161,50 @@ D:$${formData.description_en}` : ''}`;
 
                     {/* レベル・経験値・アライアンス */}
                     <div>
-                        <h4 style={{ color: '#ccc' }}>レベル・経験値・アライアンス</h4>
+                        <h4>レベル・経験値・アライアンス</h4>
                         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '10px', marginBottom: '10px' }}>
                             <div>
-                                <label style={{ display: 'block', marginBottom: '5px', color: '#ccc' }}>
+                                <label className="monster-edit-label">
                                     レベル:
                                 </label>
                                 <input
                                     type="number"
                                     value={formData.depth}
                                     onChange={(e) => handleChange('depth', parseInt(e.target.value) || 0)}
-                                    style={{
-                                        width: '100%',
-                                        padding: '5px',
-                                        background: '#1a1a1a',
-                                        border: '1px solid #555',
-                                        color: '#e0e0e0',
-                                        borderRadius: '3px'
-                                    }}
+                                    className="monster-edit-input"
                                 />
                             </div>
                             <div>
-                                <label style={{ display: 'block', marginBottom: '5px', color: '#ccc' }}>
+                                <label className="monster-edit-label">
                                     希少度:
                                 </label>
                                 <input
                                     type="number"
                                     value={formData.rarity}
                                     onChange={(e) => handleChange('rarity', parseInt(e.target.value) || 1)}
-                                    style={{
-                                        width: '100%',
-                                        padding: '5px',
-                                        background: '#1a1a1a',
-                                        border: '1px solid #555',
-                                        color: '#e0e0e0',
-                                        borderRadius: '3px'
-                                    }}
+                                    className="monster-edit-input"
                                 />
                             </div>
                             <div>
-                                <label style={{ display: 'block', marginBottom: '5px', color: '#ccc' }}>
+                                <label className="monster-edit-label">
                                     経験値:
                                 </label>
                                 <input
                                     type="number"
                                     value={formData.exp}
                                     onChange={(e) => handleChange('exp', parseInt(e.target.value) || 0)}
-                                    style={{
-                                        width: '100%',
-                                        padding: '5px',
-                                        background: '#1a1a1a',
-                                        border: '1px solid #555',
-                                        color: '#e0e0e0',
-                                        borderRadius: '3px'
-                                    }}
+                                    className="monster-edit-input"
                                 />
                             </div>
                         </div>
                         <div>
-                            <label style={{ display: 'block', marginBottom: '5px', color: '#ccc' }}>
+                            <label className="monster-edit-label">
                                 所属アライアンス:
                             </label>
                             <select
                                 value={formData.alliance || 0}
                                 onChange={(e) => handleChange('alliance', parseInt(e.target.value))}
-                                style={{
-                                    width: '100%',
-                                    padding: '5px',
-                                    background: '#1a1a1a',
-                                    border: '1px solid #555',
-                                    color: '#e0e0e0',
-                                    borderRadius: '3px'
-                                }}
+                                className="monster-edit-select"
                             >
                                 {allianceOptions.map(option => (
                                     <option key={option.value} value={option.value}>
@@ -1343,19 +1216,9 @@ D:$${formData.description_en}` : ''}`;
                     </div>
 
                     {/* フラグ */}
-                    <div style={{ gridColumn: '1 / -1' }}>
-                        <h4 style={{ color: '#ccc' }}>フラグ</h4>
-                        <div style={{ 
-                            display: 'grid', 
-                            gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', 
-                            gap: '15px',
-                            maxHeight: '400px',
-                            overflow: 'auto',
-                            border: '1px solid #555',
-                            borderRadius: '5px',
-                            padding: '10px',
-                            background: '#1a1a1a'
-                        }}>
+                    <div className="monster-flags-container">
+                        <h4>フラグ</h4>
+                        <div className="monster-flags-grid">
                             {Object.entries(flagCategories).map(([categoryName, flags]) => {
                                 const categoryFlagKeys = Object.keys(flags);
                                 const checkedCount = categoryFlagKeys.filter(flag => formData.flags[flag]).length;
@@ -1363,72 +1226,36 @@ D:$${formData.description_en}` : ''}`;
                                 const someChecked = checkedCount > 0;
                                 
                                 return (
-                                    <div key={categoryName} style={{ marginBottom: '10px' }}>
-                                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                                            <h5 style={{ 
-                                                color: '#ffd700', 
-                                                fontSize: '14px', 
-                                                margin: '0 0 8px 0',
-                                                flex: 1
-                                            }}>
+                                    <div key={categoryName} className="monster-flag-category" style={{ marginBottom: '10px' }}>
+                                        <div className="monster-flag-category-header">
+                                            <h5>
                                                 {categoryName} ({checkedCount}/{categoryFlagKeys.length})
                                             </h5>
                                             <button
                                                 onClick={() => handleCategoryToggle(flags, allChecked)}
-                                                style={{
-                                                    background: someChecked ? '#dc3545' : '#28a745',
-                                                    color: 'white',
-                                                    border: 'none',
-                                                    borderRadius: '3px',
-                                                    padding: '2px 6px',
-                                                    fontSize: '10px',
-                                                    cursor: 'pointer',
-                                                    marginBottom: '8px'
-                                                }}
+                                                className={`monster-flag-toggle-btn ${allChecked ? 'clear' : ''}`}
                                                 title={allChecked ? '全て解除' : '全て選択'}
                                             >
                                                 {allChecked ? '全解除' : '全選択'}
                                             </button>
                                         </div>
-                                        <div style={{ 
-                                            borderBottom: '1px solid #555',
-                                            paddingBottom: '8px',
-                                            marginBottom: '8px'
-                                        }}>
-                                            <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '4px' }}>
+                                        <div className="monster-flag-category-content">
+                                            <div className="monster-flag-grid">
                                                 {Object.entries(flags).map(([flag, description]) => (
                                                     <label 
                                                         key={flag} 
-                                                        style={{ 
-                                                            display: 'flex', 
-                                                            alignItems: 'center',
-                                                            color: '#e0e0e0',
-                                                            fontSize: '12px',
-                                                            cursor: 'pointer',
-                                                            padding: '2px 0'
-                                                        }}
+                                                        className="monster-flag-label"
                                                     >
                                                         <input
                                                             type="checkbox"
                                                             checked={formData.flags[flag] || false}
                                                             onChange={(e) => handleFlagChange(flag, e.target.checked)}
-                                                            style={{ 
-                                                                marginRight: '6px',
-                                                                transform: 'scale(0.9)'
-                                                            }}
+                                                            className="monster-flag-checkbox"
                                                         />
-                                                        <span style={{ 
-                                                            fontFamily: 'monospace',
-                                                            color: formData.flags[flag] ? '#4caf50' : '#ccc',
-                                                            fontWeight: formData.flags[flag] ? 'bold' : 'normal'
-                                                        }}>
+                                                        <span className={`monster-flag-name ${formData.flags[flag] ? 'active' : ''}`}>
                                                             {flag}
                                                         </span>
-                                                        <span style={{ 
-                                                            marginLeft: '8px',
-                                                            color: '#aaa',
-                                                            fontSize: '11px'
-                                                        }}>
+                                                        <span className="monster-flag-description">
                                                             {description}
                                                         </span>
                                                     </label>
@@ -1441,16 +1268,11 @@ D:$${formData.description_en}` : ''}`;
                         </div>
                         
                         {/* 選択済みフラグの概要表示 */}
-                        <div style={{ marginTop: '10px', padding: '8px', background: '#2a2a2a', borderRadius: '4px' }}>
-                            <h6 style={{ color: '#ccc', fontSize: '12px', margin: '0 0 5px 0' }}>
+                        <div className="monster-flags-summary">
+                            <h6>
                                 選択済みフラグ ({Object.values(formData.flags).filter(Boolean).length}個):
                             </h6>
-                            <div style={{ 
-                                fontSize: '11px', 
-                                color: '#4caf50',
-                                fontFamily: 'monospace',
-                                lineHeight: '1.3'
-                            }}>
+                            <div className="monster-flags-list">
                                 {Object.entries(formData.flags)
                                     .filter(([flag, isActive]) => isActive)
                                     .map(([flag]) => flag)
@@ -1462,73 +1284,44 @@ D:$${formData.description_en}` : ''}`;
 
                 {/* 説明文 */}
                 <div style={{ marginTop: '15px' }}>
-                    <h4 style={{ color: '#ccc' }}>説明文</h4>
+                    <h4>説明文</h4>
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
                         <div>
-                            <label style={{ display: 'block', marginBottom: '5px', color: '#ccc' }}>
+                            <label className="monster-edit-label">
                                 日本語説明:
                             </label>
                             <textarea
                                 value={formData.description_ja}
                                 onChange={(e) => handleChange('description_ja', e.target.value)}
                                 rows="3"
-                                style={{
-                                    width: '100%',
-                                    padding: '5px',
-                                    background: '#1a1a1a',
-                                    border: '1px solid #555',
-                                    color: '#e0e0e0',
-                                    borderRadius: '3px'
-                                }}
+                                className="monster-edit-textarea"
                             />
                         </div>
                         <div>
-                            <label style={{ display: 'block', marginBottom: '5px', color: '#ccc' }}>
+                            <label className="monster-edit-label">
                                 英語説明:
                             </label>
                             <textarea
                                 value={formData.description_en}
                                 onChange={(e) => handleChange('description_en', e.target.value)}
                                 rows="3"
-                                style={{
-                                    width: '100%',
-                                    padding: '5px',
-                                    background: '#1a1a1a',
-                                    border: '1px solid #555',
-                                    color: '#e0e0e0',
-                                    borderRadius: '3px'
-                                }}
+                                className="monster-edit-textarea"
                             />
                         </div>
                     </div>
                 </div>
 
                 {/* ボタン */}
-                <div style={{ marginTop: '20px', textAlign: 'right' }}>
+                <div className="monster-edit-buttons">
                     <button
                         onClick={onCancel}
-                        style={{
-                            background: '#666',
-                            color: 'white',
-                            border: 'none',
-                            borderRadius: '4px',
-                            padding: '10px 20px',
-                            cursor: 'pointer',
-                            marginRight: '10px'
-                        }}
+                        className="monster-btn-cancel"
                     >
                         キャンセル
                     </button>
                     <button
                         onClick={handleSave}
-                        style={{
-                            background: '#007bff',
-                            color: 'white',
-                            border: 'none',
-                            borderRadius: '4px',
-                            padding: '10px 20px',
-                            cursor: 'pointer'
-                        }}
+                        className="monster-btn-save"
                     >
                         保存
                     </button>
