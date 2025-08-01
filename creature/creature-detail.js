@@ -923,6 +923,61 @@ function MonsterEditForm({ creature, allMonsters, onSave, onCancel }) {
         description_en: creature.description_en || ""
     });
 
+    // タブ状態を追加
+    const [activeTab, setActiveTab] = React.useState("basic");
+
+    // 進化設定用の状態
+    const [searchText, setSearchText] = React.useState("");
+    const [showDropdown, setShowDropdown] = React.useState(false);
+    const [selectedMonster, setSelectedMonster] = React.useState(null);
+
+    // 進化先モンスターが設定されている場合、初期選択状態を設定
+    React.useEffect(() => {
+        if (formData.nextMon && allMonsters) {
+            const monster = allMonsters.find(m => m.serialNumber === formData.nextMon);
+            if (monster) {
+                setSelectedMonster(monster);
+                setSearchText(`${monster.name} / ${monster.ename}`);
+            }
+        }
+    }, [formData.nextMon, allMonsters]);
+
+    // 検索フィルター
+    const filteredMonsters = React.useMemo(() => {
+        if (!allMonsters || !searchText.trim()) return [];
+        
+        const search = searchText.toLowerCase();
+        return allMonsters
+            .filter(monster => 
+                monster.serialNumber !== creature.serialNumber && // 自分自身を除外
+                (monster.name.toLowerCase().includes(search) || 
+                 monster.ename.toLowerCase().includes(search) ||
+                 monster.serialNumber.toString().includes(search))
+            )
+            .slice(0, 10); // 最大10件まで表示
+    }, [allMonsters, searchText, creature.serialNumber]);
+
+    const handleMonsterSelect = (monster) => {
+        setSelectedMonster(monster);
+        setSearchText(`${monster.name} / ${monster.ename}`);
+        handleChange('nextMon', monster.serialNumber);
+        setShowDropdown(false);
+    };
+
+    const handleClearMonster = () => {
+        setSelectedMonster(null);
+        setSearchText("");
+        handleChange('nextMon', 0);
+    };
+
+    const handleRemoveEvolution = () => {
+        if (confirm("進化設定を削除しますか？")) {
+            handleChange('nextExp', 0);
+            handleChange('nextMon', 0);
+            handleClearMonster();
+        }
+    };
+
     const handleChange = (field, value) => {
         setFormData(prev => ({
             ...prev,
@@ -1006,354 +1061,456 @@ D:$${formData.description_en}` : ''}`;
         }
     };
 
-    const [showEvolutionDialog, setShowEvolutionDialog] = React.useState(false);
-
     return (
         <div className="monster-edit-overlay">
             <div className="monster-edit-form">
-                <h3>
-                    モンスター編集 - ID: {formData.serialNumber}
-                </h3>
-
-                <div className="monster-edit-grid">
-                    {/* 基本情報 */}
-                    <div>
-                        <h4>基本情報</h4>
-                        <div style={{ marginBottom: '10px' }}>
-                            <label className="monster-edit-label">
-                                日本語名:
-                            </label>
-                            <input
-                                type="text"
-                                value={formData.name}
-                                onChange={(e) => handleChange('name', e.target.value)}
-                                className="monster-edit-input"
-                            />
-                        </div>
-                        <div style={{ marginBottom: '10px' }}>
-                            <label className="monster-edit-label">
-                                英語名:
-                            </label>
-                            <input
-                                type="text"
-                                value={formData.ename}
-                                onChange={(e) => handleChange('ename', e.target.value)}
-                                className="monster-edit-input"
-                            />
-                        </div>
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
-                            <div>
-                                <label className="monster-edit-label">
-                                    シンボル:
-                                </label>
-                                <input
-                                    type="text"
-                                    maxLength="1"
-                                    value={formData.symbol}
-                                    onChange={(e) => handleChange('symbol', e.target.value)}
-                                    className="monster-edit-input"
-                                />
-                            </div>
-                            <div>
-                                <label className="monster-edit-label">
-                                    色:
-                                </label>
-                                <select
-                                    value={formData.color}
-                                    onChange={(e) => handleChange('color', e.target.value)}
-                                    className="monster-edit-select"
-                                >
-                                    <option value="">色を選択</option>
-                                    {colorOptions.map(option => (
-                                        <option key={option.code} value={option.code}>
-                                            {option.code} - {option.name}
-                                        </option>
-                                    ))}
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* 能力値 */}
-                    <div>
-                        <h4>能力値</h4>
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
-                            <div>
-                                <label className="monster-edit-label">
-                                    速度:
-                                </label>
-                                <input
-                                    type="number"
-                                    min="-99"
-                                    max="99"
-                                    value={formData.speed}
-                                    onChange={(e) => {
-                                        const value = parseInt(e.target.value) || 0;
-                                        const clampedValue = Math.max(-99, Math.min(99, value));
-                                        handleChange('speed', clampedValue);
-                                    }}
-                                    className="monster-edit-input"
-                                />
-                            </div>
-                            <div>
-                                <label className="monster-edit-label">
-                                    AC:
-                                </label>
-                                <input
-                                    type="number"
-                                    value={formData.armor_class}
-                                    onChange={(e) => handleChange('armor_class', parseInt(e.target.value) || 0)}
-                                    className="monster-edit-input"
-                                />
-                            </div>
-                            <div style={{ gridColumn: '1 / -1' }}>
-                                <label className="monster-edit-label">
-                                    HP:
-                                </label>
-                                <div className="monster-hp-grid">
-                                    <input
-                                        type="number"
-                                        min="1"
-                                        value={formData.hpDice}
-                                        onChange={(e) => handleChange('hpDice', Math.max(1, parseInt(e.target.value) || 1))}
-                                        className="monster-edit-input"
-                                        placeholder="ダイス数"
-                                    />
-                                    <span className="monster-hp-separator">d</span>
-                                    <input
-                                        type="number"
-                                        min="1"
-                                        value={formData.hpSides}
-                                        onChange={(e) => handleChange('hpSides', Math.max(1, parseInt(e.target.value) || 1))}
-                                        className="monster-edit-input"
-                                        placeholder="面数"
-                                    />
-                                    <div className="monster-hp-expected">
-                                        {formData.flags.FORCE_MAXHP ? '最大' : '平均'}: {calculateExpectedHP(formData.hpDice, formData.hpSides, formData.flags.FORCE_MAXHP)}
-                                    </div>
-                                </div>
-                                <div style={{ fontSize: '11px', color: '#888', marginTop: '3px' }}>
-                                    形式: {formData.hpDice}d{formData.hpSides}
-                                </div>
-                            </div>
-                            <div>
-                                <label className="monster-edit-label">
-                                    視界:
-                                </label>
-                                <input
-                                    type="number"
-                                    value={formData.vision}
-                                    onChange={(e) => handleChange('vision', parseInt(e.target.value) || 0)}
-                                    className="monster-edit-input"
-                                />
-                            </div>
-                            <div>
-                                <label className="monster-edit-label">
-                                    警戒度:
-                                </label>
-                                <input
-                                    type="number"
-                                    value={formData.alertness}
-                                    onChange={(e) => handleChange('alertness', parseInt(e.target.value) || 0)}
-                                    className="monster-edit-input"
-                                />
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* レベル・経験値・アライアンス */}
-                    <div>
-                        <h4>レベル・経験値・アライアンス</h4>
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '10px', marginBottom: '10px' }}>
-                            <div>
-                                <label className="monster-edit-label">
-                                    レベル:
-                                </label>
-                                <input
-                                    type="number"
-                                    value={formData.depth}
-                                    onChange={(e) => handleChange('depth', parseInt(e.target.value) || 0)}
-                                    className="monster-edit-input"
-                                />
-                            </div>
-                            <div>
-                                <label className="monster-edit-label">
-                                    希少度:
-                                </label>
-                                <input
-                                    type="number"
-                                    value={formData.rarity}
-                                    onChange={(e) => handleChange('rarity', parseInt(e.target.value) || 1)}
-                                    className="monster-edit-input"
-                                />
-                            </div>
-                            <div>
-                                <label className="monster-edit-label">
-                                    経験値:
-                                </label>
-                                <input
-                                    type="number"
-                                    value={formData.exp}
-                                    onChange={(e) => handleChange('exp', parseInt(e.target.value) || 0)}
-                                    className="monster-edit-input"
-                                />
-                            </div>
-                        </div>
-                        <div>
-                            <label className="monster-edit-label">
-                                所属アライアンス:
-                            </label>
-                            <select
-                                value={formData.alliance || 0}
-                                onChange={(e) => handleChange('alliance', parseInt(e.target.value))}
-                                className="monster-edit-select"
+                <div className="monster-edit-header">
+                    <h3>
+                        モンスター編集 - ID: {formData.serialNumber}
+                    </h3>
+                    
+                    {/* タブナビゲーション */}
+                    <ul className="nav nav-tabs monster-edit-tabs">
+                        <li className="nav-item">
+                            <button
+                                className={`nav-link${activeTab === "basic" ? " active" : ""}`}
+                                onClick={() => setActiveTab("basic")}
+                                type="button"
                             >
-                                {allianceOptions.map(option => (
-                                    <option key={option.value} value={option.value}>
-                                        {option.value} - {option.name}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
-                    </div>
-
-                    {/* フラグ */}
-                    <div className="monster-flags-container">
-                        <h4>フラグ</h4>
-                        <div className="monster-flags-grid">
-                            {Object.entries(flagCategories).map(([categoryName, flags]) => {
-                                const categoryFlagKeys = Object.keys(flags);
-                                const checkedCount = categoryFlagKeys.filter(flag => formData.flags[flag]).length;
-                                const allChecked = checkedCount === categoryFlagKeys.length;
-                                const someChecked = checkedCount > 0;
-                                
-                                return (
-                                    <div key={categoryName} className="monster-flag-category" style={{ marginBottom: '10px' }}>
-                                        <div className="monster-flag-category-header">
-                                            <h5>
-                                                {categoryName} ({checkedCount}/{categoryFlagKeys.length})
-                                            </h5>
-                                            <button
-                                                onClick={() => handleCategoryToggle(flags, allChecked)}
-                                                className={`monster-flag-toggle-btn ${allChecked ? 'clear' : ''}`}
-                                                title={allChecked ? '全て解除' : '全て選択'}
-                                            >
-                                                {allChecked ? '全解除' : '全選択'}
-                                            </button>
-                                        </div>
-                                        <div className="monster-flag-category-content">
-                                            <div className="monster-flag-grid">
-                                                {Object.entries(flags).map(([flag, description]) => (
-                                                    <label 
-                                                        key={flag} 
-                                                        className="monster-flag-label"
-                                                    >
-                                                        <input
-                                                            type="checkbox"
-                                                            checked={formData.flags[flag] || false}
-                                                            onChange={(e) => handleFlagChange(flag, e.target.checked)}
-                                                            className="monster-flag-checkbox"
-                                                        />
-                                                        <span className={`monster-flag-name ${formData.flags[flag] ? 'active' : ''}`}>
-                                                            {flag}
-                                                        </span>
-                                                        <span className="monster-flag-description">
-                                                            {description}
-                                                        </span>
-                                                    </label>
-                                                ))}
-                                            </div>
-                                        </div>
-                                    </div>
-                                );
-                            })}
-                        </div>
-                        
-                        {/* 選択済みフラグの概要表示 */}
-                        <div className="monster-flags-summary">
-                            <h6>
-                                選択済みフラグ ({Object.values(formData.flags).filter(Boolean).length}個):
-                            </h6>
-                            <div className="monster-flags-list">
-                                {Object.entries(formData.flags)
-                                    .filter(([flag, isActive]) => isActive)
-                                    .map(([flag]) => flag)
-                                    .join(' | ') || '(フラグなし)'}
-                            </div>
-                        </div>
-                    </div>
+                                基本設定
+                            </button>
+                        </li>
+                        <li className="nav-item">
+                            <button
+                                className={`nav-link${activeTab === "flags" ? " active" : ""}`}
+                                onClick={() => setActiveTab("flags")}
+                                type="button"
+                            >
+                                フラグ
+                            </button>
+                        </li>
+                        <li className="nav-item">
+                            <button
+                                className={`nav-link${activeTab === "evolution" ? " active" : ""}`}
+                                onClick={() => setActiveTab("evolution")}
+                                type="button"
+                            >
+                                🧬 進化設定
+                            </button>
+                        </li>
+                    </ul>
                 </div>
 
-                {/* 説明文 */}
-                <div style={{ marginTop: '15px' }}>
-                    <h4>説明文</h4>
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
-                        <div>
-                            <label className="monster-edit-label">
-                                日本語説明:
-                            </label>
-                            <textarea
-                                value={formData.description_ja}
-                                onChange={(e) => handleChange('description_ja', e.target.value)}
-                                rows="3"
-                                className="monster-edit-textarea"
-                            />
+                <div className="monster-edit-content">
+                    {activeTab === "basic" && (
+                        <div className="monster-edit-grid">
+                            {/* 基本情報 */}
+                            <div>
+                                <h4>基本情報</h4>
+                                <div style={{ marginBottom: '10px' }}>
+                                    <label className="monster-edit-label">
+                                        日本語名:
+                                    </label>
+                                    <input
+                                        type="text"
+                                        value={formData.name}
+                                        onChange={(e) => handleChange('name', e.target.value)}
+                                        className="monster-edit-input"
+                                    />
+                                </div>
+                                <div style={{ marginBottom: '10px' }}>
+                                    <label className="monster-edit-label">
+                                        英語名:
+                                    </label>
+                                    <input
+                                        type="text"
+                                        value={formData.ename}
+                                        onChange={(e) => handleChange('ename', e.target.value)}
+                                        className="monster-edit-input"
+                                    />
+                                </div>
+                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                                    <div>
+                                        <label className="monster-edit-label">
+                                            シンボル:
+                                        </label>
+                                        <input
+                                            type="text"
+                                            maxLength="1"
+                                            value={formData.symbol}
+                                            onChange={(e) => handleChange('symbol', e.target.value)}
+                                            className="monster-edit-input"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="monster-edit-label">
+                                            色:
+                                        </label>
+                                        <select
+                                            value={formData.color}
+                                            onChange={(e) => handleChange('color', e.target.value)}
+                                            className="monster-edit-select"
+                                        >
+                                            <option value="">色を選択</option>
+                                            {colorOptions.map(option => (
+                                                <option key={option.code} value={option.code}>
+                                                    {option.code} - {option.name}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* 能力値 */}
+                            <div>
+                                <h4>能力値</h4>
+                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                                    <div>
+                                        <label className="monster-edit-label">
+                                            速度:
+                                        </label>
+                                        <input
+                                            type="number"
+                                            min="-99"
+                                            max="99"
+                                            value={formData.speed}
+                                            onChange={(e) => {
+                                                const value = parseInt(e.target.value) || 0;
+                                                const clampedValue = Math.max(-99, Math.min(99, value));
+                                                handleChange('speed', clampedValue);
+                                            }}
+                                            className="monster-edit-input"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="monster-edit-label">
+                                            AC:
+                                        </label>
+                                        <input
+                                            type="number"
+                                            value={formData.armor_class}
+                                            onChange={(e) => handleChange('armor_class', parseInt(e.target.value) || 0)}
+                                            className="monster-edit-input"
+                                        />
+                                    </div>
+                                    <div style={{ gridColumn: '1 / -1' }}>
+                                        <label className="monster-edit-label">
+                                            HP:
+                                        </label>
+                                        <div className="monster-hp-grid">
+                                            <input
+                                                type="number"
+                                                min="1"
+                                                value={formData.hpDice}
+                                                onChange={(e) => handleChange('hpDice', Math.max(1, parseInt(e.target.value) || 1))}
+                                                className="monster-edit-input"
+                                                placeholder="ダイス数"
+                                            />
+                                            <span className="monster-hp-separator">d</span>
+                                            <input
+                                                type="number"
+                                                min="1"
+                                                value={formData.hpSides}
+                                                onChange={(e) => handleChange('hpSides', Math.max(1, parseInt(e.target.value) || 1))}
+                                                className="monster-edit-input"
+                                                placeholder="面数"
+                                            />
+                                            <div className="monster-hp-expected">
+                                                {formData.flags.FORCE_MAXHP ? '最大' : '平均'}: {calculateExpectedHP(formData.hpDice, formData.hpSides, formData.flags.FORCE_MAXHP)}
+                                            </div>
+                                        </div>
+                                        <div style={{ fontSize: '11px', color: '#888', marginTop: '3px' }}>
+                                            形式: {formData.hpDice}d{formData.hpSides}
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label className="monster-edit-label">
+                                            視界:
+                                        </label>
+                                        <input
+                                            type="number"
+                                            value={formData.vision}
+                                            onChange={(e) => handleChange('vision', parseInt(e.target.value) || 0)}
+                                            className="monster-edit-input"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="monster-edit-label">
+                                            警戒度:
+                                        </label>
+                                        <input
+                                            type="number"
+                                            value={formData.alertness}
+                                            onChange={(e) => handleChange('alertness', parseInt(e.target.value) || 0)}
+                                            className="monster-edit-input"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* レベル・経験値・アライアンス */}
+                            <div>
+                                <h4>レベル・経験値・アライアンス</h4>
+                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '10px', marginBottom: '10px' }}>
+                                    <div>
+                                        <label className="monster-edit-label">
+                                            レベル:
+                                        </label>
+                                        <input
+                                            type="number"
+                                            value={formData.depth}
+                                            onChange={(e) => handleChange('depth', parseInt(e.target.value) || 0)}
+                                            className="monster-edit-input"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="monster-edit-label">
+                                            希少度:
+                                        </label>
+                                        <input
+                                            type="number"
+                                            value={formData.rarity}
+                                            onChange={(e) => handleChange('rarity', parseInt(e.target.value) || 1)}
+                                            className="monster-edit-input"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="monster-edit-label">
+                                            経験値:
+                                        </label>
+                                        <input
+                                            type="number"
+                                            value={formData.exp}
+                                            onChange={(e) => handleChange('exp', parseInt(e.target.value) || 0)}
+                                            className="monster-edit-input"
+                                        />
+                                    </div>
+                                </div>
+                                <div>
+                                    <label className="monster-edit-label">
+                                        所属アライアンス:
+                                    </label>
+                                    <select
+                                        value={formData.alliance || 0}
+                                        onChange={(e) => handleChange('alliance', parseInt(e.target.value))}
+                                        className="monster-edit-select"
+                                    >
+                                        {allianceOptions.map(option => (
+                                            <option key={option.value} value={option.value}>
+                                                {option.value} - {option.name}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+                            </div>
                         </div>
-                        <div>
-                            <label className="monster-edit-label">
-                                英語説明:
-                            </label>
-                            <textarea
-                                value={formData.description_en}
-                                onChange={(e) => handleChange('description_en', e.target.value)}
-                                rows="3"
-                                className="monster-edit-textarea"
-                            />
+                    )}
+
+                    {activeTab === "flags" && (
+                        <div className="monster-flags-container">
+                            <h4>フラグ</h4>
+                            <div className="monster-flags-grid">
+                                {Object.entries(flagCategories).map(([categoryName, flags]) => {
+                                    const categoryFlagKeys = Object.keys(flags);
+                                    const checkedCount = categoryFlagKeys.filter(flag => formData.flags[flag]).length;
+                                    const allChecked = checkedCount === categoryFlagKeys.length;
+                                    
+                                    return (
+                                        <div key={categoryName} className="monster-flag-category" style={{ marginBottom: '10px' }}>
+                                            <div className="monster-flag-category-header">
+                                                <h5>
+                                                    {categoryName} ({checkedCount}/{categoryFlagKeys.length})
+                                                </h5>
+                                                <button
+                                                    onClick={() => handleCategoryToggle(flags, allChecked)}
+                                                    className={`monster-flag-toggle-btn ${allChecked ? 'clear' : ''}`}
+                                                    title={allChecked ? '全て解除' : '全て選択'}
+                                                >
+                                                    {allChecked ? '全解除' : '全選択'}
+                                                </button>
+                                            </div>
+                                            <div className="monster-flag-category-content">
+                                                <div className="monster-flag-grid">
+                                                    {Object.entries(flags).map(([flag, description]) => (
+                                                        <label 
+                                                            key={flag} 
+                                                            className="monster-flag-label"
+                                                        >
+                                                            <input
+                                                                type="checkbox"
+                                                                checked={formData.flags[flag] || false}
+                                                                onChange={(e) => handleFlagChange(flag, e.target.checked)}
+                                                                className="monster-flag-checkbox"
+                                                            />
+                                                            <span className={`monster-flag-name ${formData.flags[flag] ? 'active' : ''}`}>
+                                                                {flag}
+                                                            </span>
+                                                            <span className="monster-flag-description">
+                                                                {description}
+                                                            </span>
+                                                        </label>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                            
+                            {/* 選択済みフラグの概要表示 */}
+                            <div className="monster-flags-summary">
+                                <h6>
+                                    選択済みフラグ ({Object.values(formData.flags).filter(Boolean).length}個):
+                                </h6>
+                                <div className="monster-flags-list">
+                                    {Object.entries(formData.flags)
+                                        .filter(([flag, isActive]) => isActive)
+                                        .map(([flag]) => flag)
+                                        .join(' | ') || '(フラグなし)'}
+                                </div>
+                            </div>
                         </div>
-                    </div>
+                    )}
+
+                    {activeTab === "evolution" && (
+                        <div className="evolution-tab-content">
+                            <h4>🧬 進化設定</h4>
+                            
+                            {/* 現在の進化設定表示 */}
+                            <div className="evolution-current-info">
+                                <h5>現在の設定</h5>
+                                {formData.nextMon > 0 ? (
+                                    <div className="current-evolution">
+                                        <div>進化先: {selectedMonster ? `${selectedMonster.name} (ID: ${selectedMonster.serialNumber})` : `ID: ${formData.nextMon}`}</div>
+                                        <div>必要経験値: {formData.nextExp}</div>
+                                    </div>
+                                ) : (
+                                    <div className="no-evolution">進化設定なし</div>
+                                )}
+                            </div>
+
+                            {/* 必要経験値入力 */}
+                            <div className="evolution-form-group">
+                                <label className="evolution-form-label">
+                                    進化に必要な経験値:
+                                </label>
+                                <input
+                                    type="number"
+                                    min="0"
+                                    value={formData.nextExp}
+                                    onChange={(e) => handleChange('nextExp', parseInt(e.target.value) || 0)}
+                                    className="evolution-form-input"
+                                    placeholder="経験値を入力 (0で進化なし)"
+                                />
+                                <div className="evolution-help-text">
+                                    0を設定すると進化しません。通常は倒した時に得られる経験値の2-5倍程度が目安です。
+                                </div>
+                            </div>
+
+                            {/* 進化先モンスター選択 */}
+                            <div className="evolution-form-group">
+                                <label className="evolution-form-label">
+                                    進化先モンスター:
+                                </label>
+                                
+                                <div className="evolution-monster-search">
+                                    <input
+                                        type="text"
+                                        value={searchText}
+                                        onChange={(e) => {
+                                            setSearchText(e.target.value);
+                                            setShowDropdown(true);
+                                        }}
+                                        onFocus={() => setShowDropdown(true)}
+                                        onBlur={() => setTimeout(() => setShowDropdown(false), 150)}
+                                        placeholder="モンスター名またはIDで検索..."
+                                        className="evolution-search-input"
+                                    />
+                                    
+                                    {showDropdown && filteredMonsters.length > 0 && (
+                                        <div className="evolution-dropdown">
+                                            {filteredMonsters.map(monster => (
+                                                <div
+                                                    key={monster.serialNumber}
+                                                    className="evolution-dropdown-item"
+                                                    onMouseDown={() => handleMonsterSelect(monster)}
+                                                >
+                                                    <div className="evolution-monster-name">
+                                                        {monster.name} / {monster.ename}
+                                                    </div>
+                                                    <div className="evolution-monster-id">
+                                                        ID: {monster.serialNumber}
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* 選択されたモンスター表示 */}
+                                {selectedMonster && (
+                                    <div className="evolution-selected-monster">
+                                        <div className="monster-info">
+                                            <div>
+                                                <strong>{selectedMonster.name} / {selectedMonster.ename}</strong>
+                                                <div className="monster-details">
+                                                    ID: {selectedMonster.serialNumber} | 
+                                                    レベル: {selectedMonster.depth} | 
+                                                    HP: {selectedMonster.hp_expected} | 
+                                                    速度: {selectedMonster.speed}
+                                                </div>
+                                            </div>
+                                            <button
+                                                onClick={handleClearMonster}
+                                                className="evolution-clear-btn"
+                                                type="button"
+                                            >
+                                                クリア
+                                            </button>
+                                        </div>
+                                    </div>
+                                )}
+
+                                <div className="evolution-help-text">
+                                    進化先として適切なモンスターを選択してください。通常は現在のモンスターより強力なモンスターを選びます。
+                                </div>
+                            </div>
+
+                            {/* 進化設定削除ボタン */}
+                            {(formData.nextMon > 0 || formData.nextExp > 0) && (
+                                <div className="evolution-actions">
+                                    <button
+                                        onClick={handleRemoveEvolution}
+                                        className="evolution-btn-remove"
+                                        type="button"
+                                    >
+                                        進化設定を削除
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+                    )}
                 </div>
 
                 {/* ボタン */}
                 <div className="monster-edit-buttons">
                     <button
-                        onClick={() => setShowEvolutionDialog(true)}
-                        className="monster-btn-save"
-                        style={{ marginRight: "auto", background: "#17a2b8" }}
-                    >
-                        🧬 進化設定
-                    </button>
-                    <button
                         onClick={onCancel}
                         className="monster-btn-cancel"
+                        type="button"
                     >
                         キャンセル
                     </button>
                     <button
                         onClick={handleSave}
                         className="monster-btn-save"
+                        type="button"
                     >
                         保存
                     </button>
                 </div>
             </div>
-
-            {/* 進化設定ダイアログ */}
-            {showEvolutionDialog && (
-                <EvolutionDialog
-                    creature={creature}
-                    allMonsters={allMonsters}
-                    currentEvolution={{
-                        nextExp: formData.nextExp,
-                        nextMon: formData.nextMon
-                    }}
-                    onSave={(evolution) => {
-                        handleChange('nextExp', evolution.nextExp);
-                        handleChange('nextMon', evolution.nextMon);
-                        setShowEvolutionDialog(false);
-                    }}
-                    onCancel={() => setShowEvolutionDialog(false)}
-                />
-            )}
         </div>
     );
 }
@@ -1478,6 +1635,7 @@ function EvolutionDialog({ creature, allMonsters, currentEvolution, onSave, onCa
                                 setShowDropdown(true);
                             }}
                             onFocus={() => setShowDropdown(true)}
+                            onBlur={() => setTimeout(() => setShowDropdown(false), 150)}
                             placeholder="モンスター名またはIDで検索..."
                             className="evolution-search-input"
                         />
@@ -1488,7 +1646,7 @@ function EvolutionDialog({ creature, allMonsters, currentEvolution, onSave, onCa
                                     <div
                                         key={monster.serialNumber}
                                         className="evolution-dropdown-item"
-                                        onClick={() => handleMonsterSelect(monster)}
+                                        onMouseDown={() => handleMonsterSelect(monster)}
                                     >
                                         <div className="evolution-monster-name">
                                             {monster.name} / {monster.ename}
@@ -1518,6 +1676,7 @@ function EvolutionDialog({ creature, allMonsters, currentEvolution, onSave, onCa
                                 <button
                                     onClick={handleClearMonster}
                                     className="evolution-clear-btn"
+                                    type="button"
                                 >
                                     クリア
                                 </button>
