@@ -294,7 +294,7 @@ function FileReaderComponent() {
             processChunk(0);
         } catch (error) {
             console.error('GitHubからの読み込みエラー:', error);
-            alert('GitHubからの読み込みに失敗しました: ' + error.message);
+            showError('GitHubからの読み込みに失敗しました: ' + error.message);
             setLoading(false);
             setProgress(0);
         }
@@ -315,7 +315,7 @@ function FileReaderComponent() {
                     try {
                         obj = JSON.parse(text);
                     } catch (jsonErr) {
-                        alert("JSONのパースに失敗しました: " + jsonErr.message);
+                        showError("JSONのパースに失敗しました: " + jsonErr.message);
                         setLoading(false);
                         return;
                     }
@@ -325,7 +325,7 @@ function FileReaderComponent() {
                     } else if (Array.isArray(obj.monsters)) {
                         monstersArr = obj.monsters;
                     } else {
-                        alert("不正なJSON形式です（配列またはmonstersプロパティが必要）");
+                        showError("不正なJSON形式です（配列またはmonstersプロパティが必要）");
                         setLoading(false);
                         return;
                     }
@@ -362,14 +362,14 @@ function FileReaderComponent() {
                             }
                         });
                     } catch (convErr) {
-                        alert("データ変換エラー: " + convErr.message);
+                        showError("データ変換エラー: " + convErr.message);
                         setLoading(false);
                         return;
                     }
                     setInfoList(creatures);
                     setProgress(100);
                 } catch (e) {
-                    alert("JSONの読み込みに失敗しました: " + e.message);
+                    showError("JSONの読み込みに失敗しました: " + e.message);
                 }
                 setLoading(false);
             };
@@ -404,13 +404,13 @@ F:BASH_DOOR`;
                     }
                 }, 100);
 
-                alert(`新しいモンスター（ID: ${newId}）が追加されました`);
+                showSuccess(`新しいモンスター（ID: ${newId}）が追加されました`);
             } else {
-                alert('新しいモンスターの作成に失敗しました');
+                showError('新しいモンスターの作成に失敗しました');
             }
         } catch (error) {
             console.error('新しいモンスター作成エラー:', error);
-            alert('新しいモンスターの作成中にエラーが発生しました: ' + error.message);
+            showError('新しいモンスターの作成中にエラーが発生しました: ' + error.message);
         }
     };
 
@@ -477,13 +477,13 @@ F:BASH_DOOR`;
                     }
                 }, 100);
 
-                alert(`新しいモンスター（ID: ${newId}）が追加されました`);
+                showInfo(`新しいモンスター（ID: ${newId}）が追加されました`);
             } else {
-                alert('新しいモンスターの作成に失敗しました');
+                showInfo('新しいモンスターの作成に失敗しました');
             }
         } catch (error) {
             console.error('新しいモンスター作成エラー:', error);
-            alert('新しいモンスターの作成中にエラーが発生しました: ' + error.message);
+            showInfo('新しいモンスターの作成中にエラーが発生しました: ' + error.message);
         }
     };
 
@@ -513,13 +513,13 @@ F:BASH_DOOR`;
                     }
                 }, 100);
 
-                alert(`モンスター「${originalCreature.name}」がコピーされました（新ID: ${newId}）`);
+                showInfo(`モンスター「${originalCreature.name}」がコピーされました（新ID: ${newId}）`);
             } else {
-                alert('モンスターのコピーに失敗しました');
+                showInfo('モンスターのコピーに失敗しました');
             }
         } catch (error) {
             console.error('モンスターコピーエラー:', error);
-            alert('モンスターのコピー中にエラーが発生しました: ' + error.message);
+            showInfo('モンスターのコピー中にエラーが発生しました: ' + error.message);
         }
     };
 
@@ -541,7 +541,7 @@ F:BASH_DOOR`;
             if (foundIndex !== -1) {
                 targetIndex = foundIndex;
             } else {
-                alert(`編集対象のモンスターが見つかりません (ID: ${updatedCreature.serialNumber})`);
+                showInfo(`編集対象のモンスターが見つかりません (ID: ${updatedCreature.serialNumber})`);
                 return;
             }
         }
@@ -553,7 +553,7 @@ F:BASH_DOOR`;
         setEditingCreature(null);
         setEditingIndex(-1);
         
-        alert('モンスターが更新されました');
+        showInfo('モンスターが更新されました');
     };
 
     const handleCancelEdit = () => {

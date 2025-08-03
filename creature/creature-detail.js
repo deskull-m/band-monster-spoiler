@@ -302,11 +302,11 @@ function MonsterTableRow({ creature, index, infoList, onCopy, onEdit, onSave }) 
                 setShowModal(false);
             } else {
                 console.warn('onSave is not defined');
-                alert('保存機能が利用できません');
+                showError('保存機能が利用できません');
             }
         } catch (error) {
             console.error('Error in handleSaveEdit:', error);
-            alert('保存中にエラーが発生しました: ' + error.message);
+            showError('保存中にエラーが発生しました: ' + error.message);
         }
     };
 
@@ -1168,7 +1168,7 @@ D:$${formData.description_en}` : ''}`;
             }
         } catch (error) {
             console.error('Error in handleSave:', error);
-            alert('モンスターデータの更新に失敗しました: ' + error.message);
+            showInfo('モンスターデータの更新に失敗しました: ' + error.message);
         }
     };
 
