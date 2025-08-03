@@ -57,14 +57,18 @@ function MonsterDetail({ creature, index, infoList }) {
                 role="dialog"
             >
                 <div className="modal-dialog modal-lg">
-                    <div className="modal-content">
-                        <div className="modal-header">
+                    <div className="modal-content" style={{ backgroundColor: "#1f1f1f", color: "#e0e0e0", border: "1px solid #555" }}>
+                        <div className="modal-header" style={{ backgroundColor: "#2d2d2d", borderBottom: "1px solid #555" }}>
                             <ul className="nav nav-tabs modal-title" style={{ marginBottom: 0 }}>
                                 <li className="nav-item">
                                     <button
                                         className={`nav-link${tab === "detail" ? " active" : ""}`}
                                         onClick={() => setTab("detail")}
-                                        style={{ border: "none", background: "none" }}
+                                        style={{ 
+                                            border: "none", 
+                                            background: tab === "detail" ? "#3d3d3d" : "none",
+                                            color: tab === "detail" ? "#ffffff" : "#a0a0a0"
+                                        }}
                                     >
                                         詳細
                                     </button>
@@ -73,7 +77,11 @@ function MonsterDetail({ creature, index, infoList }) {
                                     <button
                                         className={`nav-link${tab === "rinfo" ? " active" : ""}`}
                                         onClick={() => setTab("rinfo")}
-                                        style={{ border: "none", background: "none" }}
+                                        style={{ 
+                                            border: "none", 
+                                            background: tab === "rinfo" ? "#3d3d3d" : "none",
+                                            color: tab === "rinfo" ? "#ffffff" : "#a0a0a0"
+                                        }}
                                     >
                                         r_info
                                     </button>
@@ -82,7 +90,11 @@ function MonsterDetail({ creature, index, infoList }) {
                                     <button
                                         className={`nav-link${tab === "json" ? " active" : ""}`}
                                         onClick={() => setTab("json")}
-                                        style={{ border: "none", background: "none" }}
+                                        style={{ 
+                                            border: "none", 
+                                            background: tab === "json" ? "#3d3d3d" : "none",
+                                            color: tab === "json" ? "#ffffff" : "#a0a0a0"
+                                        }}
                                     >
                                         .json
                                     </button>
@@ -90,11 +102,11 @@ function MonsterDetail({ creature, index, infoList }) {
                             </ul>
                             <button
                                 type="button"
-                                className="btn-close"
+                                className="btn-close btn-close-white"
                                 onClick={() => setShowModal(false)}
                             ></button>
                         </div>
-                        <div className="modal-body">
+                        <div className="modal-body" style={{ backgroundColor: "#1f1f1f" }}>
                             {tab === "detail" && (
                                 <div class="status-detail">
                                     <h5>ステータス詳細</h5>
@@ -221,7 +233,13 @@ function MonsterDetail({ creature, index, infoList }) {
                                         className="form-control"
                                         value={creature.textDetails}
                                         rows={Math.max(3, creature.textDetails.split('\n').length)}
-                                        style={{ width: "100%", resize: "vertical" }}
+                                        style={{ 
+                                            width: "100%", 
+                                            resize: "vertical",
+                                            backgroundColor: "#2d2d2d",
+                                            color: "#e0e0e0",
+                                            border: "1px solid #555"
+                                        }}
                                         readOnly
                                     />
                                 </>
@@ -239,7 +257,13 @@ function MonsterDetail({ creature, index, infoList }) {
                                         className="form-control"
                                         value={creature.putJson()}
                                         rows={Math.max(3, creature.textDetails.split('\n').length)}
-                                        style={{ width: "100%", resize: "vertical" }}
+                                        style={{ 
+                                            width: "100%", 
+                                            resize: "vertical",
+                                            backgroundColor: "#2d2d2d",
+                                            color: "#e0e0e0",
+                                            border: "1px solid #555"
+                                        }}
                                         readOnly
                                     />
                                 </>
@@ -253,7 +277,7 @@ function MonsterDetail({ creature, index, infoList }) {
 }
 
 // テーブル行用のコンポーネント
-function MonsterTableRow({ creature, index, infoList, onDelete, onCopy, onEdit }) {
+function MonsterTableRow({ creature, index, infoList, onCopy, onEdit }) {
     const [showModal, setShowModal] = React.useState(false);
     const [tab, setTab] = React.useState("detail");
     const [editingCreature, setEditingCreature] = React.useState(null);
@@ -323,15 +347,6 @@ function MonsterTableRow({ creature, index, infoList, onDelete, onCopy, onEdit }
                             📋
                         </button>
                     )}
-                    {onDelete && (
-                        <button
-                            className="btn btn-outline-danger btn-sm"
-                            onClick={() => onDelete(creature.serialNumber)}
-                            title="このモンスターを削除"
-                        >
-                            🗑️
-                        </button>
-                    )}
                 </td>
             </tr>
 
@@ -348,9 +363,9 @@ function MonsterTableRow({ creature, index, infoList, onDelete, onCopy, onEdit }
                     role="dialog"
                 >
                     <div className="modal-dialog modal-lg">
-                        <div className="modal-content">
-                            <div className="modal-header">
-                                <h5 className="modal-title">
+                        <div className="modal-content" style={{ backgroundColor: "#1f1f1f", color: "#e0e0e0", border: "1px solid #555" }}>
+                            <div className="modal-header" style={{ backgroundColor: "#2d2d2d", borderBottom: "1px solid #555" }}>
+                                <h5 className="modal-title" style={{ color: "#ffffff" }}>
                                     {creature.serialNumber}: {creature.name} / {creature.ename}
                                 </h5>
                                 <ul className="nav nav-tabs" style={{ marginLeft: "auto", marginRight: "1rem" }}>
@@ -358,7 +373,11 @@ function MonsterTableRow({ creature, index, infoList, onDelete, onCopy, onEdit }
                                         <button
                                             className={`nav-link${tab === "detail" ? " active" : ""}`}
                                             onClick={() => setTab("detail")}
-                                            style={{ border: "none", background: "none" }}
+                                            style={{ 
+                                                border: "none", 
+                                                background: tab === "detail" ? "#3d3d3d" : "none",
+                                                color: tab === "detail" ? "#ffffff" : "#a0a0a0"
+                                            }}
                                         >
                                             詳細
                                         </button>
@@ -368,7 +387,11 @@ function MonsterTableRow({ creature, index, infoList, onDelete, onCopy, onEdit }
                                             <button
                                                 className={`nav-link${tab === "edit" ? " active" : ""}`}
                                                 onClick={() => setTab("edit")}
-                                                style={{ border: "none", background: "none" }}
+                                                style={{ 
+                                                    border: "none", 
+                                                    background: tab === "edit" ? "#3d3d3d" : "none",
+                                                    color: tab === "edit" ? "#ffffff" : "#a0a0a0"
+                                                }}
                                             >
                                                 編集
                                             </button>
@@ -378,7 +401,11 @@ function MonsterTableRow({ creature, index, infoList, onDelete, onCopy, onEdit }
                                         <button
                                             className={`nav-link${tab === "rinfo" ? " active" : ""}`}
                                             onClick={() => setTab("rinfo")}
-                                            style={{ border: "none", background: "none" }}
+                                            style={{ 
+                                                border: "none", 
+                                                background: tab === "rinfo" ? "#3d3d3d" : "none",
+                                                color: tab === "rinfo" ? "#ffffff" : "#a0a0a0"
+                                            }}
                                         >
                                             r_info
                                         </button>
@@ -387,7 +414,11 @@ function MonsterTableRow({ creature, index, infoList, onDelete, onCopy, onEdit }
                                         <button
                                             className={`nav-link${tab === "json" ? " active" : ""}`}
                                             onClick={() => setTab("json")}
-                                            style={{ border: "none", background: "none" }}
+                                            style={{ 
+                                                border: "none", 
+                                                background: tab === "json" ? "#3d3d3d" : "none",
+                                                color: tab === "json" ? "#ffffff" : "#a0a0a0"
+                                            }}
                                         >
                                             .json
                                         </button>
@@ -395,11 +426,11 @@ function MonsterTableRow({ creature, index, infoList, onDelete, onCopy, onEdit }
                                 </ul>
                                 <button
                                     type="button"
-                                    className="btn-close"
+                                    className="btn-close btn-close-white"
                                     onClick={() => setShowModal(false)}
                                 ></button>
                             </div>
-                            <div className="modal-body">
+                            <div className="modal-body" style={{ backgroundColor: "#1f1f1f" }}>
                                 {tab === "detail" && (
                                     <div>
                                         <h5>ステータス詳細</h5>
@@ -536,7 +567,13 @@ function MonsterTableRow({ creature, index, infoList, onDelete, onCopy, onEdit }
                                             className="form-control"
                                             value={creature.textDetails}
                                             rows={Math.max(3, creature.textDetails.split('\n').length)}
-                                            style={{ width: "100%", resize: "vertical" }}
+                                            style={{ 
+                                                width: "100%", 
+                                                resize: "vertical",
+                                                backgroundColor: "#2d2d2d",
+                                                color: "#e0e0e0",
+                                                border: "1px solid #555"
+                                            }}
                                             readOnly
                                         />
                                     </>
@@ -554,7 +591,13 @@ function MonsterTableRow({ creature, index, infoList, onDelete, onCopy, onEdit }
                                             className="form-control"
                                             value={creature.putJson()}
                                             rows={Math.max(3, creature.textDetails.split('\n').length)}
-                                            style={{ width: "100%", resize: "vertical" }}
+                                            style={{ 
+                                                width: "100%", 
+                                                resize: "vertical",
+                                                backgroundColor: "#2d2d2d",
+                                                color: "#e0e0e0",
+                                                border: "1px solid #555"
+                                            }}
                                             readOnly
                                         />
                                     </>
