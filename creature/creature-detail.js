@@ -657,7 +657,10 @@ function MonsterEditForm({ creature, allMonsters, onSave, onCancel, isModal = fa
         { value: 39, name: "秘密結社メガデス" },
         { value: 40, name: "血の神コーン" },
         { value: 41, name: "快楽神スラーネッシュ" },
-        { value: 42, name: "覇府" }
+        { value: 42, name: "覇府" },
+        { value: 43, name: "変幻の神ティーンチ" },
+        { value: 44, name: "ニーベルングの王国" },
+        { value: 45, name: "セクシーコマンドー部" }
     ];
 
     // アライアンスフラグとアライアンス値のマッピング
