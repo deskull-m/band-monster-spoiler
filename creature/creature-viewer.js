@@ -487,14 +487,6 @@ F:BASH_DOOR`;
         }
     };
 
-    const handleDeleteMonster = (serialNumber) => {
-        if (confirm(`モンスター ID: ${serialNumber} を削除しますか？この操作は取り消せません。`)) {
-            const newList = infoList.filter(creature => creature.serialNumber !== serialNumber);
-            setInfoList(newList);
-            alert(`モンスター ID: ${serialNumber} が削除されました`);
-        }
-    };
-
     const handleCopyMonster = (originalCreature) => {
         // 新しいモンスターIDを決定（既存の最大ID + 1）
         const maxId = infoList.length > 0 ? Math.max(...infoList.map(c => c.serialNumber)) : 0;
@@ -1052,7 +1044,6 @@ F:BASH_DOOR`;
                                     creature={creature}
                                     index={index}
                                     infoList={infoList}
-                                    onDelete={handleDeleteMonster}
                                     onCopy={handleCopyMonster}
                                     onEdit={handleEditMonster}
                                 />
