@@ -277,7 +277,7 @@ function MonsterDetail({ creature, index, infoList }) {
 }
 
 // テーブル行用のコンポーネント
-function MonsterTableRow({ creature, index, infoList, onCopy, onEdit }) {
+function MonsterTableRow({ creature, index, infoList, onCopy, onEdit, onSave }) {
     const [showModal, setShowModal] = React.useState(false);
     const [tab, setTab] = React.useState("detail");
     const [editingCreature, setEditingCreature] = React.useState(null);
@@ -289,18 +289,24 @@ function MonsterTableRow({ creature, index, infoList, onCopy, onEdit }) {
     const spellMap = SPELL_MAP;
 
     // 編集用ハンドラー
-    const handleSaveEdit = (updatedCreature) => {
-        // すべての状態を先にクリア
-        setEditingCreature(null);
-        setTab("detail");
-        setShowModal(false);
-        
-        // その後で親コンポーネントに通知
-        if (onEdit) {
-            // 非同期で実行して状態更新の競合を避ける
-            setTimeout(() => {
-                onEdit(updatedCreature, index);
-            }, 10);
+    const handleSaveEdit = async (updatedCreature) => {
+        try {
+            // 親コンポーネントに通知
+            if (onSave) {
+                // onSaveが非同期の場合を考慮してPromiseとして処理
+                await Promise.resolve(onSave(updatedCreature, index));
+                
+                // 成功時のみ状態をクリア
+                setEditingCreature(null);
+                setTab("detail");
+                setShowModal(false);
+            } else {
+                console.warn('onSave is not defined');
+                alert('保存機能が利用できません');
+            }
+        } catch (error) {
+            console.error('Error in handleSaveEdit:', error);
+            alert('保存中にエラーが発生しました: ' + error.message);
         }
     };
 
@@ -555,6 +561,7 @@ function MonsterTableRow({ creature, index, infoList, onCopy, onEdit }) {
                                     <div style={{ maxHeight: "70vh", overflow: "auto" }}>
                                         <MonsterEditForm
                                             creature={editingCreature}
+                                            allMonsters={infoList}
                                             onSave={handleSaveEdit}
                                             onCancel={handleCancelEdit}
                                             isModal={true}
@@ -1121,6 +1128,10 @@ function MonsterEditForm({ creature, allMonsters, onSave, onCancel, isModal = fa
     };
 
     const handleSave = () => {
+        console.log('handleSave called in MonsterEditForm');
+        console.log('formData:', formData);
+        console.log('onSave function:', onSave);
+        
         try {
             // HPダイスを文字列形式に変換
             const hitPoints = `${formData.hpDice}d${formData.hpSides}`;
@@ -1130,6 +1141,9 @@ function MonsterEditForm({ creature, allMonsters, onSave, onCancel, isModal = fa
                 .filter(([flag, isActive]) => isActive)
                 .map(([flag]) => flag);
             const flagString = activeFlags.join(' | ');
+            
+            console.log('Active flags:', activeFlags);
+            console.log('HP:', hitPoints);
             
             // フォームデータからCreatureテキスト形式を再構築
             const textData = `N:${formData.serialNumber}:${formData.name}
@@ -1141,9 +1155,19 @@ F:${flagString}` : ''}${formData.description_ja ? `
 D:${formData.description_ja}` : ''}${formData.description_en ? `
 D:$${formData.description_en}` : ''}`;
 
+            console.log('Generated textData:', textData);
+
             const updatedCreature = new Creature(textData);
-            onSave(updatedCreature);
+            console.log('Created updatedCreature:', updatedCreature);
+            
+            if (onSave) {
+                console.log('Calling onSave with updatedCreature');
+                onSave(updatedCreature);
+            } else {
+                console.error('onSave is not defined!');
+            }
         } catch (error) {
+            console.error('Error in handleSave:', error);
             alert('モンスターデータの更新に失敗しました: ' + error.message);
         }
     };

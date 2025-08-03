@@ -530,17 +530,29 @@ F:BASH_DOOR`;
         setEditingIndex(actualIndex);
     };
 
-    const handleSaveEdit = (updatedCreature) => {
-        if (editingIndex === -1) {
-            alert('編集対象のモンスターが見つかりません');
-            return;
+    const handleSaveEdit = (updatedCreature, providedIndex) => {
+        // providedIndexが提供された場合はそれを使用、そうでなければeditingIndexを使用
+        let targetIndex = providedIndex !== undefined ? providedIndex : editingIndex;
+        
+        if (targetIndex === -1 || targetIndex >= infoList.length) {
+            // serialNumberで検索してみる
+            const foundIndex = infoList.findIndex(c => c.serialNumber === updatedCreature.serialNumber);
+            
+            if (foundIndex !== -1) {
+                targetIndex = foundIndex;
+            } else {
+                alert(`編集対象のモンスターが見つかりません (ID: ${updatedCreature.serialNumber})`);
+                return;
+            }
         }
 
         const newList = [...infoList];
-        newList[editingIndex] = updatedCreature;
+        newList[targetIndex] = updatedCreature;
+        
         setInfoList(newList);
         setEditingCreature(null);
         setEditingIndex(-1);
+        
         alert('モンスターが更新されました');
     };
 
@@ -1046,6 +1058,7 @@ F:BASH_DOOR`;
                                     infoList={infoList}
                                     onCopy={handleCopyMonster}
                                     onEdit={handleEditMonster}
+                                    onSave={handleSaveEdit}
                                 />
                             ))}
                         </tbody>
