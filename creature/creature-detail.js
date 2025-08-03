@@ -300,28 +300,17 @@ function MonsterTableRow({ creature, index, infoList, onDelete, onCopy, onEdit }
                     </span>
                 </td>
                 <td style={{ textAlign: "center" }}>
-                    <button
-                        className="btn btn-outline-info btn-sm"
-                        onClick={() => {
-                            setTab("detail");
-                            setShowModal(true);
-                        }}
-                        style={{ marginRight: "0.3em" }}
-                        title="詳細・編集モーダルを開く"
-                    >
-                        📄
-                    </button>
                     {onEdit && (
                         <button
                             className="btn btn-outline-primary btn-sm"
                             onClick={() => {
-                                setTab("edit");
+                                setTab("detail");
                                 setShowModal(true);
                             }}
-                            title="編集タブを開く"
+                            title="詳細・編集モーダルを開く"
                             style={{ marginRight: "0.3em" }}
                         >
-                            ✏️
+                            📄
                         </button>
                     )}
                     {onCopy && (
