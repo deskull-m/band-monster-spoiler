@@ -290,11 +290,18 @@ function MonsterTableRow({ creature, index, infoList, onCopy, onEdit }) {
 
     // 編集用ハンドラー
     const handleSaveEdit = (updatedCreature) => {
-        if (onEdit) {
-            onEdit(updatedCreature, index);
-        }
+        // すべての状態を先にクリア
         setEditingCreature(null);
         setTab("detail");
+        setShowModal(false);
+        
+        // その後で親コンポーネントに通知
+        if (onEdit) {
+            // 非同期で実行して状態更新の競合を避ける
+            setTimeout(() => {
+                onEdit(updatedCreature, index);
+            }, 10);
+        }
     };
 
     const handleCancelEdit = () => {
@@ -1142,46 +1149,64 @@ D:$${formData.description_en}` : ''}`;
     };
 
     return (
-        <div style={isModal ? {} : {
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            width: '100vw',
-            height: '100vh',
-            background: 'rgba(0,0,0,0.8)',
-            zIndex: 9999,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: '20px',
-            boxSizing: 'border-box'
+        <div style={{ 
+            maxHeight: isModal ? '70vh' : 'none',
+            overflow: isModal ? 'auto' : 'visible'
         }}>
-            <div style={isModal ? {} : {
-                background: '#2b3035',
-                borderRadius: '8px',
-                padding: '20px',
-                maxWidth: '1000px',
-                width: '95%',
-                maxHeight: '95vh',
-                overflow: 'auto',
-                border: '1px solid #555'
-            }}>
-                <h3 style={{ marginTop: 0, color: isModal ? 'inherit' : '#e0e0e0' }}>
-                    モンスター編集 - ID: {formData.serialNumber}
-                </h3>
+            <h3 style={{ marginTop: 0, color: '#e0e0e0' }}>
+                モンスター編集 - ID: {formData.serialNumber}
+            </h3>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
-                    {/* 基本情報 */}
-                    <div>
-                        <h4 style={{ color: '#ccc' }}>基本情報</h4>
-                        <div style={{ marginBottom: '10px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
+                {/* 基本情報 */}
+                <div>
+                    <h4 style={{ color: '#ccc' }}>基本情報</h4>
+                    <div style={{ marginBottom: '10px' }}>
+                        <label style={{ display: 'block', marginBottom: '5px', color: '#ccc' }}>
+                            日本語名:
+                        </label>
+                        <input
+                            type="text"
+                            value={formData.name}
+                            onChange={(e) => handleChange('name', e.target.value)}
+                            style={{
+                                width: '100%',
+                                padding: '5px',
+                                background: '#1a1a1a',
+                                border: '1px solid #555',
+                                color: '#e0e0e0',
+                                borderRadius: '3px'
+                            }}
+                        />
+                    </div>
+                    <div style={{ marginBottom: '10px' }}>
+                        <label style={{ display: 'block', marginBottom: '5px', color: '#ccc' }}>
+                            英語名:
+                        </label>
+                        <input
+                            type="text"
+                            value={formData.ename}
+                            onChange={(e) => handleChange('ename', e.target.value)}
+                            style={{
+                                width: '100%',
+                                padding: '5px',
+                                background: '#1a1a1a',
+                                border: '1px solid #555',
+                                color: '#e0e0e0',
+                                borderRadius: '3px'
+                            }}
+                        />
+                    </div>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                        <div>
                             <label style={{ display: 'block', marginBottom: '5px', color: '#ccc' }}>
-                                日本語名:
+                                シンボル:
                             </label>
                             <input
                                 type="text"
-                                value={formData.name}
-                                onChange={(e) => handleChange('name', e.target.value)}
+                                maxLength="1"
+                                value={formData.symbol}
+                                onChange={(e) => handleChange('symbol', e.target.value)}
                                 style={{
                                     width: '100%',
                                     padding: '5px',
@@ -1192,275 +1217,13 @@ D:$${formData.description_en}` : ''}`;
                                 }}
                             />
                         </div>
-                        <div style={{ marginBottom: '10px' }}>
+                        <div>
                             <label style={{ display: 'block', marginBottom: '5px', color: '#ccc' }}>
-                                英語名:
-                            </label>
-                            <input
-                                type="text"
-                                value={formData.ename}
-                                onChange={(e) => handleChange('ename', e.target.value)}
-                                style={{
-                                    width: '100%',
-                                    padding: '5px',
-                                    background: '#1a1a1a',
-                                    border: '1px solid #555',
-                                    color: '#e0e0e0',
-                                    borderRadius: '3px'
-                                }}
-                            />
-                        </div>
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
-                            <div>
-                                <label style={{ display: 'block', marginBottom: '5px', color: '#ccc' }}>
-                                    シンボル:
-                                </label>
-                                <input
-                                    type="text"
-                                    maxLength="1"
-                                    value={formData.symbol}
-                                    onChange={(e) => handleChange('symbol', e.target.value)}
-                                    style={{
-                                        width: '100%',
-                                        padding: '5px',
-                                        background: '#1a1a1a',
-                                        border: '1px solid #555',
-                                        color: '#e0e0e0',
-                                        borderRadius: '3px'
-                                    }}
-                                />
-                            </div>
-                            <div>
-                                <label style={{ display: 'block', marginBottom: '5px', color: '#ccc' }}>
-                                    色:
-                                </label>
-                                <select
-                                    value={formData.color}
-                                    onChange={(e) => handleChange('color', e.target.value)}
-                                    style={{
-                                        width: '100%',
-                                        padding: '5px',
-                                        background: '#1a1a1a',
-                                        border: '1px solid #555',
-                                        color: '#e0e0e0',
-                                        borderRadius: '3px'
-                                    }}
-                                >
-                                    <option value="">色を選択</option>
-                                    {colorOptions.map(option => (
-                                        <option key={option.code} value={option.code}>
-                                            {option.code} - {option.name}
-                                        </option>
-                                    ))}
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* 能力値 */}
-                    <div>
-                        <h4 style={{ color: '#ccc' }}>能力値</h4>
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
-                            <div>
-                                <label style={{ display: 'block', marginBottom: '5px', color: '#ccc' }}>
-                                    速度:
-                                </label>
-                                <input
-                                    type="number"
-                                    min="-99"
-                                    max="99"
-                                    value={formData.speed}
-                                    onChange={(e) => {
-                                        const value = parseInt(e.target.value) || 0;
-                                        const clampedValue = Math.max(-99, Math.min(99, value));
-                                        handleChange('speed', clampedValue);
-                                    }}
-                                    style={{
-                                        width: '100%',
-                                        padding: '5px',
-                                        background: '#1a1a1a',
-                                        border: '1px solid #555',
-                                        color: '#e0e0e0',
-                                        borderRadius: '3px'
-                                    }}
-                                />
-                            </div>
-                            <div style={{ gridColumn: '1 / -1' }}>
-                                <label style={{ display: 'block', marginBottom: '5px', color: '#ccc' }}>
-                                    HP:
-                                </label>
-                                <div style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr auto', gap: '5px', alignItems: 'center' }}>
-                                    <input
-                                        type="number"
-                                        min="1"
-                                        value={formData.hpDice}
-                                        onChange={(e) => handleChange('hpDice', Math.max(1, parseInt(e.target.value) || 1))}
-                                        style={{
-                                            width: '100%',
-                                            padding: '5px',
-                                            background: '#1a1a1a',
-                                            border: '1px solid #555',
-                                            color: '#e0e0e0',
-                                            borderRadius: '3px'
-                                        }}
-                                        placeholder="ダイス数"
-                                    />
-                                    <span style={{ color: '#ccc', padding: '0 5px' }}>d</span>
-                                    <input
-                                        type="number"
-                                        min="1"
-                                        value={formData.hpSides}
-                                        onChange={(e) => handleChange('hpSides', Math.max(1, parseInt(e.target.value) || 1))}
-                                        style={{
-                                            width: '100%',
-                                            padding: '5px',
-                                            background: '#1a1a1a',
-                                            border: '1px solid #555',
-                                            color: '#e0e0e0',
-                                            borderRadius: '3px'
-                                        }}
-                                        placeholder="面数"
-                                    />
-                                    <div style={{ 
-                                        padding: '5px 10px',
-                                        background: '#333',
-                                        borderRadius: '3px',
-                                        color: '#ccc',
-                                        fontSize: '12px',
-                                        whiteSpace: 'nowrap'
-                                    }}>
-                                        {formData.flags.FORCE_MAXHP ? '最大' : '平均'}: {calculateExpectedHP(formData.hpDice, formData.hpSides, formData.flags.FORCE_MAXHP)}
-                                    </div>
-                                </div>
-                                <div style={{ fontSize: '11px', color: '#888', marginTop: '3px' }}>
-                                    形式: {formData.hpDice}d{formData.hpSides}
-                                </div>
-                            </div>
-                            <div>
-                                <label style={{ display: 'block', marginBottom: '5px', color: '#ccc' }}>
-                                    視界:
-                                </label>
-                                <input
-                                    type="number"
-                                    value={formData.vision}
-                                    onChange={(e) => handleChange('vision', parseInt(e.target.value) || 0)}
-                                    style={{
-                                        width: '100%',
-                                        padding: '5px',
-                                        background: '#1a1a1a',
-                                        border: '1px solid #555',
-                                        color: '#e0e0e0',
-                                        borderRadius: '3px'
-                                    }}
-                                />
-                            </div>
-                            <div>
-                                <label style={{ display: 'block', marginBottom: '5px', color: '#ccc' }}>
-                                    AC:
-                                </label>
-                                <input
-                                    type="number"
-                                    value={formData.armor_class}
-                                    onChange={(e) => handleChange('armor_class', parseInt(e.target.value) || 0)}
-                                    style={{
-                                        width: '100%',
-                                        padding: '5px',
-                                        background: '#1a1a1a',
-                                        border: '1px solid #555',
-                                        color: '#e0e0e0',
-                                        borderRadius: '3px'
-                                    }}
-                                />
-                            </div>
-                            <div>
-                                <label style={{ display: 'block', marginBottom: '5px', color: '#ccc' }}>
-                                    警戒度:
-                                </label>
-                                <input
-                                    type="number"
-                                    value={formData.alertness}
-                                    onChange={(e) => handleChange('alertness', parseInt(e.target.value) || 0)}
-                                    style={{
-                                        width: '100%',
-                                        padding: '5px',
-                                        background: '#1a1a1a',
-                                        border: '1px solid #555',
-                                        color: '#e0e0e0',
-                                        borderRadius: '3px'
-                                    }}
-                                />
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* レベル・経験値・アライアンス */}
-                    <div>
-                        <h4 style={{ color: '#ccc' }}>レベル・経験値・アライアンス</h4>
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
-                            <div>
-                                <label style={{ display: 'block', marginBottom: '5px', color: '#ccc' }}>
-                                    レベル:
-                                </label>
-                                <input
-                                    type="number"
-                                    value={formData.depth}
-                                    onChange={(e) => handleChange('depth', parseInt(e.target.value) || 0)}
-                                    style={{
-                                        width: '100%',
-                                        padding: '5px',
-                                        background: '#1a1a1a',
-                                        border: '1px solid #555',
-                                        color: '#e0e0e0',
-                                        borderRadius: '3px'
-                                    }}
-                                />
-                            </div>
-                            <div>
-                                <label style={{ display: 'block', marginBottom: '5px', color: '#ccc' }}>
-                                    希少度:
-                                </label>
-                                <input
-                                    type="number"
-                                    value={formData.rarity}
-                                    onChange={(e) => handleChange('rarity', parseInt(e.target.value) || 1)}
-                                    style={{
-                                        width: '100%',
-                                        padding: '5px',
-                                        background: '#1a1a1a',
-                                        border: '1px solid #555',
-                                        color: '#e0e0e0',
-                                        borderRadius: '3px'
-                                    }}
-                                />
-                            </div>
-                            <div>
-                                <label style={{ display: 'block', marginBottom: '5px', color: '#ccc' }}>
-                                    経験値:
-                                </label>
-                                <input
-                                    type="number"
-                                    value={formData.exp}
-                                    onChange={(e) => handleChange('exp', parseInt(e.target.value) || 0)}
-                                    style={{
-                                        width: '100%',
-                                        padding: '5px',
-                                        background: '#1a1a1a',
-                                        border: '1px solid #555',
-                                        color: '#e0e0e0',
-                                        borderRadius: '3px'
-                                    }}
-                                />
-                            </div>
-                        </div>
-                        
-                        {/* アライアンス選択 */}
-                        <div style={{ marginTop: '10px' }}>
-                            <label style={{ display: 'block', marginBottom: '5px', color: '#ccc' }}>
-                                所属アライアンス:
+                                色:
                             </label>
                             <select
-                                value={formData.alliance || 0}
-                                onChange={(e) => handleChange('alliance', parseInt(e.target.value))}
+                                value={formData.color}
+                                onChange={(e) => handleChange('color', e.target.value)}
                                 style={{
                                     width: '100%',
                                     padding: '5px',
@@ -1470,171 +1233,394 @@ D:$${formData.description_en}` : ''}`;
                                     borderRadius: '3px'
                                 }}
                             >
-                                {allianceOptions.map(option => (
-                                    <option key={option.value} value={option.value}>
-                                        {option.value} - {option.name}
+                                <option value="">色を選択</option>
+                                {colorOptions.map(option => (
+                                    <option key={option.code} value={option.code}>
+                                        {option.code} - {option.name}
                                     </option>
                                 ))}
                             </select>
                         </div>
                     </div>
+                </div>
 
-                    {/* フラグ */}
-                    <div style={{ gridColumn: '1 / -1' }}>
-                        <h4 style={{ color: '#ccc' }}>フラグ</h4>
-                        <div style={{ 
-                            display: 'grid', 
-                            gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', 
-                            gap: '15px',
-                            maxHeight: '400px',
-                            overflow: 'auto',
-                            border: '1px solid #555',
-                            borderRadius: '5px',
-                            padding: '10px',
-                            background: '#1a1a1a'
-                        }}>
-                            {Object.entries(flagCategories).map(([categoryName, flags]) => {
-                                const categoryFlagKeys = Object.keys(flags);
-                                const checkedCount = categoryFlagKeys.filter(flag => formData.flags[flag]).length;
-                                const allChecked = checkedCount === categoryFlagKeys.length;
-                                const someChecked = checkedCount > 0;
-                                
-                                return (
-                                    <div key={categoryName} style={{ marginBottom: '10px' }}>
-                                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                                            <h5 style={{ 
-                                                color: '#ffd700', 
-                                                fontSize: '14px', 
-                                                margin: '0 0 8px 0',
-                                                flex: 1
-                                            }}>
-                                                {categoryName} ({checkedCount}/{categoryFlagKeys.length})
-                                            </h5>
-                                            <button
-                                                onClick={() => handleCategoryToggle(flags, allChecked)}
-                                                style={{
-                                                    background: someChecked ? '#dc3545' : '#28a745',
-                                                    color: 'white',
-                                                    border: 'none',
-                                                    borderRadius: '3px',
-                                                    padding: '2px 6px',
-                                                    fontSize: '10px',
-                                                    cursor: 'pointer',
-                                                    marginBottom: '8px'
-                                                }}
-                                                title={allChecked ? '全て解除' : '全て選択'}
-                                            >
-                                                {allChecked ? '全解除' : '全選択'}
-                                            </button>
-                                        </div>
-                                        <div style={{ 
-                                            borderBottom: '1px solid #555',
-                                            paddingBottom: '8px',
-                                            marginBottom: '8px'
-                                        }}>
-                                            <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '4px' }}>
-                                                {Object.entries(flags).map(([flag, description]) => (
-                                                    <label 
-                                                        key={flag} 
-                                                        style={{ 
-                                                            display: 'flex', 
-                                                            alignItems: 'center',
-                                                            color: '#e0e0e0',
-                                                            fontSize: '12px',
-                                                            cursor: 'pointer',
-                                                            padding: '2px 0'
-                                                        }}
-                                                    >
-                                                        <input
-                                                            type="checkbox"
-                                                            checked={formData.flags[flag] || false}
-                                                            onChange={(e) => handleFlagChange(flag, e.target.checked)}
-                                                            style={{ 
-                                                                marginRight: '6px',
-                                                                transform: 'scale(0.9)'
-                                                            }}
-                                                        />
-                                                        <span style={{ 
-                                                            fontFamily: 'monospace',
-                                                            color: formData.flags[flag] ? '#4caf50' : '#ccc',
-                                                            fontWeight: formData.flags[flag] ? 'bold' : 'normal'
-                                                        }}>
-                                                            {flag}
-                                                        </span>
-                                                        <span style={{ 
-                                                            marginLeft: '8px',
-                                                            color: '#aaa',
-                                                            fontSize: '11px'
-                                                        }}>
-                                                            {description}
-                                                        </span>
-                                                    </label>
-                                                ))}
-                                            </div>
-                                        </div>
-                                    </div>
-                                );
-                            })}
+                {/* 能力値 */}
+                <div>
+                    <h4 style={{ color: '#ccc' }}>能力値</h4>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                        <div>
+                            <label style={{ display: 'block', marginBottom: '5px', color: '#ccc' }}>
+                                速度:
+                            </label>
+                            <input
+                                type="number"
+                                min="-99"
+                                max="99"
+                                value={formData.speed}
+                                onChange={(e) => {
+                                    const value = parseInt(e.target.value) || 0;
+                                    const clampedValue = Math.max(-99, Math.min(99, value));
+                                    handleChange('speed', clampedValue);
+                                }}
+                                style={{
+                                    width: '100%',
+                                    padding: '5px',
+                                    background: '#1a1a1a',
+                                    border: '1px solid #555',
+                                    color: '#e0e0e0',
+                                    borderRadius: '3px'
+                                }}
+                            />
                         </div>
-                        
-                        {/* 選択済みフラグの概要表示 */}
-                        <div style={{ marginTop: '10px', padding: '8px', background: '#2a2a2a', borderRadius: '4px' }}>
-                            <h6 style={{ color: '#ccc', fontSize: '12px', margin: '0 0 5px 0' }}>
-                                選択済みフラグ ({Object.values(formData.flags).filter(Boolean).length}個):
-                            </h6>
-                            <div style={{ 
-                                fontSize: '11px', 
-                                color: '#4caf50',
-                                fontFamily: 'monospace',
-                                lineHeight: '1.3'
-                            }}>
-                                {Object.entries(formData.flags)
-                                    .filter(([flag, isActive]) => isActive)
-                                    .map(([flag]) => flag)
-                                    .join(' | ') || '(フラグなし)'}
+                        <div style={{ gridColumn: '1 / -1' }}>
+                            <label style={{ display: 'block', marginBottom: '5px', color: '#ccc' }}>
+                                HP:
+                            </label>
+                            <div style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr auto', gap: '5px', alignItems: 'center' }}>
+                                <input
+                                    type="number"
+                                    min="1"
+                                    value={formData.hpDice}
+                                    onChange={(e) => handleChange('hpDice', Math.max(1, parseInt(e.target.value) || 1))}
+                                    style={{
+                                        width: '100%',
+                                        padding: '5px',
+                                        background: '#1a1a1a',
+                                        border: '1px solid #555',
+                                        color: '#e0e0e0',
+                                        borderRadius: '3px'
+                                    }}
+                                    placeholder="ダイス数"
+                                />
+                                <span style={{ color: '#ccc', padding: '0 5px' }}>d</span>
+                                <input
+                                    type="number"
+                                    min="1"
+                                    value={formData.hpSides}
+                                    onChange={(e) => handleChange('hpSides', Math.max(1, parseInt(e.target.value) || 1))}
+                                    style={{
+                                        width: '100%',
+                                        padding: '5px',
+                                        background: '#1a1a1a',
+                                        border: '1px solid #555',
+                                        color: '#e0e0e0',
+                                        borderRadius: '3px'
+                                    }}
+                                    placeholder="面数"
+                                />
+                                <div style={{ 
+                                    padding: '5px 10px',
+                                    background: '#333',
+                                    borderRadius: '3px',
+                                    color: '#ccc',
+                                    fontSize: '12px',
+                                    whiteSpace: 'nowrap'
+                                }}>
+                                    {formData.flags.FORCE_MAXHP ? '最大' : '平均'}: {calculateExpectedHP(formData.hpDice, formData.hpSides, formData.flags.FORCE_MAXHP)}
+                                </div>
                             </div>
+                            <div style={{ fontSize: '11px', color: '#888', marginTop: '3px' }}>
+                                形式: {formData.hpDice}d{formData.hpSides}
+                            </div>
+                        </div>
+                        <div>
+                            <label style={{ display: 'block', marginBottom: '5px', color: '#ccc' }}>
+                                視界:
+                            </label>
+                            <input
+                                type="number"
+                                value={formData.vision}
+                                onChange={(e) => handleChange('vision', parseInt(e.target.value) || 0)}
+                                style={{
+                                    width: '100%',
+                                    padding: '5px',
+                                    background: '#1a1a1a',
+                                    border: '1px solid #555',
+                                    color: '#e0e0e0',
+                                    borderRadius: '3px'
+                                }}
+                            />
+                        </div>
+                        <div>
+                            <label style={{ display: 'block', marginBottom: '5px', color: '#ccc' }}>
+                                AC:
+                            </label>
+                            <input
+                                type="number"
+                                value={formData.armor_class}
+                                onChange={(e) => handleChange('armor_class', parseInt(e.target.value) || 0)}
+                                style={{
+                                    width: '100%',
+                                    padding: '5px',
+                                    background: '#1a1a1a',
+                                    border: '1px solid #555',
+                                    color: '#e0e0e0',
+                                    borderRadius: '3px'
+                                }}
+                            />
+                        </div>
+                        <div>
+                            <label style={{ display: 'block', marginBottom: '5px', color: '#ccc' }}>
+                                警戒度:
+                            </label>
+                            <input
+                                type="number"
+                                value={formData.alertness}
+                                onChange={(e) => handleChange('alertness', parseInt(e.target.value) || 0)}
+                                style={{
+                                    width: '100%',
+                                    padding: '5px',
+                                    background: '#1a1a1a',
+                                    border: '1px solid #555',
+                                    color: '#e0e0e0',
+                                    borderRadius: '3px'
+                                }}
+                            />
                         </div>
                     </div>
                 </div>
 
-                {/* ボタン */}
-                <div style={{ 
-                    marginTop: '20px', 
-                    padding: '15px', 
-                    borderTop: '1px solid #555',
-                    display: 'flex', 
-                    justifyContent: 'flex-end', 
-                    gap: '10px' 
-                }}>
-                    <button
-                        onClick={onCancel}
-                        style={{
-                            background: '#6c757d',
-                            color: 'white',
-                            border: 'none',
-                            borderRadius: '4px',
-                            padding: '8px 16px',
-                            cursor: 'pointer'
-                        }}
-                        type="button"
-                    >
-                        キャンセル
-                    </button>
-                    <button
-                        onClick={handleSave}
-                        style={{
-                            background: '#007bff',
-                            color: 'white',
-                            border: 'none',
-                            borderRadius: '4px',
-                            padding: '8px 16px',
-                            cursor: 'pointer'
-                        }}
-                        type="button"
-                    >
-                        保存
-                    </button>
+                {/* レベル・経験値・アライアンス */}
+                <div>
+                    <h4 style={{ color: '#ccc' }}>レベル・経験値・アライアンス</h4>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                        <div>
+                            <label style={{ display: 'block', marginBottom: '5px', color: '#ccc' }}>
+                                レベル:
+                            </label>
+                            <input
+                                type="number"
+                                value={formData.depth}
+                                onChange={(e) => handleChange('depth', parseInt(e.target.value) || 0)}
+                                style={{
+                                    width: '100%',
+                                    padding: '5px',
+                                    background: '#1a1a1a',
+                                    border: '1px solid #555',
+                                    color: '#e0e0e0',
+                                    borderRadius: '3px'
+                                }}
+                            />
+                        </div>
+                        <div>
+                            <label style={{ display: 'block', marginBottom: '5px', color: '#ccc' }}>
+                                希少度:
+                            </label>
+                            <input
+                                type="number"
+                                value={formData.rarity}
+                                onChange={(e) => handleChange('rarity', parseInt(e.target.value) || 1)}
+                                style={{
+                                    width: '100%',
+                                    padding: '5px',
+                                    background: '#1a1a1a',
+                                    border: '1px solid #555',
+                                    color: '#e0e0e0',
+                                    borderRadius: '3px'
+                                }}
+                            />
+                        </div>
+                        <div>
+                            <label style={{ display: 'block', marginBottom: '5px', color: '#ccc' }}>
+                                経験値:
+                            </label>
+                            <input
+                                type="number"
+                                value={formData.exp}
+                                onChange={(e) => handleChange('exp', parseInt(e.target.value) || 0)}
+                                style={{
+                                    width: '100%',
+                                    padding: '5px',
+                                    background: '#1a1a1a',
+                                    border: '1px solid #555',
+                                    color: '#e0e0e0',
+                                    borderRadius: '3px'
+                                }}
+                            />
+                        </div>
+                    </div>
+                    
+                    {/* アライアンス選択 */}
+                    <div style={{ marginTop: '10px' }}>
+                        <label style={{ display: 'block', marginBottom: '5px', color: '#ccc' }}>
+                            所属アライアンス:
+                        </label>
+                        <select
+                            value={formData.alliance || 0}
+                            onChange={(e) => handleChange('alliance', parseInt(e.target.value))}
+                            style={{
+                                width: '100%',
+                                padding: '5px',
+                                background: '#1a1a1a',
+                                border: '1px solid #555',
+                                color: '#e0e0e0',
+                                borderRadius: '3px'
+                            }}
+                        >
+                            {allianceOptions.map(option => (
+                                <option key={option.value} value={option.value}>
+                                    {option.value} - {option.name}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
                 </div>
+
+                {/* フラグ */}
+                <div style={{ gridColumn: '1 / -1' }}>
+                    <h4 style={{ color: '#ccc' }}>フラグ</h4>
+                    <div style={{ 
+                        display: 'grid', 
+                        gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', 
+                        gap: '15px',
+                        maxHeight: '400px',
+                        overflow: 'auto',
+                        border: '1px solid #555',
+                        borderRadius: '5px',
+                        padding: '10px',
+                        background: '#1a1a1a'
+                    }}>
+                        {Object.entries(flagCategories).map(([categoryName, flags]) => {
+                            const categoryFlagKeys = Object.keys(flags);
+                            const checkedCount = categoryFlagKeys.filter(flag => formData.flags[flag]).length;
+                            const allChecked = checkedCount === categoryFlagKeys.length;
+                            const someChecked = checkedCount > 0;
+                            
+                            return (
+                                <div key={categoryName} style={{ marginBottom: '10px' }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                        <h5 style={{ 
+                                            color: '#ffd700', 
+                                            fontSize: '14px', 
+                                            margin: '0 0 8px 0',
+                                            flex: 1
+                                        }}>
+                                            {categoryName} ({checkedCount}/{categoryFlagKeys.length})
+                                        </h5>
+                                        <button
+                                            onClick={() => handleCategoryToggle(flags, allChecked)}
+                                            style={{
+                                                background: someChecked ? '#dc3545' : '#28a745',
+                                                color: 'white',
+                                                border: 'none',
+                                                borderRadius: '3px',
+                                                padding: '2px 6px',
+                                                fontSize: '10px',
+                                                cursor: 'pointer',
+                                                marginBottom: '8px'
+                                            }}
+                                            title={allChecked ? '全て解除' : '全て選択'}
+                                        >
+                                            {allChecked ? '全解除' : '全選択'}
+                                        </button>
+                                    </div>
+                                    <div style={{ 
+                                        borderBottom: '1px solid #555',
+                                        paddingBottom: '8px',
+                                        marginBottom: '8px'
+                                    }}>
+                                        <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '4px' }}>
+                                            {Object.entries(flags).map(([flag, description]) => (
+                                                <label 
+                                                    key={flag} 
+                                                    style={{ 
+                                                        display: 'flex', 
+                                                        alignItems: 'center',
+                                                        color: '#e0e0e0',
+                                                        fontSize: '12px',
+                                                        cursor: 'pointer',
+                                                        padding: '2px 0'
+                                                    }}
+                                                >
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={formData.flags[flag] || false}
+                                                        onChange={(e) => handleFlagChange(flag, e.target.checked)}
+                                                        style={{ 
+                                                            marginRight: '6px',
+                                                            transform: 'scale(0.9)'
+                                                        }}
+                                                    />
+                                                    <span style={{ 
+                                                        fontFamily: 'monospace',
+                                                        color: formData.flags[flag] ? '#4caf50' : '#ccc',
+                                                        fontWeight: formData.flags[flag] ? 'bold' : 'normal'
+                                                    }}>
+                                                        {flag}
+                                                    </span>
+                                                    <span style={{ 
+                                                        marginLeft: '8px',
+                                                        color: '#aaa',
+                                                        fontSize: '11px'
+                                                    }}>
+                                                        {description}
+                                                    </span>
+                                                </label>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </div>
+                    
+                    {/* 選択済みフラグの概要表示 */}
+                    <div style={{ marginTop: '10px', padding: '8px', background: '#2a2a2a', borderRadius: '4px' }}>
+                        <h6 style={{ color: '#ccc', fontSize: '12px', margin: '0 0 5px 0' }}>
+                            選択済みフラグ ({Object.values(formData.flags).filter(Boolean).length}個):
+                        </h6>
+                        <div style={{ 
+                            fontSize: '11px', 
+                            color: '#4caf50',
+                            fontFamily: 'monospace',
+                            lineHeight: '1.3'
+                        }}>
+                            {Object.entries(formData.flags)
+                                .filter(([flag, isActive]) => isActive)
+                                .map(([flag]) => flag)
+                                .join(' | ') || '(フラグなし)'}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* ボタン */}
+            <div style={{ 
+                marginTop: '20px', 
+                padding: '15px', 
+                borderTop: '1px solid #555',
+                display: 'flex', 
+                justifyContent: 'flex-end', 
+                gap: '10px' 
+            }}>
+                <button
+                    onClick={onCancel}
+                    style={{
+                        background: '#6c757d',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '4px',
+                        padding: '8px 16px',
+                        cursor: 'pointer'
+                    }}
+                    type="button"
+                >
+                    キャンセル
+                </button>
+                <button
+                    onClick={handleSave}
+                    style={{
+                        background: '#007bff',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '4px',
+                        padding: '8px 16px',
+                        cursor: 'pointer'
+                    }}
+                    type="button"
+                >
+                    保存
+                </button>
             </div>
         </div>
     );
