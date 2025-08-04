@@ -1,3 +1,62 @@
+// コメント行を含むテキストを解析してモンスターデータに分割する関数
+const os = require('os');
+function parseTextWithComments(text, lineEnding = os.EOL) {
+    // 改行コードを統一（まず全て \n に変換）
+    const normalizedText = text.replace(/\r\n|\r/g, '\n');
+
+    // 全ての行を取得
+    const lines = normalizedText.split('\n');
+
+    const monstersWithComments = [];
+    let currentComments = [];
+    let currentMonsterLines = [];
+
+    for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+
+        if (line.trim().startsWith('#')) {
+            // コメント行の場合
+            currentComments.push(line);
+        } else if (line.trim().startsWith('N:')) {
+            // 新しいモンスターの開始
+            if (currentMonsterLines.length > 0) {
+                // 前のモンスターデータを保存
+                const monsterText = currentMonsterLines.join('\r\n');
+                monstersWithComments.push(monsterText);
+            }
+
+            // 新しいモンスターの開始
+            currentMonsterLines = [];
+            if (currentComments.length > 0) {
+                // コメントがある場合は最初に追加
+                currentMonsterLines.push(...currentComments);
+                currentComments = [];
+            }
+            currentMonsterLines.push(line);
+        } else if (line.trim() === '') {
+            // 空行の場合
+            if (currentMonsterLines.length > 0) {
+                currentMonsterLines.push(line);
+            }
+            // コメントが溜まっている状態で空行が来た場合はコメントをリセット
+            if (currentMonsterLines.length === 0) {
+                currentComments = [];
+            }
+        } else if (currentMonsterLines.length > 0) {
+            // モンスターデータの続き
+            currentMonsterLines.push(line);
+        }
+    }
+
+    // 最後のモンスターデータを保存
+    if (currentMonsterLines.length > 0) {
+        const monsterText = currentMonsterLines.join('\r\n');
+        monstersWithComments.push(monsterText);
+    }
+
+    return monstersWithComments;
+}
+
 function FileReaderComponent() {
     const [infoList, setInfoList] = React.useState([]);
     const [progress, setProgress] = React.useState(0);
@@ -202,14 +261,16 @@ function FileReaderComponent() {
                 setLoading(true);
                 setProgress(0);
                 const text = e.target.result;
-                const datas = text.split(/\r\nN\:/);
+
+                // コメント行を含めてモンスターデータを分割
+                const monstersWithComments = parseTextWithComments(text);
                 let list = [];
-                const total = datas.length - 1;
+                const total = monstersWithComments.length;
 
                 function processChunk(i) {
-                    if (i < datas.length) {
-                        let data = "N:" + datas[i];
-                        let creature = new Creature(data);
+                    if (i < monstersWithComments.length) {
+                        const monsterData = monstersWithComments[i];
+                        let creature = new Creature(monsterData);
                         list.push(creature);
                         setProgress(Math.round((i / total) * 100));
 
@@ -224,7 +285,7 @@ function FileReaderComponent() {
                         setLoading(false);
                     }
                 }
-                processChunk(1);
+                processChunk(0);
             };
             reader.readAsText(file);
         }
@@ -240,34 +301,23 @@ function FileReaderComponent() {
             }
             const text = await response.text();
 
-            // GitHubデータは改行コードが\nのみの可能性があるので、より柔軟な分割を行う
-            const datas = text.split(/\r?\n(?=N:)/);
+            // コメント行を含めてモンスターデータを分割
+            const monstersWithComments = parseTextWithComments(text);
 
             let list = [];
-            const total = datas.length;
+            const total = monstersWithComments.length;
             let processedCount = 0;
 
             // バッチ処理でタイムアウトを防ぐ
             function processChunk(startIndex) {
                 const batchSize = 100; // バッチサイズを増やして効率化
-                const endIndex = Math.min(startIndex + batchSize, datas.length);
+                const endIndex = Math.min(startIndex + batchSize, monstersWithComments.length);
 
                 for (let i = startIndex; i < endIndex; i++) {
-                    let data = datas[i];
-
-                    // データの前処理と検証を強化
-                    if (!data || !data.trim()) continue;
-
-                    // N:で始まっていない場合はスキップ
-                    if (!data.trim().startsWith('N:')) {
-                        continue;
-                    }
-
-                    // 改行コードを統一（GitHubは\nだけの可能性）
-                    data = data.replace(/\r?\n/g, '\r\n');
+                    const monsterData = monstersWithComments[i];
 
                     try {
-                        let creature = new Creature(data);
+                        let creature = new Creature(monsterData);
                         if (creature && creature.serialNumber != null && creature.name) {
                             list.push(creature);
                         }
@@ -280,7 +330,7 @@ function FileReaderComponent() {
                 const progress = Math.round((processedCount / total) * 100);
                 setProgress(progress);
 
-                if (endIndex < datas.length) {
+                if (endIndex < monstersWithComments.length) {
                     // 次のバッチを非同期で処理
                     setTimeout(() => processChunk(endIndex), 1); // タイムアウトを短縮
                 } else {
@@ -533,11 +583,11 @@ F:BASH_DOOR`;
     const handleSaveEdit = (updatedCreature, providedIndex) => {
         // providedIndexが提供された場合はそれを使用、そうでなければeditingIndexを使用
         let targetIndex = providedIndex !== undefined ? providedIndex : editingIndex;
-        
+
         if (targetIndex === -1 || targetIndex >= infoList.length) {
             // serialNumberで検索してみる
             const foundIndex = infoList.findIndex(c => c.serialNumber === updatedCreature.serialNumber);
-            
+
             if (foundIndex !== -1) {
                 targetIndex = foundIndex;
             } else {
@@ -548,11 +598,11 @@ F:BASH_DOOR`;
 
         const newList = [...infoList];
         newList[targetIndex] = updatedCreature;
-        
+
         setInfoList(newList);
         setEditingCreature(null);
         setEditingIndex(-1);
-        
+
         showInfo('モンスターが更新されました');
     };
 

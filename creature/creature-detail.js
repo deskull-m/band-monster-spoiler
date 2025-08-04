@@ -1014,7 +1014,8 @@ function MonsterEditForm({ creature, allMonsters, onSave, onCancel, isModal = fa
         alliance: getInitialAlliance(),
         flags: initialFlags,
         description_ja: creature.description_ja || "",
-        description_en: creature.description_en || ""
+        description_en: creature.description_en || "",
+        comments: creature.comments || ""
     });
 
     // タブ状態を追加
@@ -1146,7 +1147,13 @@ function MonsterEditForm({ creature, allMonsters, onSave, onCancel, isModal = fa
             console.log('HP:', hitPoints);
             
             // フォームデータからCreatureテキスト形式を再構築
-            const textData = `N:${formData.serialNumber}:${formData.name}
+            const commentLines = (typeof formData.comments === 'string' && formData.comments.length > 0) ? 
+                formData.comments.split('\n')
+                    .filter(line => line.trim()) // 空行を除去
+                    .map(line => `# ${line.trim()}`)
+                    .join('\n') + '\n' : '';
+            
+            const textData = `${commentLines}N:${formData.serialNumber}:${formData.name}
 E:${formData.ename}
 G:${formData.symbol}:${formData.color}
 I:${formData.speed + 110}:${hitPoints}:${formData.vision}:${formData.armor_class}:${formData.alertness}
@@ -1487,6 +1494,47 @@ D:$${formData.description_en}` : ''}`;
                                 </option>
                             ))}
                         </select>
+                    </div>
+                </div>
+
+                {/* コメント */}
+                <div style={{ gridColumn: '1 / -1' }}>
+                    <h4 style={{ color: '#ccc' }}>コメント</h4>
+                    <div style={{ marginBottom: '10px' }}>
+                        <label style={{ display: 'block', marginBottom: '5px', color: '#ccc' }}>
+                            コメント（# で始まる行として保存されます）:
+                        </label>
+                        <textarea
+                            value={formData.comments}
+                            onChange={(e) => handleChange('comments', e.target.value)}
+                            placeholder="このモンスターに関するコメントを入力してください..."
+                            style={{
+                                width: '100%',
+                                minHeight: '100px',
+                                padding: '8px',
+                                background: '#1a1a1a',
+                                border: '1px solid #555',
+                                color: '#e0e0e0',
+                                borderRadius: '3px',
+                                fontFamily: 'monospace',
+                                fontSize: '12px',
+                                resize: 'vertical'
+                            }}
+                        />
+                        {formData.comments && (
+                            <div style={{ 
+                                marginTop: '5px', 
+                                fontSize: '11px', 
+                                color: '#888',
+                                fontFamily: 'monospace'
+                            }}>
+                                プレビュー: {(formData.comments ?? '').split('\n').map((line, index) => (
+                                    <div key={index}>
+                                        {line.trim() ? `# ${line.trim()}` : '#'}
+                                    </div>
+                                ))}
+                            </div>
+                        )}
                     </div>
                 </div>
 

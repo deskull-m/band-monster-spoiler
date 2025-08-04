@@ -246,6 +246,7 @@ class Creature {
         this.description_ja = "";
         this.description_en = "";
         this.attacks = [];
+        this.comments = ""; // コメント情報を格納
 
         this.depth = 0;
         this.rarity = 1;
@@ -277,6 +278,21 @@ class Creature {
                 if (!line || line.length < 2) return; // 空行や短すぎる行をスキップ
 
                 const key = line.charAt(0); // 行の最初の文字で判断
+                
+                // コメント行の処理
+                if (key === '#') {
+                    // コメント行を追加（#を除去して格納）
+                    const commentText = line.substring(1).trim();
+                    if (commentText) {
+                        if (this.comments) {
+                            this.comments += '\n' + commentText;
+                        } else {
+                            this.comments = commentText;
+                        }
+                    }
+                    return;
+                }
+
                 const values = line.substring(2).split(':'); // データを抽出
 
                 switch (key) {
