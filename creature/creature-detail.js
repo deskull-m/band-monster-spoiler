@@ -1147,7 +1147,7 @@ function MonsterEditForm({ creature, allMonsters, onSave, onCancel, isModal = fa
             console.log('HP:', hitPoints);
             
             // フォームデータからCreatureテキスト形式を再構築
-            const commentLines = formData.comments ? 
+            const commentLines = (typeof formData.comments === 'string' && formData.comments.length > 0) ? 
                 formData.comments.split('\n')
                     .filter(line => line.trim()) // 空行を除去
                     .map(line => `# ${line.trim()}`)
