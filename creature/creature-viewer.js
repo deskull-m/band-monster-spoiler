@@ -1,10 +1,11 @@
 // コメント行を含むテキストを解析してモンスターデータに分割する関数
-function parseTextWithComments(text) {
-    // 改行コードを統一
-    const normalizedText = text.replace(/\r?\n/g, '\r\n');
+const os = require('os');
+function parseTextWithComments(text, lineEnding = os.EOL) {
+    // 改行コードを統一（まず全て \n に変換）
+    const normalizedText = text.replace(/\r\n|\r/g, '\n');
 
     // 全ての行を取得
-    const lines = normalizedText.split('\r\n');
+    const lines = normalizedText.split('\n');
 
     const monstersWithComments = [];
     let currentComments = [];
