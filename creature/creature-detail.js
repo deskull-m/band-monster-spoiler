@@ -1528,7 +1528,7 @@ D:$${formData.description_en}` : ''}`;
                                 color: '#888',
                                 fontFamily: 'monospace'
                             }}>
-                                プレビュー: {formData.comments.split('\n').map((line, index) => (
+                                プレビュー: {(formData.comments ?? '').split('\n').map((line, index) => (
                                     <div key={index}>
                                         {line.trim() ? `# ${line.trim()}` : '#'}
                                     </div>
