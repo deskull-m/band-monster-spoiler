@@ -674,7 +674,9 @@ function MonsterEditForm({ creature, allMonsters, onSave, onCancel, isModal = fa
         { value: 42, name: "覇府" },
         { value: 43, name: "変幻の神ティーンチ" },
         { value: 44, name: "ニーベルングの王国" },
-        { value: 45, name: "セクシーコマンドー部" }
+        { value: 45, name: "セクシーコマンドー部" },
+        { value: 46, name: "腐敗神ナーグル" },
+        { value: 47, name: "南蛮" },
     ];
 
     // アライアンスフラグとアライアンス値のマッピング
@@ -720,7 +722,12 @@ function MonsterEditForm({ creature, allMonsters, onSave, onCancel, isModal = fa
         "ALLIANCE_MEGADETH": 39,
         "ALLIANCE_KHORNE": 40,
         "ALLIANCE_SLAANESH": 41,
-        "ALLIANCE_HAFU": 42
+        "ALLIANCE_HAFU": 42,
+        "ALLIANCE_TZEENTCH": 43,
+        "ALLIANCE_NIBELUNG": 44,
+        "ALLIANCE_SEXY-COMMANDO-CLUB": 45,
+        "ALLIANCE_NURGLE": 46,
+        "ALLIANCE_NANMAN": 47,
     };
     // フラグの定義（カテゴリ別に整理）
     const flagCategories = {
