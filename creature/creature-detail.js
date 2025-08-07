@@ -677,6 +677,8 @@ function MonsterEditForm({ creature, allMonsters, onSave, onCancel, isModal = fa
         { value: 45, name: "セクシーコマンドー部" },
         { value: 46, name: "腐敗神ナーグル" },
         { value: 47, name: "南蛮" },
+        { value: 48, name: "ひで" },
+        { value: 49, name: "ゴンドール" },
     ];
 
     // アライアンスフラグとアライアンス値のマッピング
@@ -728,6 +730,8 @@ function MonsterEditForm({ creature, allMonsters, onSave, onCancel, isModal = fa
         "ALLIANCE_SEXY-COMMANDO-CLUB": 45,
         "ALLIANCE_NURGLE": 46,
         "ALLIANCE_NANMAN": 47,
+        "ALLIANCE_HIDE": 48,
+        "ALLIANCE_GONDOR": 49,
     };
     // フラグの定義（カテゴリ別に整理）
     const flagCategories = {
