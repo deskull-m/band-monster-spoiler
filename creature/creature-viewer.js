@@ -1,6 +1,5 @@
 // コメント行を含むテキストを解析してモンスターデータに分割する関数
-const os = require('os');
-function parseTextWithComments(text, lineEnding = os.EOL) {
+function parseTextWithComments(text, lineEnding = '\r\n') {
     // 改行コードを統一（まず全て \n に変換）
     const normalizedText = text.replace(/\r\n|\r/g, '\n');
 
@@ -69,6 +68,8 @@ function FileReaderComponent() {
     const [selectedFlags, setSelectedFlags] = React.useState([]);
     const [excludedFlags, setExcludedFlags] = React.useState([]);
     const [showFlagFilter, setShowFlagFilter] = React.useState(false);
+    const [unknownFlags, setUnknownFlags] = React.useState([]);
+    const [showUnknownFlags, setShowUnknownFlags] = React.useState(false);
 
     // フラグ翻訳マップ（creature-detail.jsから参照）
     const FLAG_TRANSLATION = {
@@ -224,6 +225,37 @@ function FileReaderComponent() {
         "IM_MELEE": "打撃免疫"
     };
 
+    // 不明なフラグを検出する関数
+    const detectUnknownFlags = (monsterList) => {
+        const knownFlags = new Set(Object.keys(FLAG_TRANSLATION));
+        const unknownFlagMap = new Map(); // フラグ名 -> モンスター情報の配列
+
+        monsterList.forEach(creature => {
+            if (creature.flags && Array.isArray(creature.flags)) {
+                creature.flags.forEach(flag => {
+                    if (!knownFlags.has(flag)) {
+                        if (!unknownFlagMap.has(flag)) {
+                            unknownFlagMap.set(flag, []);
+                        }
+                        unknownFlagMap.get(flag).push({
+                            id: creature.serialNumber,
+                            name: creature.name,
+                            englishName: creature.english_name
+                        });
+                    }
+                });
+            }
+        });
+
+        // Map を配列に変換
+        const unknownFlagsArray = Array.from(unknownFlagMap.entries()).map(([flag, monsters]) => ({
+            flag,
+            monsters: monsters.slice() // 配列をコピー
+        }));
+
+        return unknownFlagsArray;
+    };
+
     // フラグフィルタのハンドラー
     const handleFlagToggle = (flag) => {
         setSelectedFlags(prev => {
@@ -281,6 +313,15 @@ function FileReaderComponent() {
                         }
                     } else {
                         setInfoList(list);
+                        
+                        // 不明なフラグを検出
+                        const detectedUnknownFlags = detectUnknownFlags(list);
+                        setUnknownFlags(detectedUnknownFlags);
+                        if (detectedUnknownFlags.length > 0) {
+                            setShowUnknownFlags(true);
+                            showInfo(`${detectedUnknownFlags.length}個の不明なフラグが検出されました`);
+                        }
+                        
                         setProgress(100);
                         setLoading(false);
                     }
@@ -335,6 +376,15 @@ function FileReaderComponent() {
                     setTimeout(() => processChunk(endIndex), 1); // タイムアウトを短縮
                 } else {
                     setInfoList(list);
+                    
+                    // 不明なフラグを検出
+                    const detectedUnknownFlags = detectUnknownFlags(list);
+                    setUnknownFlags(detectedUnknownFlags);
+                    if (detectedUnknownFlags.length > 0) {
+                        setShowUnknownFlags(true);
+                        showInfo(`${detectedUnknownFlags.length}個の不明なフラグが検出されました`);
+                    }
+                    
                     setProgress(100);
                     setLoading(false);
                 }
@@ -416,7 +466,17 @@ function FileReaderComponent() {
                         setLoading(false);
                         return;
                     }
+                    
                     setInfoList(creatures);
+                    
+                    // 不明なフラグを検出
+                    const detectedUnknownFlags = detectUnknownFlags(creatures);
+                    setUnknownFlags(detectedUnknownFlags);
+                    if (detectedUnknownFlags.length > 0) {
+                        setShowUnknownFlags(true);
+                        showInfo(`${detectedUnknownFlags.length}個の不明なフラグが検出されました`);
+                    }
+                    
                     setProgress(100);
                 } catch (e) {
                     showError("JSONの読み込みに失敗しました: " + e.message);
@@ -802,6 +862,146 @@ F:BASH_DOOR`;
                     </div>
                 </div>
             </div>
+
+            {/* 不明なフラグ表示セクション */}
+            {unknownFlags.length > 0 && (
+                <div style={{ 
+                    marginBottom: "1em", 
+                    border: "2px solid #dc3545", 
+                    borderRadius: "4px", 
+                    background: "#f8d7da" 
+                }}>
+                    <div style={{ 
+                        background: "#dc3545", 
+                        color: "white", 
+                        padding: "0.5em 1em",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between"
+                    }}>
+                        <h3 style={{ margin: 0 }}>
+                            ⚠️ 不明なフラグが検出されました ({unknownFlags.length}個)
+                        </h3>
+                        <button
+                            onClick={() => setShowUnknownFlags(!showUnknownFlags)}
+                            style={{
+                                background: "transparent",
+                                color: "white",
+                                border: "1px solid white",
+                                borderRadius: "3px",
+                                padding: "0.3em 0.6em",
+                                cursor: "pointer"
+                            }}
+                        >
+                            {showUnknownFlags ? "隠す" : "表示"}
+                        </button>
+                    </div>
+                    
+                    {showUnknownFlags && (
+                        <div style={{ padding: "1em" }}>
+                            <p style={{ margin: "0 0 1em 0", color: "#721c24" }}>
+                                未定義のフラグ一覧を検出しました
+                            </p>
+                            
+                            <textarea
+                                readOnly
+                                value={unknownFlags.map(({ flag, monsters }) => {
+                                    const monsterList = monsters.map(m => 
+                                        `  - ID:${m.id} ${m.name} (${m.englishName})`
+                                    ).join('\n');
+                                    return `フラグ: ${flag}\n使用モンスター:\n${monsterList}`;
+                                }).join('\n\n')}
+                                style={{
+                                    width: "100%",
+                                    height: "300px",
+                                    fontFamily: "monospace",
+                                    fontSize: "0.9em",
+                                    padding: "0.5em",
+                                    border: "1px solid #adb5bd",
+                                    borderRadius: "3px",
+                                    background: "white",
+                                    resize: "vertical",
+                                    color: "black"
+                                }}
+                                placeholder="不明なフラグはありません"
+                            />
+                            
+                            <div style={{ 
+                                marginTop: "0.5em", 
+                                display: "flex", 
+                                gap: "0.5em",
+                                alignItems: "center"
+                            }}>
+                                <button
+                                    onClick={() => {
+                                        const text = unknownFlags.map(({ flag, monsters }) => {
+                                            const monsterList = monsters.map(m => 
+                                                `  - ID:${m.id} ${m.name} (${m.englishName})`
+                                            ).join('\n');
+                                            return `フラグ: ${flag}\n使用モンスター:\n${monsterList}`;
+                                        }).join('\n\n');
+                                        
+                                        navigator.clipboard.writeText(text).then(() => {
+                                            showInfo('不明なフラグリストをクリップボードにコピーしました');
+                                        }).catch(() => {
+                                            showError('クリップボードへのコピーに失敗しました');
+                                        });
+                                    }}
+                                    style={{
+                                        background: "#007bff",
+                                        color: "white",
+                                        border: "none",
+                                        borderRadius: "3px",
+                                        padding: "0.4em 0.8em",
+                                        cursor: "pointer"
+                                    }}
+                                >
+                                    📋 クリップボードにコピー
+                                </button>
+                                
+                                <button
+                                    onClick={() => {
+                                        const text = unknownFlags.map(({ flag, monsters }) => {
+                                            const monsterList = monsters.map(m => 
+                                                `  - ID:${m.id} ${m.name} (${m.englishName})`
+                                            ).join('\n');
+                                            return `フラグ: ${flag}\n使用モンスター:\n${monsterList}`;
+                                        }).join('\n\n');
+                                        
+                                        const blob = new Blob([text], { type: "text/plain" });
+                                        const url = URL.createObjectURL(blob);
+                                        const a = document.createElement("a");
+                                        a.href = url;
+                                        a.download = "unknown_flags.txt";
+                                        document.body.appendChild(a);
+                                        a.click();
+                                        document.body.removeChild(a);
+                                        URL.revokeObjectURL(url);
+                                    }}
+                                    style={{
+                                        background: "#28a745",
+                                        color: "white",
+                                        border: "none",
+                                        borderRadius: "3px",
+                                        padding: "0.4em 0.8em",
+                                        cursor: "pointer"
+                                    }}
+                                >
+                                    💾 ファイルに保存
+                                </button>
+                                
+                                <span style={{ 
+                                    marginLeft: "auto",
+                                    fontSize: "0.8em",
+                                    color: "#6c757d"
+                                }}>
+                                    合計 {unknownFlags.reduce((sum, { monsters }) => sum + monsters.length, 0)} 個のモンスター
+                                </span>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            )}
 
             <div style={{ marginBottom: "1em" }}>
                 <div className="search-container">
