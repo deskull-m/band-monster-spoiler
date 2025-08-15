@@ -79,6 +79,15 @@ function FileReaderComponent() {
         monsterList.forEach(creature => {
             if (creature.flags && Array.isArray(creature.flags)) {
                 creature.flags.forEach(flag => {
+                    // MOB_* および ALLIANCE_* パターンのフラグは無視
+                    if (flag.startsWith('MOB_') || flag.startsWith('ALLIANCE_') ||
+                        flag.startsWith('FATHER_') || flag.startsWith('MOTHER_') ||
+                        flag.startsWith('DEAD_SPAWN_') || flag.startsWith('SPAWN_') ||
+                        flag.startsWith('COLLAPSE-OVER_') ||
+                        flag.startsWith('SUICIDE_') || flag.startsWith('DROP_KIND_')) {
+                        return;
+                    }
+                    
                     if (!knownFlags.has(flag)) {
                         if (!unknownFlagMap.has(flag)) {
                             unknownFlagMap.set(flag, []);
