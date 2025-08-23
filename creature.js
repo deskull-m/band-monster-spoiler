@@ -446,10 +446,13 @@ class Creature {
         c.nextExp = json.next_exp ?? 0;
         c.nextMon = json.next_mon ?? 0;
 
-        if (c.escorts.length > 0) {
-            c.escorts = json.escorts.map(e => {
-                return [e.id, e.num];
-            });
+        // escorts
+        c.escorts = [];
+        if (Array.isArray(json.escorts) && json.escorts.length > 0) {
+            c.escorts = json.escorts.map(e => ({
+                escorts_id: e.escorts_id || e.id || 0,
+                escort_num: e.escort_num || e.num || ""
+            }));
         }
 
         // attacks
