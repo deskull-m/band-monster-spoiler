@@ -44,11 +44,15 @@ class Creature {
                     if (!j.skill) j.skill = {};
                     j.skill.shoot = atk.damage;
                 } else {
-                    j.blows.push({
+                    const blow = {
                         method: atk.method,
-                        effect: atk.effect,
-                        damage_dice: atk.damage
-                    });
+                        effect: atk.effect
+                    };
+                    // damage_diceが空白でない場合のみ追加
+                    if (atk.damage && atk.damage.trim() !== "") {
+                        blow.damage_dice = atk.damage;
+                    }
+                    j.blows.push(blow);
                 }
             });
             // 空配列ならblowsを削除
