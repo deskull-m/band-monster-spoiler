@@ -1,5 +1,7 @@
 // 共通のフラグ翻訳マップ
 const FLAG_TRANSLATION = {
+    "WILD_ONLY": "地上にしか出現しない",
+    "WILD_TOWN": "地上の都市に出現",
     "UNIQUE": "ユニーク",
     "QUESTOR": "クエスト",
     "MALE": "雄",
@@ -31,6 +33,10 @@ const FLAG_TRANSLATION = {
     "DROP_GREAT": "高品質ドロップ",
     "DROP_USEFUL": "有用ドロップ",
     "DROP_CHOSEN": "選択ドロップ",
+    "DROP_CORPSE": "死体を残す",
+    "DROP_SKELETON": "骨を残す",
+    "DROP_JUNK": "残骸を残す",
+    "DROP_NASTY": "クッソ汚いものを落とす",
     "STUPID": "愚鈍",
     "SMART": "賢い",
     "CAN_SPEAK": "発言",
@@ -69,6 +75,7 @@ const FLAG_TRANSLATION = {
     "AURA_GRAVITY": "重力オーラ",
     "AURA_VOIDS": "虚無オーラ",
     "AURA_ABYSS": "深淵オーラ",
+    "CAN_FLY": "飛行能力",
     "OPEN_DOOR": "扉開放",
     "BASH_DOOR": "扉破壊",
     "PASS_WALL": "壁通過",
@@ -197,6 +204,7 @@ const FLAG_TRANSLATION = {
     "YAZYU": "野獣",
     "SKELETON": "骸骨",
     "DOG": "犬",
+    "FRIENDLY": "友好的"
 };
 
 // 共通の魔法・特殊能力翻訳マップ
