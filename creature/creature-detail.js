@@ -735,6 +735,10 @@ function MonsterEditForm({ creature, allMonsters, onSave, onCancel, isModal = fa
     };
     // フラグの定義（カテゴリ別に整理）
     const flagCategories = {
+        "出現場所": {
+            "WILD_ONLY": "地上にしか出現しない",
+            "WILD_TOWN": "地上の都市に出現"
+        },
         "基本属性": {
             "UNIQUE": "ユニーク",
             "QUESTOR": "クエスト",
@@ -768,6 +772,9 @@ function MonsterEditForm({ creature, allMonsters, onSave, onCancel, isModal = fa
             "RAND_50": "1/2確率出現"
         },
         "ドロップ": {
+            "DROP_CORPSE": "死体を残す",
+            "DROP_SKELETON": "骨を残す",
+            "DROP_JUNK": "残骸を残す",
             "ONLY_GOLD": "金のみドロップ",
             "ONLY_ITEM": "アイテムのみドロップ",
             "DROP_60": "60%でドロップ",
@@ -779,7 +786,8 @@ function MonsterEditForm({ creature, allMonsters, onSave, onCancel, isModal = fa
             "DROP_GOOD": "良質ドロップ",
             "DROP_GREAT": "高品質ドロップ",
             "DROP_USEFUL": "有用ドロップ",
-            "DROP_CHOSEN": "選択ドロップ"
+            "DROP_CHOSEN": "選択ドロップ",
+            "DROP_NASTY": "クッソ汚いものを落とす"
         },
         "知能・特性": {
             "STUPID": "愚鈍",
@@ -821,6 +829,7 @@ function MonsterEditForm({ creature, allMonsters, onSave, onCancel, isModal = fa
             "AURA_ABYSS": "深淵オーラ"
         },
         "移動能力": {
+            "CAN_FLY": "飛行能力",
             "OPEN_DOOR": "扉開放",
             "BASH_DOOR": "扉破壊",
             "PASS_WALL": "壁通過",
@@ -984,6 +993,9 @@ function MonsterEditForm({ creature, allMonsters, onSave, onCancel, isModal = fa
             "ALLIANCE_KHORNE": "血の神コーン所属",
             "ALLIANCE_SLAANESH": "快楽神スラーネッシュ所属",
             "ALLIANCE_HAFU": "覇府所属"
+        },
+        "行動": {
+            "FRIENDLY": "友好的"
         }
     };
 
