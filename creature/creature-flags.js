@@ -5,6 +5,8 @@ const FLAG_TRANSLATION = {
   WILD_GRASS: "地上の草原に出現",
   WILD_WOOD: "地上の森に出現",
   WILD_SWAMP: "地上の沼地に出現",
+  WILD_MOUNTAIN: "地上の山に出現",
+  WILD_ALL: "地上の全地域に出現",
   UNIQUE: "ユニーク",
   QUESTOR: "クエスト",
   MALE: "雄",
@@ -79,6 +81,7 @@ const FLAG_TRANSLATION = {
   AURA_VOIDS: "虚無オーラ",
   AURA_ABYSS: "深淵オーラ",
   CAN_FLY: "飛行能力",
+  CAN_SWIM: "遊泳能力",
   OPEN_DOOR: "扉開放",
   BASH_DOOR: "扉破壊",
   PASS_WALL: "壁通過",
@@ -216,6 +219,8 @@ const FLAG_TRANSLATION = {
   EAT_LOSE_WIS: "捕食により賢さ低下",
   EAT_LOSE_CHR: "捕食により魅力低下",
   EAT_LOSE_CON: "捕食により耐久低下",
+  EAT_POISONOUS: "捕食により毒化",
+  EAT_CONF: "捕食により混乱",
   SPEAK_ALL: "全種類のセリフを持つ",
 };
 
