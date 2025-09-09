@@ -750,7 +750,10 @@ function MonsterEditForm({ creature, allMonsters, onSave, onCancel, isModal = fa
         "光源": {
             "HAS_LITE_1": "光源+1",
             "HAS_LITE_2": "光源+2",
-            "HAS_LITE_3": "光源+3"
+            "HAS_LITE_3": "光源+3",
+            "SELF_LITE_1": "発光+1",
+            "SELF_LITE_2": "発光+2",
+            "SELF_LITE_3": "発光+3",
         },
         "滋養効果": {
             "EAT_ELEC_RES": "捕食により電撃耐性獲得",
@@ -971,7 +974,8 @@ function MonsterEditForm({ creature, allMonsters, onSave, onCancel, isModal = fa
             "ROBOT": "ロボット",
             "YAZYU": "野獣",
             "SKELETON": "骸骨",
-            "DOG": "犬"
+            "DOG": "犬",
+            "CAT": "猫"
         },
         "アライアンス": {
             "ALLIANCE_AMBER": "アンバー所属",
