@@ -757,12 +757,18 @@ function MonsterEditForm({ creature, allMonsters, onSave, onCancel, isModal = fa
         },
         "滋養効果": {
             "EAT_ELEC_RES": "捕食により電撃耐性獲得",
+            "EAT_LOSE_STR": "捕食により腕力低下",
             "EAT_LOSE_INT": "捕食により知能低下",
             "EAT_LOSE_WIS": "捕食により賢さ低下",
             "EAT_LOSE_CHR": "捕食により魅力低下",
             "EAT_LOSE_CON": "捕食により耐久低下",
             "EAT_POISONOUS": "捕食により毒化",
             "EAT_CONF": "捕食により混乱",
+            "EAT_SLEEP": "捕食により睡眠",
+            "EAT_GIVE_STR": "捕食により腕力増加",
+            "EAT_GIVE_INT": "捕食により知能増加",
+            "EAT_GIVE_WIS": "捕食により賢さ増加",
+            "EAT_GIVE_DEX": "捕食により器用さ増加",
         },
         "基本属性": {
             "UNIQUE": "ユニーク",
@@ -854,6 +860,7 @@ function MonsterEditForm({ creature, allMonsters, onSave, onCancel, isModal = fa
             "AURA_ABYSS": "深淵オーラ"
         },
         "移動能力": {
+            "AQUATIC": "水棲",
             "CAN_FLY": "飛行能力",
             "CAN_SWIM": "遊泳能力",
             "OPEN_DOOR": "扉開放",
