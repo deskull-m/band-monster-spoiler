@@ -101,7 +101,7 @@ function FileReaderComponent() {
             unknownFlagMap.get(flag).push({
               id: creature.serialNumber,
               name: creature.name,
-              englishName: creature.english_name,
+              englishName: creature.ename,
             });
           }
         });
@@ -837,7 +837,7 @@ F:BASH_DOOR`;
                 value={unknownFlags
                   .map(({ flag, monsters }) => {
                     const monsterList = monsters
-                      .map((m) => `  - ID:${m.id} ${m.name} (${m.englishName})`)
+                      .map((m) => `  - ID:${m.id} ${m.name} / ${m.englishName}`)
                       .join("\n");
                     return `フラグ: ${flag}\n使用モンスター:\n${monsterList}`;
                   })
