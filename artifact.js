@@ -22,6 +22,10 @@ class Artifact {
                 case "P":
                     [this.base_ac, this.base_damage, this.plus_to_hit, this.plus_to_dam, this.plus_to_ac] = values.map(v => v.trim());
                     break;
+                case "U":
+                    // アクティベーション情報を保存
+                    this.activate = line.substring(2).trim();
+                    break;
                 case "F":
                     if (!this.flags) this.flags = [];
                     this.flags.push(...line.substring(2).split("|").map(f => f.trim()).filter(f => f));
@@ -73,6 +77,12 @@ function ArtifactDetail({ artifact }) {
                         <strong>フラグ</strong><br />
                         {artifact.flags ? artifact.flags.join(", ") : "―"}
                     </div>
+                    {artifact.activate && (
+                        <div>
+                            <strong>アクティベーション</strong><br />
+                            {artifact.activate}
+                        </div>
+                    )}
                 </div>
                 <details style={{ marginTop: "1em" }}>
                     <summary>生データ</summary>
@@ -167,7 +177,7 @@ function ArtifactViewer() {
 }
 
 Artifact.prototype.toJson = function () {
-    return {
+    const result = {
         id: Number(this.serialNumber),
         name: {
             ja: this.name ?? "",
@@ -193,4 +203,11 @@ Artifact.prototype.toJson = function () {
             en: this.flavor_en
         }
     };
+
+    // activateが空文字列でない場合のみ追加
+    if (this.activate && this.activate.trim() !== "") {
+        result.activate = this.activate;
+    }
+
+    return result;
 };
