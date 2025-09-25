@@ -221,7 +221,11 @@ const FLAG_TRANSLATION = {
   SELF_LITE_1: "発光+1",
   SELF_LITE_2: "発光+2",
   SELF_LITE_3: "発光+3",
+  EAT_FIRE_RES: "捕食により火炎耐性獲得",
+  EAT_COLD_RES: "捕食により冷気耐性獲得",
   EAT_ELEC_RES: "捕食により電撃耐性獲得",
+  EAT_ACID_RES: "捕食により酸耐性獲得",
+  EAT_POIS_RES: "捕食により毒耐性獲得",
   EAT_LOSE_STR: "捕食により腕力低下",
   EAT_LOSE_INT: "捕食により知能低下",
   EAT_LOSE_WIS: "捕食により賢さ低下",
@@ -235,6 +239,7 @@ const FLAG_TRANSLATION = {
   EAT_GIVE_WIS: "捕食により賢さ増加",
   EAT_GIVE_DEX: "捕食により器用さ増加",
   SPEAK_ALL: "全種類のセリフを持つ",
+  SCATOLOGIST: "糞尿愛好者"
 };
 
 // 共通の魔法・特殊能力翻訳マップ
