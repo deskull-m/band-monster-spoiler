@@ -756,7 +756,11 @@ function MonsterEditForm({ creature, allMonsters, onSave, onCancel, isModal = fa
             "SELF_LITE_3": "発光+3",
         },
         "滋養効果": {
+            "EAT_FIRE_RES": "捕食により火炎耐性獲得",
+            "EAT_COLD_RES": "捕食により冷気耐性獲得",
             "EAT_ELEC_RES": "捕食により電撃耐性獲得",
+            "EAT_ACID_RES": "捕食により酸耐性獲得",
+            "EAT_POIS_RES": "捕食により毒耐性獲得",
             "EAT_LOSE_STR": "捕食により腕力低下",
             "EAT_LOSE_INT": "捕食により知能低下",
             "EAT_LOSE_WIS": "捕食により賢さ低下",
@@ -1031,6 +1035,9 @@ function MonsterEditForm({ creature, allMonsters, onSave, onCancel, isModal = fa
         "行動": {
             "FRIENDLY": "友好的"
         },
+        "その他": {
+            "SCATOLOGIST": "糞尿愛好者"
+        }
     };
 
     // 色の選択肢を定義
