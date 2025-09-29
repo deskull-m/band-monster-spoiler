@@ -6,6 +6,7 @@ const FLAG_TRANSLATION = {
   WILD_WOOD: "地上の森に出現",
   WILD_SWAMP: "地上の沼地に出現",
   WILD_MOUNTAIN: "地上の山に出現",
+  WILD_VOLCANO: "地上の火山に出現",
   WILD_WASTE: "地上の荒地に出現",
   WILD_SHORE: "地上の岸辺に出現",
   WILD_ALL: "地上の全地域に出現",
@@ -231,6 +232,7 @@ const FLAG_TRANSLATION = {
   EAT_LOSE_WIS: "捕食により賢さ低下",
   EAT_LOSE_CHR: "捕食により魅力低下",
   EAT_LOSE_CON: "捕食により耐久低下",
+  EAT_LOSE_DEX: "捕食により器用さ低下",
   EAT_POISONOUS: "捕食により毒化",
   EAT_CONF: "捕食により混乱",
   EAT_SLEEP: "捕食により睡眠",
@@ -238,8 +240,11 @@ const FLAG_TRANSLATION = {
   EAT_GIVE_INT: "捕食により知能増加",
   EAT_GIVE_WIS: "捕食により賢さ増加",
   EAT_GIVE_DEX: "捕食により器用さ増加",
+  EAT_GIVE_CON: "捕食により耐久力増加",
+  EAT_MANA: "捕食により魔力回復",
   SPEAK_ALL: "全種類のセリフを持つ",
-  SCATOLOGIST: "糞尿愛好者"
+  SCATOLOGIST: "糞尿愛好者",
+  RIDING: "騎乗可能"
 };
 
 // 共通の魔法・特殊能力翻訳マップ
