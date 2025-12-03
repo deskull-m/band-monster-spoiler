@@ -331,6 +331,7 @@ function MonsterTableRow({ creature, index, infoList, onCopy, onEdit, onSave }) 
                 <td>{creature.name}</td>
                 <td>{creature.ename}</td>
                 <td>{creature.depth}</td>
+                <td style={{ textAlign: "center" }}>{creature.armor_class}</td>
                 <td style={{ textAlign: "center", fontFamily: "monospace", fontSize: "1.2em" }}>
                     <span style={{ color: creature.color || "#e0e0e0" }}>
                         {creature.symbol}
@@ -781,6 +782,7 @@ function MonsterEditForm({ creature, allMonsters, onSave, onCancel, isModal = fa
         "基本属性": {
             "UNIQUE": "ユニーク",
             "QUESTOR": "クエスト",
+            "ONLY_ONE": "常に単体生成",
             "MALE": "雄",
             "FEMALE": "雌"
         },

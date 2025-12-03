@@ -12,6 +12,7 @@ const FLAG_TRANSLATION = {
   WILD_ALL: "地上の全地域に出現",
   UNIQUE: "ユニーク",
   QUESTOR: "クエスト",
+  ONLY_ONE: "常に単体生成",
   MALE: "雄",
   FEMALE: "雌",
   CHAR_CLEAR: "透明な文字",

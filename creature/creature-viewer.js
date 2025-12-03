@@ -1326,6 +1326,7 @@ F:BASH_DOOR`;
                 <th style={{ width: "200px" }}>日本語名</th>
                 <th style={{ width: "200px" }}>英語名</th>
                 <th style={{ width: "80px" }}>レベル</th>
+                <th style={{ width: "60px" }}>AC</th>
                 <th style={{ width: "100px", textAlign: "center" }}>
                   シンボル
                 </th>
