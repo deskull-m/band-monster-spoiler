@@ -89,7 +89,8 @@ function FileReaderComponent() {
             flag.startsWith("SPAWN_") ||
             flag.startsWith("COLLAPSE-OVER_") ||
             flag.startsWith("SUICIDE_") ||
-            flag.startsWith("DROP_KIND_")
+            flag.startsWith("DROP_KIND_") ||
+            flag.startsWith("PERHP_")
           ) {
             return;
           }
