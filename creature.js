@@ -90,7 +90,7 @@ class Creature {
 
         const perhpFlags = this.flags.filter(f => f.startsWith("PERHP_"));
         if (perhpFlags.length > 0) {
-            j.perhp = perhpFlags[0].split("_")[1];
+            j.start_hp_percentage = parseInt(perhpFlags[0].split("_")[1], 10);
         }
 
         const mobFlags = this.flags.filter(f => f.startsWith("MOB_"));
@@ -485,10 +485,11 @@ class Creature {
         if (json.sex === "MALE") c.flags.push("MALE");
         if (json.sex === "FEMALE") c.flags.push("FEMALE");
 
-        // alliance, collapse, perhp, mob, collapse_over, suicide, mother, father
+        // alliance, collapse, start_hp_percentage, mob, collapse_over, suicide, mother, father
         if (json.alliance) c.flags.push(`ALLIANCE_${json.alliance}`);
         if (json.collapse) c.flags.push(`COLLAPSE_${json.collapse}`);
-        if (json.perhp) c.flags.push(`PERHP_${json.perhp}`);
+        if (json.start_hp_percentage) c.flags.push(`PERHP_${json.start_hp_percentage}`);
+        if (json.perhp) c.flags.push(`PERHP_${json.perhp}`); // 後方互換性のため残す
         if (json.mob) c.flags.push(`MOB_${json.mob}`);
         if (json.collapse_over) c.flags.push(`COLLAPSE-OVER_${json.collapse_over}`);
         if (json.suicide) c.flags.push(`SUICIDE_${json.suicide}`);
