@@ -8,6 +8,17 @@ function MonsterDetail({ creature, index, infoList }) {
     // 魔法・特殊能力の日本語化マップ
     const spellMap = SPELL_MAP;
 
+    // r_info形式テキストとJSONをタブがアクティブな時だけ生成
+    const rinfoText = React.useMemo(() => {
+        if (tab !== "rinfo") return "";
+        return creature.putText();
+    }, [creature, tab]);
+    
+    const jsonText = React.useMemo(() => {
+        if (tab !== "json") return "";
+        return creature.putJson();
+    }, [creature, tab]);
+
     return (
         <div id={index} key={index}>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
@@ -224,15 +235,15 @@ function MonsterDetail({ creature, index, infoList }) {
                                 <>
                                     <button
                                         className="btn btn-sm btn-outline-secondary mb-2"
-                                        onClick={() => navigator.clipboard.writeText(creature.textDetails)}
+                                        onClick={() => navigator.clipboard.writeText(rinfoText)}
                                         title="*_infoをコピー"
                                     >
                                         コピー
                                     </button>
                                     <textarea
                                         className="form-control"
-                                        value={creature.textDetails}
-                                        rows={Math.max(3, creature.textDetails.split('\n').length)}
+                                        value={rinfoText}
+                                        rows={20}
                                         style={{ 
                                             width: "100%", 
                                             resize: "vertical",
@@ -248,15 +259,15 @@ function MonsterDetail({ creature, index, infoList }) {
                                 <>
                                     <button
                                         className="btn btn-sm btn-outline-secondary mb-2"
-                                        onClick={() => navigator.clipboard.writeText(creature.putJson())}
+                                        onClick={() => navigator.clipboard.writeText(jsonText)}
                                         title="JSONをコピー"
                                     >
                                         コピー
                                     </button>
                                     <textarea
                                         className="form-control"
-                                        value={creature.putJson()}
-                                        rows={Math.max(3, creature.textDetails.split('\n').length)}
+                                        value={jsonText}
+                                        rows={20}
                                         style={{ 
                                             width: "100%", 
                                             resize: "vertical",
@@ -287,6 +298,17 @@ function MonsterTableRow({ creature, index, infoList, onCopy, onEdit, onSave }) 
 
     // 魔法・特殊能力の日本語化マップ（共通定数を使用）
     const spellMap = SPELL_MAP;
+
+    // r_info形式テキストとJSONをタブがアクティブな時だけ生成
+    const rinfoText = React.useMemo(() => {
+        if (tab !== "rinfo") return "";
+        return creature.putText();
+    }, [creature, tab]);
+    
+    const jsonText = React.useMemo(() => {
+        if (tab !== "json") return "";
+        return creature.putJson();
+    }, [creature, tab]);
 
     // 編集用ハンドラー
     const handleSaveEdit = async (updatedCreature) => {
@@ -573,15 +595,15 @@ function MonsterTableRow({ creature, index, infoList, onCopy, onEdit, onSave }) 
                                     <>
                                         <button
                                             className="btn btn-sm btn-outline-secondary mb-2"
-                                            onClick={() => navigator.clipboard.writeText(creature.textDetails)}
+                                            onClick={() => navigator.clipboard.writeText(rinfoText)}
                                             title="*_infoをコピー"
                                         >
                                             コピー
                                         </button>
                                         <textarea
                                             className="form-control"
-                                            value={creature.textDetails}
-                                            rows={Math.max(3, creature.textDetails.split('\n').length)}
+                                            value={rinfoText}
+                                            rows={20}
                                             style={{ 
                                                 width: "100%", 
                                                 resize: "vertical",
@@ -597,15 +619,15 @@ function MonsterTableRow({ creature, index, infoList, onCopy, onEdit, onSave }) 
                                     <>
                                         <button
                                             className="btn btn-sm btn-outline-secondary mb-2"
-                                            onClick={() => navigator.clipboard.writeText(creature.putJson())}
+                                            onClick={() => navigator.clipboard.writeText(jsonText)}
                                             title="JSONをコピー"
                                         >
                                             コピー
                                         </button>
                                         <textarea
                                             className="form-control"
-                                            value={creature.putJson()}
-                                            rows={Math.max(3, creature.textDetails.split('\n').length)}
+                                            value={jsonText}
+                                            rows={20}
                                             style={{ 
                                                 width: "100%", 
                                                 resize: "vertical",

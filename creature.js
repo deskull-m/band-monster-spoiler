@@ -241,6 +241,97 @@ class Creature {
         return JSON.stringify(j, null, 4);
     }
 
+    putText() {
+        let lines = [];
+        
+        // N: シリアル番号:名前
+        lines.push(`N:${this.serialNumber}:${this.name}`);
+        
+        // E: 英語名
+        if (this.ename) {
+            lines.push(`E:${this.ename}`);
+        }
+        
+        // G: シンボル:色
+        lines.push(`G:${this.symbol}:${this.color}`);
+        
+        // I: 速度:HP:視界:AC:警戒度
+        const speed = this.speed + 110; // JSON形式では0基準だが、r_info形式では110基準
+        lines.push(`I:${speed}:${this.hitPoints}:${this.vision}:${this.armor_class}:${this.alertness}`);
+        
+        // W: レベル:レア度:pad:経験値:次の経験値:次のモンスター
+        lines.push(`W:${this.depth}:${this.rarity}:0:${this.exp}:${this.nextExp}:${this.nextMon}`);
+        
+        // B: 攻撃方法:効果:ダメージダイス
+        if (this.attacks && this.attacks.length > 0) {
+            this.attacks.forEach(atk => {
+                lines.push(`B:${atk.method}:${atk.effect}:${atk.damage || ""}`);
+            });
+        }
+        
+        // S: スキル
+        if (this.skills && this.skills.length > 0) {
+            lines.push(`S:${this.skills.join(" | ")}`);
+        }
+        
+        // F: フラグ
+        if (this.flags && this.flags.length > 0) {
+            // フラグを適切に分割（長すぎる行を避ける）
+            const flagChunks = [];
+            let currentChunk = [];
+            let currentLength = 0;
+            
+            this.flags.forEach(flag => {
+                const flagLength = flag.length + 3; // " | " の長さを考慮
+                if (currentLength + flagLength > 120 && currentChunk.length > 0) {
+                    flagChunks.push(currentChunk.join(" | "));
+                    currentChunk = [flag];
+                    currentLength = flag.length;
+                } else {
+                    currentChunk.push(flag);
+                    currentLength += flagLength;
+                }
+            });
+            
+            if (currentChunk.length > 0) {
+                flagChunks.push(currentChunk.join(" | "));
+            }
+            
+            flagChunks.forEach(chunk => {
+                lines.push(`F:${chunk}`);
+            });
+        }
+        
+        // D: 説明文（日本語）
+        if (this.description_ja) {
+            const descLines = this.description_ja.split('\n');
+            descLines.forEach(line => {
+                if (line.trim()) {
+                    lines.push(`D:${line}`);
+                }
+            });
+        }
+        
+        // D: 説明文（英語）$ プレフィックス付き
+        if (this.description_en) {
+            const descLines = this.description_en.split('\n');
+            descLines.forEach(line => {
+                if (line.trim()) {
+                    lines.push(`D:$${line}`);
+                }
+            });
+        }
+        
+        // R: エスコート
+        if (this.escorts && this.escorts.length > 0) {
+            this.escorts.forEach(escort => {
+                lines.push(`R:${escort.escorts_id}:${escort.escort_num}`);
+            });
+        }
+        
+        return lines.join('\r\n');
+    }
+
     constructor(text) {
         // 基本的なプロパティの初期化
         this.textDetails = text || "";
