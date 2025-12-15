@@ -745,9 +745,11 @@ function MonsterEditForm({ creature, allMonsters, onSave, onCancel, isModal = fa
             "WILD_MOUNTAIN": "地上の山に出現",
             "WILD_VOLCANO": "地上の火山に出現",
             "WILD_ALL": "地上の全地域に出現",
+            "WILD_OCEAN": "海洋に出現",
         },
         "会話": {
             "SPEAK_ALL": "全種類のセリフを持つ",
+            "SPEAK_DEATH": "死に際にセリフを発する",
         },
         "光源": {
             "HAS_LITE_1": "光源+1",
@@ -756,6 +758,10 @@ function MonsterEditForm({ creature, allMonsters, onSave, onCancel, isModal = fa
             "SELF_LITE_1": "発光+1",
             "SELF_LITE_2": "発光+2",
             "SELF_LITE_3": "発光+3",
+            "HAS_DARK_1": "暗闇源+1",
+            "HAS_DARK_2": "暗闇源+2",
+            "SELF_DARK_1": "暗闇+1",
+            "SELF_DARK_2": "暗闇+2",
         },
         "滋養効果": {
             "EAT_FIRE_RES": "捕食により火炎耐性獲得",
@@ -778,6 +784,13 @@ function MonsterEditForm({ creature, allMonsters, onSave, onCancel, isModal = fa
             "EAT_GIVE_DEX": "捕食により器用さ増加",
             "EAT_GIVE_CON": "捕食により耐久力増加",
             "EAT_MANA": "捕食により魔力回復",
+            "EAT_ACIDIC": "捕食により酸性",
+            "EAT_BLIND": "捕食により盲目",
+            "EAT_BERSERKER": "捕食により狂戦士化",
+            "EAT_NEXUS": "捕食により因果混乱",
+            "EAT_SPEED": "捕食により加速",
+            "EAT_DRAIN_EXP": "捕食により経験値吸収",
+            "EAT_INSANITY": "捕食により狂気",
         },
         "基本属性": {
             "UNIQUE": "ユニーク",
@@ -791,8 +804,23 @@ function MonsterEditForm({ creature, allMonsters, onSave, onCancel, isModal = fa
             "ATTR_CLEAR": "透明",
             "ATTR_MULTI": "色変化",
             "ATTR_ANY": "任意の色",
+            "ATTR_SEMIRAND": "半ランダムな色",
             "SHAPECHANGER": "変身",
             "INVISIBLE": "透明"
+        },
+        "材質": {
+            "FLESH": "肉",
+            "STONE": "石",
+            "IRON": "鉄",
+            "MITHRIL": "ミスリル",
+            "COPPER": "銅",
+            "SILVER": "銀",
+            "GOLD": "金",
+            "ADAMANTITE": "アダマンタイト",
+            "WOODEN": "木",
+            "WARPSTONE": "ワープストーン",
+            "DARKSTEEL": "ダークスティール",
+            "FECES": "糞便"
         },
         "強制設定": {
             "FORCE_DEPTH": "階層固定",
@@ -842,7 +870,13 @@ function MonsterEditForm({ creature, allMonsters, onSave, onCancel, isModal = fa
             "REGENERATE": "再生",
             "POWERFUL": "強力",
             "ELDRITCH_HORROR": "狂気誘発",
-            "RIDING": "騎乗可能"
+            "RIDING": "騎乗可能",
+            "MASOCHIST": "マゾヒスト",
+            "NAZGUL": "ナズグル",
+            "KAGE": "影",
+            "VOCIFEROUS": "大声で叫ぶ",
+            "BREAK_DOWN": "主を失うと消滅する",
+            "DIMINISH_MAX_DAMAGE": "最大ダメージ減少"
         },
         "オーラ": {
             "AURA_FIRE": "火炎オーラ",
@@ -1138,7 +1172,12 @@ function MonsterEditForm({ creature, allMonsters, onSave, onCancel, isModal = fa
             "FRIENDLY": "友好的"
         },
         "その他": {
-            "SCATOLOGIST": "糞尿愛好者"
+            "SCATOLOGIST": "糞尿愛好者",
+            "FRIENDLY_STANDBY": "友好的待機",
+            "NO_QUEST": "クエストに出現しない",
+            "INFORMATION_AGE": "情報時代",
+            "NO_WAIFUZATION": "嫁化不可",
+            "HOME_ONLY": "我が家のみ"
         }
     };
 
