@@ -379,6 +379,9 @@ const FLAG_TRANSLATION = {
   HOME_ONLY: "我が家のみ",
   BREAK_DOWN: "主を失うと消滅する",
   DIMINISH_MAX_DAMAGE: "最大ダメージ減少",
+  GREAT_OLD_ONE: "旧支配者",
+  SMITH: "鍛冶師",
+  WHEEL: "車輪",
 };
 
 // 共通の魔法・特殊能力翻訳マップ
