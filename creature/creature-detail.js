@@ -1144,7 +1144,10 @@ function MonsterEditForm({ creature, allMonsters, onSave, onCancel, isModal = fa
             "IXITXACHITL": "イクシツザチトル",
             "NAGA": "ナーガ",
             "PERVERT": "変質者",
-            "SOLDIER": "兵士"
+            "SOLDIER": "兵士",
+            "GREAT_OLD_ONE": "旧支配者",
+            "SMITH": "鍛冶師",
+            "WHEEL": "車輪"
         },
         "アライアンス": {
             "ALLIANCE_AMBER": "アンバー所属",
