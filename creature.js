@@ -85,7 +85,7 @@ class Creature {
 
         const collapseFlags = this.flags.filter(f => f.startsWith("COLLAPSE_"));
         if (collapseFlags.length > 0) {
-            j.collapse = collapseFlags[0].split("_")[1];
+            j.world_collapse_plus = collapseFlags[0].split("_")[1];
         }
 
         const perhpFlags = this.flags.filter(f => f.startsWith("PERHP_"));
@@ -578,7 +578,8 @@ class Creature {
 
         // alliance, collapse, start_hp_percentage, mob, collapse_over, suicide, mother, father
         if (json.alliance) c.flags.push(`ALLIANCE_${json.alliance}`);
-        if (json.collapse) c.flags.push(`COLLAPSE_${json.collapse}`);
+        if (json.world_collapse_plus) c.flags.push(`COLLAPSE_${json.world_collapse_plus}`);
+        if (json.collapse) c.flags.push(`COLLAPSE_${json.collapse}`); // 後方互換性のため残す
         if (json.start_hp_percentage) c.flags.push(`PERHP_${json.start_hp_percentage}`);
         if (json.perhp) c.flags.push(`PERHP_${json.perhp}`); // 後方互換性のため残す
         if (json.mob) c.flags.push(`MOB_${json.mob}`);
