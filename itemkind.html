@@ -495,8 +495,9 @@
                                                     コピー
                                                 </button>
                                                 <textarea
+                                                    key="json-text"
                                                     className="form-control"
-                                                    value={JSON.stringify(item.toJson(), null, 2)}
+                                                    defaultValue={JSON.stringify(item.toJson(), null, 2)}
                                                     rows={Math.max(3, JSON.stringify(item.toJson(), null, 2).split('\n').length)}
                                                     style={{ width: "100%", resize: "vertical" }}
                                                     readOnly
@@ -710,8 +711,9 @@
                                                     コピー
                                                 </button>
                                                 <textarea
+                                                    key="raw-text-2"
                                                     className="form-control"
-                                                    value={item.rawText}
+                                                    defaultValue={item.rawText}
                                                     rows={Math.max(3, item.rawText.split('\n').length)}
                                                     style={{ width: "100%", resize: "vertical" }}
                                                     readOnly
@@ -729,8 +731,9 @@
                                                     コピー
                                                 </button>
                                                 <textarea
+                                                    key="json-text-2"
                                                     className="form-control"
-                                                    value={JSON.stringify(item.toJson(), null, 2)}
+                                                    defaultValue={JSON.stringify(item.toJson(), null, 2)}
                                                     rows={Math.max(3, JSON.stringify(item.toJson(), null, 2).split('\n').length)}
                                                     style={{ width: "100%", resize: "vertical" }}
                                                     readOnly

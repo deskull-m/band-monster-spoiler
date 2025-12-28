@@ -241,8 +241,9 @@ function MonsterDetail({ creature, index, infoList }) {
                                         コピー
                                     </button>
                                     <textarea
+                                        key="rinfo-text"
                                         className="form-control"
-                                        value={rinfoText}
+                                        defaultValue={rinfoText}
                                         rows={20}
                                         style={{ 
                                             width: "100%", 
@@ -265,8 +266,9 @@ function MonsterDetail({ creature, index, infoList }) {
                                         コピー
                                     </button>
                                     <textarea
+                                        key="json-text"
                                         className="form-control"
-                                        value={jsonText}
+                                        defaultValue={jsonText}
                                         rows={20}
                                         style={{ 
                                             width: "100%", 
@@ -303,12 +305,12 @@ function MonsterTableRow({ creature, index, infoList, onCopy, onEdit, onSave }) 
     const rinfoText = React.useMemo(() => {
         if (tab !== "rinfo") return "";
         return creature.putText();
-    }, [creature, tab]);
+    }, [tab]);
     
     const jsonText = React.useMemo(() => {
         if (tab !== "json") return "";
         return creature.putJson();
-    }, [creature, tab]);
+    }, [tab]);
 
     // 編集用ハンドラー
     const handleSaveEdit = async (updatedCreature) => {
@@ -601,8 +603,9 @@ function MonsterTableRow({ creature, index, infoList, onCopy, onEdit, onSave }) 
                                             コピー
                                         </button>
                                         <textarea
+                                            key="rinfo-text"
                                             className="form-control"
-                                            value={rinfoText}
+                                            defaultValue={rinfoText}
                                             rows={20}
                                             style={{ 
                                                 width: "100%", 
@@ -625,8 +628,9 @@ function MonsterTableRow({ creature, index, infoList, onCopy, onEdit, onSave }) 
                                             コピー
                                         </button>
                                         <textarea
+                                            key="json-text"
                                             className="form-control"
-                                            value={jsonText}
+                                            defaultValue={jsonText}
                                             rows={20}
                                             style={{ 
                                                 width: "100%", 
