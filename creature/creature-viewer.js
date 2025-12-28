@@ -834,8 +834,9 @@ F:BASH_DOOR`;
               </p>
 
               <textarea
+                key="unknown-flags"
                 readOnly
-                value={unknownFlags
+                defaultValue={unknownFlags
                   .map(({ flag, monsters }) => {
                     const monsterList = monsters
                       .map((m) => `  - ID:${m.id} ${m.name} / ${m.englishName}`)
