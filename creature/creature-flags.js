@@ -382,6 +382,7 @@ const FLAG_TRANSLATION = {
   GREAT_OLD_ONE: "旧支配者",
   SMITH: "鍛冶師",
   WHEEL: "車輪",
+  MESUGAKI: "メスガキ",
 };
 
 // 共通の魔法・特殊能力翻訳マップ
